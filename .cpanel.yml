@@ -3,15 +3,4 @@ deployment:
   tasks:
     # this path is fixed in cpanel, do not update
     - export DEPLOYPATH=/home/aidanhon/public_html/
-    - /bin/cp index.html $DEPLOYPATH
-    - /bin/cp main.ts $DEPLOYPATH
-    - /bin/cp styles.scss $DEPLOYPATH
-    - /bin/cp -R public $DEPLOYPATH
-    - /bin/cp -R app $DEPLOYPATH
-    - /bin/cp angular.json $DEPLOYPATH
-    - /bin/cp package.json $DEPLOYPATH
-    - /bin/cp package-lock.json $DEPLOYPATH
-    - /bin/cp tsconfig.json $DEPLOYPATH
-    - /bin/cp tsconfig.app.json $DEPLOYPATH
-    - /bin/cp tsconfig.spec.json $DEPLOYPATH
-    - /bin/cp README.md
+    - /bin/cp -R dist/browser/* $DEPLOYPATH

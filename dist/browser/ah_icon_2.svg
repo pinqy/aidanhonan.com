@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="69.178 81.988 353.958 243.404" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
+  <defs>
+    <linearGradient gradientUnits="userSpaceOnUse" x1="116.17" y1="104.607" x2="116.17" y2="142.198" id="gradient-0">
+      <stop offset="0" style="stop-color: rgb(255, 0, 150);"/>
+      <stop offset="1" style="stop-color: rgb(0, 255, 106);"/>
+    </linearGradient>
+    <linearGradient gradientUnits="userSpaceOnUse" x1="116.17" y1="104.607" x2="116.17" y2="142.198" id="gradient-1">
+      <stop offset="0" style="stop-color: rgb(255, 0, 150);"/>
+      <stop offset="1" style="stop-color: rgb(0, 255, 106);"/>
+    </linearGradient>
+    <style type="text/css">
+      @import url('https://fonts.googleapis.com/css2?family=Atomic+Age%3Aital%2Cwght%400%2C400&amp;display=swap');
+    </style>
+  </defs>
+  <text style="fill: url('#gradient-0'); font-family: 'Atomic Age'; font-size: 28px; paint-order: fill; stroke: url('#gradient-1'); stroke-linejoin: bevel; stroke-width: 0.437559px; white-space: pre;" transform="matrix(8.718223571777344, 0, 0.011868000961840153, 9.565019607543945, -762.287353515625, -970.0474243164062)" x="97.361" y="133.231">AH</text>
+</svg>
