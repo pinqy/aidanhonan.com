@@ -1,6 +1,23 @@
-# AngularTestSite1
+# aidanhonan.com
+https://aidanhonan.com/
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.1.0.
+## Deploying Changes
+
+Before deploying any changes, **<u>make sure</u>** to run `ng build` and include the `dist/` folder in your commit, otherwise the changes you make will not take effect.
+
+When making changes, after testing locally, you can first deploy them to test.aidanhonan.com
+1. `git checkout -b test`
+2. Commit changes
+3. `git push -u origin test`
+4. Pull and deploy changes in cPanel repository `aidanhonan.com-test`
+5. Test on test.aidanhonan.com
+   1. To update the page quickly, go to CloudFlare Console -> Caching -> Configuration -> Purge Cache (Custom Purge) and purge https://www.test.aidanhonan.com
+
+When you're ready to deploy changes to mainline
+1. `gh pr create --draft --title "<title>"`
+2. Populate the pull-request with details in GitHub
+3. Merge the pull-request
+4. Pull and deploy changes in cPanel repository `aidanhonan.com`
 
 ## Development server
 
