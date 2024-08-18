@@ -1,9 +1,10 @@
 ---
 deployment:
   tasks:
-    # this path is fixed in cpanel, do not update
+    # DO NOT UPDATE: these paths are fixed in cpanel
     - export DEPLOYPATH=/home/aidanhon/public_html/
     - export TESTDEPLOYPATH=/home/aidanhon/test_html/
+    # CAUTION: This logic determines where changes deploy, do not modify unless necessary
     - export TEST_BRANCH=test
     - export PROD_BRANCH=mainline
     - export CURRENT_BRANCH=$(git symbolic-ref --short HEAD)
