@@ -8,9 +8,19 @@ jobs:
   test_job:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Test Job
-        uses: colbyhill21/angular-full-ci@v1.0
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          # Command to run tests on your project, do not prepend with "npm", it is already included.
-          testcommand: run test:ci
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run Tests
+        run: npm run test:headless
+
+      - name: Build
+        run: npm run build
