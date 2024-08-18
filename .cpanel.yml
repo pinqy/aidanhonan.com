@@ -1,6 +1,11 @@
 ---
 deployment:
   tasks:
-    # this path is fixed in cpanel, do not update
+    # DO NOT UPDATE: these paths are fixed in cpanel
     - export DEPLOYPATH=/home/aidanhon/public_html/
-    - /bin/cp -R dist/browser/* $DEPLOYPATH
+    - export TESTDEPLOYPATH=/home/aidanhon/test_html/
+    # CAUTION: This logic determines where changes deploy, do not modify unless necessary
+    - export TEST_BRANCH=test
+    - export PROD_BRANCH=mainline
+    - export CURRENT_BRANCH=$(git symbolic-ref --short HEAD)
+    - if [ ${CURRENT_BRANCH} == ${TEST_BRANCH} ]; then /bin/cp -R dist/browser/* $TESTDEPLOYPATH; elif [ ${CURRENT_BRANCH} == ${PROD_BRANCH} ]; then /bin/cp -R dist/browser/* $DEPLOYPATH; else echo "Could not determine proper deployment location"; fi
