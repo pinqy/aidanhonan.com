@@ -9,4 +9,5 @@ import { Component } from '@angular/core';
 })
 export class HeaderComponent {
   headerText = "AidanHonan.com";
+  repoLink = "https://github.com/pinqy/aidanhonan.com";
 }

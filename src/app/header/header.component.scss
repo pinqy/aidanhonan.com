@@ -3,6 +3,10 @@
 $content-padding: 10px;
 
 header {
+  flex-direction: row;
+  display: inline-flex;
+  justify-content: center;
+
   height: 50px;
   width: 100%;
   padding: var($content-padding);
@@ -10,7 +14,31 @@ header {
   color: styles.$primary-color;
   
   h1 {
-    text-align: left;
+    margin: auto;
     margin-left: 10px;
+  }
+
+  .header-spacer {
+    width: 100%;
+  }
+
+  .header-source-link {
+    margin: auto;
+    margin-right: 10px;
+
+    font-size: 10px;
+    text-align: center;
+
+    a {
+      text-decoration: none;
+    }
+    
+    :hover {
+      text-decoration: underline;
+    }
+  }
+
+  img {
+    height: 25px;
   }
 }
