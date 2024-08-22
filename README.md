@@ -3,7 +3,7 @@ https://aidanhonan.com/
 
 ## Deploying Changes
 
-Before deploying any changes, **<u>make sure</u>** to run `ng build` and include the `dist/` folder in your commit, otherwise the changes you make will not take effect.
+Before deploying any changes, **<u>make sure</u>** to run `npm run build` and include the `dist/` folder in your commit, otherwise the changes you make will not take effect.
 
 When making changes, after testing locally, you can first deploy them to test.aidanhonan.com
 1. On mainline branch, make sure local repo is up to date: `git pull`
