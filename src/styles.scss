@@ -12,3 +12,8 @@ $primary-color: #605DC8;
 $secondary-color: #8B89E6;
 $accent-color: #e8e7fa;
 $shadow-color: #E8E8E8;
+
+// This is hardcoded to primary-color: #605DC8, generated here: https://codepen.io/sosuke/pen/Pjoqqp
+.filter-primary-color {
+  filter: invert(37%) sepia(76%) saturate(536%) hue-rotate(202deg) brightness(90%) contrast(90%);
+}
