@@ -23,9 +23,11 @@ jobs:
           node-version: 20
 
       - name: Install Dependencies
+        id: install_deps
         run: npm install
 
       - name: Dump version
+        if: steps.install_deps.outcome == 'success'
         run: |
           node -v
           npm --version
@@ -33,4 +35,5 @@ jobs:
           ng --version
 
       - name: Build
+        if: steps.install_deps.outcome == 'success'
         run: npm run build
