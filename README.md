@@ -6,11 +6,13 @@ https://aidanhonan.com/
 Before deploying any changes, **<u>make sure</u>** to run `ng build` and include the `dist/` folder in your commit, otherwise the changes you make will not take effect.
 
 When making changes, after testing locally, you can first deploy them to test.aidanhonan.com
+1. On mainline branch, make sure local repo is up to date: `git pull`
 1. `git checkout -b test`
-2. Commit changes
-3. `git push -u origin test`
-4. Pull and deploy changes in cPanel repository `aidanhonan.com-test`
-5. Test on test.aidanhonan.com
+2. `git merge mainline`
+3. Commit changes
+4. `git push -u origin test`
+5. Pull and deploy changes in cPanel repository `aidanhonan.com-test`
+6. Test on test.aidanhonan.com
    1. To update the page quickly, go to CloudFlare Console -> Caching -> Configuration -> Purge Cache (Custom Purge) and purge https://www.test.aidanhonan.com
 
 When you're ready to deploy changes to mainline
