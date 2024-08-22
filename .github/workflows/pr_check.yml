@@ -1,8 +1,6 @@
 name: PR Validation
 
-on:
-  pull_request:
-    types: [opened, reopened]
+on: pull_request
 
 jobs:
   dependency_review:
@@ -22,15 +20,10 @@ jobs:
         with:
           node-version: 20
 
-      - name: Dump version
-        run: |
-          node -v
-          npm --version
-          git --version
-          ng --version
-
       - name: Install Dependencies
+        id: install_deps
         run: npm install
 
       - name: Build
+        if: steps.install_deps.outcome == 'success'
         run: npm run build
