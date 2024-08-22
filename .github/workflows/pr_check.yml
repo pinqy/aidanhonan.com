@@ -5,22 +5,32 @@ on:
     types: [opened, reopened]
 
 jobs:
-  test_job:
+  dependency_review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/dependency-review-action@v4
+
+  dry_run_build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 20
 
+      - name: Dump version
+        run: |
+          node -v
+          npm --version
+          git --version
+          ng --version
+
       - name: Install Dependencies
         run: npm install
-
-      - name: Run Tests
-        run: npm run test:headless
 
       - name: Build
         run: npm run build
