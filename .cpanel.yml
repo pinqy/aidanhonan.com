@@ -1,6 +1,7 @@
 ---
 deployment:
   tasks:
+    # WARNING: be very careful, breaking this file will mess up remote cpanel repos and break deployments
     # DO NOT UPDATE: these paths are fixed in cpanel
     - export DEPLOYPATH=/home/aidanhon/public_html/
     - export TESTDEPLOYPATH=/home/aidanhon/test_html/
