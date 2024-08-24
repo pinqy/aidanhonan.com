@@ -18,6 +18,7 @@ jobs:
           repository_root: '/home/aidanhon/repositories/aidanhonan.com-test'
           branch: test
           cpanel_token: '${{ secrets.CPANEL_TOKEN }}'
+          cpanel_username: 'aidanhon'
       
       - name: echo deploy-duration
         run: echo "Deployment took ${{ steps.deploy.outputs.duration }} milliseconds"
