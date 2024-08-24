@@ -1,0 +1,23 @@
+name: Deploy Test Branch
+
+on:
+  push:
+    branches:
+      - test
+
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy test branch to cPanel
+        id: deploy
+        uses: pinkasey/cpanel-deploy-action@v1.2.0
+        with:
+          hostname: 'https://test.aidanhonan.com'
+          repository_root: '/home/aidanhon/repositories/aidanhonan.com-test'
+          branch: test
+          cpanel_token: '${{ secrets.CPANEL_TOKEN }}'
+      
+      - name: echo deploy-duration
+        run: echo "Deployment took ${{ steps.deploy.outputs.duration }} milliseconds"
