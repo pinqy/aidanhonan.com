@@ -14,7 +14,7 @@ jobs:
         id: deploy
         uses: pinkasey/cpanel-deploy-action@v1.2.0
         with:
-          hostname: 'https://test.aidanhonan.com'
+          hostname: 'https://${{ secrets.A2_HOSTNAME }}'
           repository_root: '/home/aidanhon/repositories/aidanhonan.com-test'
           branch: test
           cpanel_token: '${{ secrets.CPANEL_TOKEN }}'
