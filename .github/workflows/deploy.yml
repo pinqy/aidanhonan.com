@@ -1,0 +1,24 @@
+name: Deploy Mainline Branch
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  deploy:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy mainline branch to cPanel
+        id: deploy
+        uses: pinkasey/cpanel-deploy-action@v1.2.0
+        with:
+          hostname: 'https://${{ secrets.A2_HOSTNAME }}'
+          repository_root: '/home/aidanhon/repositories/aidanhonan.com'
+          branch: mainline
+          cpanel_token: '${{ secrets.CPANEL_TOKEN }}'
+          cpanel_username: 'aidanhon'
+      
+      - name: echo deploy-duration
+        run: echo "Deployment took ${{ steps.deploy.outputs.duration }} milliseconds"
