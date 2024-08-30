@@ -1,16 +1,14 @@
 @use '../../styles';
 
-$content-padding: 10px;
-
 header {
   flex-direction: row;
   display: inline-flex;
   justify-content: center;
+  box-sizing: border-box;
 
-  height: 50px;
   width: 100%;
-  padding: var($content-padding);
-  border-bottom: 2px solid styles.$secondary-color;
+  height: 100%;
+  //border-bottom: 2px solid styles.$secondary-color;
   color: styles.$primary-color;
   
   h1 {
@@ -29,6 +27,7 @@ header {
 
     font-size: 10px;
     text-align: center;
+    color: styles.$secondary-color;
 
     a {
       text-decoration: none;
@@ -36,6 +35,11 @@ header {
     
     :hover {
       text-decoration: underline;
+    }
+
+    :visited {
+      text-decoration: none;
+      color: inherit;
     }
   }
 
