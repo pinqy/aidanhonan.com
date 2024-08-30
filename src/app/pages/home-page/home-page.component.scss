@@ -1,0 +1,13 @@
+@use '../../../styles';
+
+h1 {
+    font-size: 128px;
+    font-weight: 200;
+    @include styles.neon_text(styles.$primary-color);//#F535AA);
+}
+
+h2 {
+    font-size: 50px;
+    font-weight: 200;
+    @include styles.neon_text(styles.$primary-color);
+}
