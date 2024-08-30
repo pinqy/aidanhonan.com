@@ -1,15 +1,32 @@
+@use '../styles';
+
 main {
   box-sizing: border-box;
   width: 100%;
-  min-height: 100%;
-  padding: 5px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  height: 50px;
+  padding: 0;
+  background-color: black;
 }
 
 .content {
   justify-content: space-around;
+  max-width: 100%;
+  flex: 1 1 auto;
+  background-color: black;
+  align-content: center;
+  text-align: center;
+}
+
+.footer {
   width: 100%;
-  min-height: 100%;
-  margin-bottom: 3rem;
+  height: 20px;
+  background-color: black;
 }
 
 @media screen and (max-width: 650px) {

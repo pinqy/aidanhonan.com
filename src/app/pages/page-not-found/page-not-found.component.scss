@@ -1,0 +1,7 @@
+@use '../../../styles';
+
+p {
+    font-size: 128px;
+    font-weight: 400;
+    @include styles.neon_text(styles.$primary-color);
+}
