@@ -4,7 +4,8 @@
   padding: 0;
 }
 
-header {
+html, body {
+  height: 100%;
   font-family: 'Atomic Age', sans-serif;
 }
 
@@ -13,7 +14,22 @@ $secondary-color: #8B89E6;
 $accent-color: #e8e7fa;
 $shadow-color: #E8E8E8;
 
+$color-3: #EAC8CA;
+
 // This is hardcoded to primary-color: #605DC8, generated here: https://codepen.io/sosuke/pen/Pjoqqp
 .filter-primary-color {
   filter: invert(37%) sepia(76%) saturate(536%) hue-rotate(202deg) brightness(90%) contrast(90%);
+}
+
+@mixin neon_text($input_color) {
+  color: #fff;
+  text-shadow:
+    0 0 7px #fff,
+    0 0 10px #fff,
+    0 0 21px #fff,
+    0 0 42px $input_color,
+    0 0 82px $input_color,
+    0 0 92px $input_color,
+    0 0 102px $input_color,
+    0 0 151px $input_color;
 }
