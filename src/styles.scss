@@ -9,27 +9,87 @@ html, body {
   font-family: 'Atomic Age', sans-serif;
 }
 
+// | ------------------------------------------------- |
+// |           Redesign -- Sepia/Brown Vibes           |
+// | ------------------------------------------------- |
+$background-color: #EAD7C3;
+$text-color: black; // placeholder (main content text)
+$header-color: #5d4232;
+$header-background: #cfc3b5; // currently unused
+$footer-background: #6e604b;
+
+@mixin default-link-hover() {
+  opacity: 50%;
+}
+
+// Hardcoded for header-color #5d4232, generated here: https://codepen.io/sosuke/pen/Pjoqqp
+.filter-header-color {
+  filter: invert(22%) sepia(65%) saturate(326%) hue-rotate(339deg) brightness(95%) contrast(85%);
+}
+// -----------------------------------------------------
+
+
+
+// | -------------------------------------------------------- |
+// |  Dark mode w/ purple text stuff and neon -- maybe later  |
+// | -------------------------------------------------------- |
 $primary-color: #605DC8;
 $secondary-color: #8B89E6;
 $accent-color: #e8e7fa;
 $shadow-color: #E8E8E8;
-
-$color-3: #EAC8CA;
 
 // This is hardcoded to primary-color: #605DC8, generated here: https://codepen.io/sosuke/pen/Pjoqqp
 .filter-primary-color {
   filter: invert(37%) sepia(76%) saturate(536%) hue-rotate(202deg) brightness(90%) contrast(90%);
 }
 
-@mixin neon_text($input_color) {
+@mixin neon_text($color) {
   color: #fff;
   text-shadow:
     0 0 7px #fff,
     0 0 10px #fff,
     0 0 21px #fff,
-    0 0 42px $input_color,
-    0 0 82px $input_color,
-    0 0 92px $input_color,
-    0 0 102px $input_color,
-    0 0 151px $input_color;
+    0 0 42px $color,
+    0 0 82px $color,
+    0 0 92px $color,
+    0 0 102px $color,
+    0 0 151px $color;
+}
+
+@mixin flicker_neon_text($color) {
+  @include neon_text($color);
+  animation: flicker 1s infinite alternate;     
+
+  /* Flickering animation */
+  @keyframes flicker {
+    0%, 18%, 22%, 25%, 53%, 57%, 100% {
+      text-shadow:
+        0 0 7px #fff,
+        0 0 10px #fff,
+        0 0 21px #fff,
+        0 0 42px $color,
+        0 0 82px $color,
+        0 0 92px $color,
+        0 0 102px $color,
+        0 0 151px $color;
+    }
+    
+    20%, 24%, 55% {        
+        text-shadow: none;
+    }    
+  }
+}
+
+@mixin neon_border($color) {
+  border: 3px solid #fff;
+  border-radius: 32px;
+  padding: 6px;
+
+  box-shadow: 
+    0 0 3px #fff,
+    0 0 3px #fff,
+    0 0 32px $color,
+    0 0 13px $color,
+    0 0 45px $color,
+    inset 0 0 19px $color;
 }
