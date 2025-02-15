@@ -1,7 +1,16 @@
 @use '../../../styles';
 
-p {
+.content-body {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+
+h1 {
     font-size: 128px;
     font-weight: 400;
-    @include styles.neon_text(styles.$primary-color);
+}
+
+h2 {
+    font-size: 64px;
 }

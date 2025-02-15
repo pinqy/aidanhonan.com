@@ -6,19 +6,19 @@ main {
   height: 100%;
   display: flex;
   flex-direction: column;
+  background-color: styles.$background-color;
 }
 
 .header {
   height: 50px;
   padding: 0;
-  background-color: black;
+  color: styles.$header-color;
 }
 
 .content {
   justify-content: space-around;
   max-width: 100%;
   flex: 1 1 auto;
-  background-color: black;
   align-content: center;
   text-align: center;
 }
@@ -26,7 +26,7 @@ main {
 .footer {
   width: 100%;
   height: 20px;
-  background-color: black;
+  background-color: styles.$footer-background;
 }
 
 @media screen and (max-width: 650px) {
