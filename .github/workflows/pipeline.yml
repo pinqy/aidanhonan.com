@@ -45,7 +45,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: deploy_dist
+      - name: Show file struct
+        run: ls -a
       - name: Deploy to cPanel
+        if: success()
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ftp.aidanhonan.com
