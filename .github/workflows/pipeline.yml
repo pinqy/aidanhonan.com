@@ -45,7 +45,7 @@ jobs:
         with:
           name: deploy_dist
       - name: Deploy to cPanel
-        uses: SamKirkland/FTP-Deploy-Action@v4
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ftp.aidanhonan.com
           username: ${{ secrets.FTP_USERNAME }}
