@@ -53,6 +53,6 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
           server-dir: ./test/
-          local-dir: ./deploy_dist/
+          local-dir: deploy_dist/
           dry-run: true
     
