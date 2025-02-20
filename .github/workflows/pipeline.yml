@@ -46,8 +46,6 @@ jobs:
         with:
           name: deploy_dist
           path: deploy_dist
-      - name: Show file struct
-        run: ls -a
       - name: Deploy to cPanel
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
