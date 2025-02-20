@@ -51,11 +51,11 @@ jobs:
       - name: Deploy to cPanel
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ftp.aidanhonan.com
+          server: ftpes.aidanhonan.com
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
           server-dir: test/
-          local-dir: ./dist/browser/
+          local-dir: ./deploy_dist/
           dry-run: true
     
