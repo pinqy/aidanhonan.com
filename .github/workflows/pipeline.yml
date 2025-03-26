@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - mainline
-      - pipeline_test
 
 jobs:
   build:
@@ -34,8 +33,8 @@ jobs:
           name: deploy_coverage
           path: coverage
         
-  deploy-test:
-    name: Deploy Test Site
+  deploy-beta:
+    name: Deploy Beta Site
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -56,3 +55,44 @@ jobs:
           server-dir: test/
           local-dir: ./deploy_dist/
           dry-run: false
+
+  beta-approval-workflow:
+    name: Beta Approval Workflow
+    needs: deploy-beta
+    runs-on: ubuntu-latest
+    steps:
+      - name: Beta Integ Test Placeholder
+        run: echo "Placeholder for Beta Integ Tests"
+      - name: Manual Approval PlaceHolder
+        run: echo "See link to set up - https://github.com/marketplace/actions/manual-workflow-approval"
+
+  deploy-prod:
+    name: Deploy Prod Site
+    needs: beta-approval-workflow
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Download build
+        uses: actions/download-artifact@v4
+        with:
+          name: deploy_dist
+          path: deploy_dist
+      - name: Deploy to cPanel
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ftps.aidanhonan.com
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          server-dir: prod/
+          local-dir: ./deploy_dist/
+          dry-run: false
+  
+  prod-approval-workflow:
+    name: Prod Approval Workflow
+    needs: deploy-prod
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prod Integ Test Placeholder
+        run: echo "Placeholder for Prod Integ Tests"
