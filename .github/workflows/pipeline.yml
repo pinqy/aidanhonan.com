@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - mainline
+      - pipeline_test
 
 jobs:
   build:
@@ -25,7 +26,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: deploy_dist
-          path: dist
+          path: dist/browser
       - name: Archive code coverage result
         if: success()
         uses: actions/upload-artifact@v4
@@ -44,14 +45,14 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: deploy_dist
+          path: deploy_dist
       - name: Deploy to cPanel
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          server: ftp.aidanhonan.com
+          server: ftps.aidanhonan.com
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
-          server-dir: ./test/
-          local-dir: ./deploy_dist/browser/
-          dry-run: true
-    
+          server-dir: test/
+          local-dir: ./deploy_dist/
+          dry-run: false
