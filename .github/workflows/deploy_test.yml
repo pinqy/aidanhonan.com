@@ -3,7 +3,7 @@ name: Deploy Test Branch
 on:
   push:
     branches:
-      - test
+      - DEPRECATED_WORKFLOW
 
 
 jobs:
