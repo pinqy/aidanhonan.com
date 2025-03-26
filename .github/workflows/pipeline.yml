@@ -55,4 +55,4 @@ jobs:
           protocol: ftps
           server-dir: test/
           local-dir: ./deploy_dist/
-          dry-run: true
+          dry-run: false
