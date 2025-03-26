@@ -87,7 +87,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
           local-dir: ./deploy_dist/
-          dry-run: true # testing deployment directly to public_html
+          dry-run: false
           exclude: |
             **/test/**
             **/.well-known/**
