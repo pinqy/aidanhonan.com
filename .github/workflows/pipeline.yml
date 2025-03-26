@@ -86,9 +86,14 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ftps
-          server-dir: prod/
           local-dir: ./deploy_dist/
-          dry-run: false
+          dry-run: true # testing deployment directly to public_html
+          exclude: |
+            **/test/**
+            **/.well-known/**
+            **/cgi-bin/**
+            .ftpquota
+            a2-default-index.php
   
   prod-approval-workflow:
     name: Prod Approval Workflow
