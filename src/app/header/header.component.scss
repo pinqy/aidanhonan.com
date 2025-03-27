@@ -8,6 +8,19 @@ header {
 
   width: 100%;
   height: 100%;
+
+  a {
+    text-decoration: none;
+  }
+
+  a:hover {
+    @include styles.default-link-hover();
+  }
+
+  a:visited {
+    text-decoration: none;
+    color: inherit;
+  }
   
   h1 {
     margin: auto;
@@ -28,16 +41,10 @@ header {
     }
 
     :hover {
-      @include styles.default-link-hover();
       padding-left: 9px;
       padding-right: 9px;
       border-left: 1px solid styles.$header-color;
       border-right: 1px solid styles.$header-color;
-    }
-
-    :visited {
-      text-decoration: none;
-      color: inherit;
     }
   }
 
@@ -62,15 +69,6 @@ header {
       :hover {
         opacity: 1.0;
       }
-    }
-    
-    :hover {
-      @include styles.default-link-hover()
-    }
-
-    :visited {
-      text-decoration: none;
-      color: inherit;
     }
   }
 
