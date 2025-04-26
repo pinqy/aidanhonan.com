@@ -10,11 +10,12 @@ Run `npm run start` for a dev server. Navigate to `http://localhost:4200/`. The 
 When you're ready to deploy changes
 1. On mainline branch, make sure local repo is up to date: `git fetch && git pull`
 2. Checkout a feature branch for your change: `git checkout -b <branch-name>`
-3. Commit changes
-4. `gh pr create --draft --title "<title>"`
-5. Populate the pull-request with details in GitHub
-6. Merge the pull-request
-7. The change will first deploy on https://test.aidanhonan.com
+3. Run `npm run build` to make sure unit tests pass
+4. Commit changes
+5. `gh pr create --draft --title "<title>"`
+6. Populate the pull-request with details in GitHub
+7. Merge the pull-request
+8. The change will first deploy on https://test.aidanhonan.com
    1. Testing step is TODO
 
 
