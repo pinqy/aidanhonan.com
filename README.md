@@ -1,41 +1,37 @@
-# aidanhonan.com
+# AidanHonan.com
 https://aidanhonan.com/
+
+## Local Testing
+
+Run `npm run start` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
 
 ## Deploying Changes
 
-Before deploying any changes, **<u>make sure</u>** to run `npm run build` and include the `dist/` folder in your commit, otherwise the changes you make will not take effect.
-
-When making changes, after testing locally, you can first deploy them to test.aidanhonan.com
-1. On mainline branch, make sure local repo is up to date: `git pull`
-1. `git checkout -b test`
-2. `git merge mainline`
+When you're ready to deploy changes
+1. On mainline branch, make sure local repo is up to date: `git fetch && git pull`
+2. Checkout a feature branch for your change: `git checkout -b <branch-name>`
 3. Commit changes
-4. `git push -u origin test`
-5. Pull and deploy changes in cPanel repository `aidanhonan.com-test`
-6. Test on test.aidanhonan.com
-   1. To update the page quickly, go to CloudFlare Console -> Caching -> Configuration -> Purge Cache (Custom Purge) and purge https://www.test.aidanhonan.com
+4. `gh pr create --draft --title "<title>"`
+5. Populate the pull-request with details in GitHub
+6. Merge the pull-request
+7. The change will first deploy on https://test.aidanhonan.com
+   1. Testing step is TODO
 
-When you're ready to deploy changes to mainline
-1. `gh pr create --draft --title "<title>"`
-2. Populate the pull-request with details in GitHub
-3. Merge the pull-request
-4. Pull and deploy changes in cPanel repository `aidanhonan.com`
 
-## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
-
+# Angular
+https://angular.dev/overview
 ## Code scaffolding
 
 Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+Run `npm run build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
 ## Running unit tests
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Run `npm run test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
 ## Running end-to-end tests
 

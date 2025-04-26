@@ -1,8 +1,8 @@
 <header>
-  <a href="/"><h1>{{ headerText }}</h1></a>
+  <a routerLink="/" routerLinkActive="active" ariaCurrentWhenActive="page"><h1>{{ headerText }}</h1></a>
   <div class="header-nav-links">
-    <a href="">GAMES</a>
-    <a href="">PLACEHOLDER</a>
+    <a routerLink="/" routerLinkActive="active" ariaCurrentWhenActive="page">GAMES</a>
+    <a routerLink="/backend-test" routerLinkActive="active" ariaCurrentWhenActive="page">BACKEND TEST</a>
   </div>
   <div class="header-spacer"></div>
   <div class="header-source-link"><a href="{{ repoLink }}">
