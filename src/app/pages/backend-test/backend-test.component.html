@@ -1,1 +1,9 @@
-<p>backend-test WIP</p>
+<div *ngIf="(testString$ | async) as testString; else loading" >
+    <p>Success! Response from backend:</p>
+    <br />
+    <h3>{{ testString }}</h3>
+</div>
+
+<ng-template #loading>
+    Loading...
+</ng-template>
