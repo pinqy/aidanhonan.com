@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { BackendTestComponent } from './backend-test.component';
+import { appConfig } from '../../app.config';
 
 describe('BackendTestComponent', () => {
   let component: BackendTestComponent;
@@ -8,7 +9,8 @@ describe('BackendTestComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [BackendTestComponent]
+      imports: [BackendTestComponent],
+      providers: appConfig.providers,
     })
     .compileComponents();
 
