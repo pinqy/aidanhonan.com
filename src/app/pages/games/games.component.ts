@@ -7,4 +7,5 @@ import { RouterOutlet } from '@angular/router';
   templateUrl: './games.component.html',
   styleUrl: './games.component.scss'
 })
-export class GamesComponent {}
+export class GamesComponent {
+}

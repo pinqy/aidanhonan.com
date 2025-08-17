@@ -1,1 +1,10 @@
-<p>games-menu works!</p>
+<body class="games-menu-component">
+  <div class="games-menu-grid">
+    @for (game of games; track game.displayName) {
+      <a class="games-menu-item" routerLink="{{game.path}}" routerLinkActive="active" ariaCurrentWhenActive="page">
+        <img src="{{game.iconPath ?? gameIconPathDefault}}" alt="{{game.displayName}} Logo" class="games-menu-item-logo" />
+        <p class="games-menu-item-text">{{game.displayName}}</p>
+      </a>
+    }
+  </div>
+</body>

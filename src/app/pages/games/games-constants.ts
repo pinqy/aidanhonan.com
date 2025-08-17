@@ -1,19 +1,23 @@
-import { Route } from "@angular/router";
+import { GamesMenuComponent } from "./games-menu/games-menu";
 import { MinesweeperComponent } from "./minesweeper/minesweeper.component";
-import { TITLE_SUFFIX } from "../../constants";
 
 export interface Game {
     displayName: string,
-    route: Route,
+    path: string,
+    component: MinesweeperComponent,
+    iconPath?: string,
 }
 
 export const GAMES: Game[] = [
     {
         displayName: "Minesweeper", 
-        route: {
-            path: "minesweeper",
-            title: "Minesweeper" + TITLE_SUFFIX,
-            component: MinesweeperComponent,
-        },
+        path: "minesweeper",
+        component: MinesweeperComponent,
+        iconPath: "game-icon-minesweeper.png",
+    },
+    {
+        displayName: "Test Game",
+        path: 'test',
+        component: GamesMenuComponent,
     },
 ]
