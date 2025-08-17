@@ -1,0 +1,35 @@
+.games-component {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  height: 100%;
+  width: 100%;
+
+  padding: 20px 50px;
+}
+
+.games-screen-border {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  border: 2px solid black;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.games-screen {
+  box-sizing: border-box;
+  height: 100%;
+  width: 100%;
+  border-top: 25px solid black;
+  border-bottom: 25px solid black;
+  border-left: 15px solid black;
+  border-right: 15px solid black;
+
+  background-image: url('../../../../public/games-background-default.png');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}

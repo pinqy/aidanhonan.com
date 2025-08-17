@@ -1,4 +1,4 @@
-import { Routes } from '@angular/router';
+import { Routes, Route } from '@angular/router';
 import { HomePageComponent } from './pages/home-page/home-page.component';
 import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
 import { BackendTestComponent } from './pages/backend-test/backend-test.component';
@@ -18,8 +18,10 @@ export const routes: Routes = [
     { path: 'games', title: titleWithSuffix('Games'), component: GamesComponent,
         children: [
             { path: '', component: GamesMenuComponent },
-            ...GAMES.map((game) => game.route),
-            { path: "**", title: "Game Not Found", component: GameNotFoundComponent },
+            ...GAMES.map<Route>((game) => {
+                return { path: game.path, title: titleWithSuffix(game.displayName), component: game.component } as Route
+            }),
+            { path: "**", title: titleWithSuffix("Game Not Found"), component: GameNotFoundComponent },
         ] 
     },
     { path: '**', title: titleWithSuffix('Page Not Found'), component: PageNotFoundComponent },
