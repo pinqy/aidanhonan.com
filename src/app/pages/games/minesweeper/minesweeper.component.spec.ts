@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { MinesweeperComponent } from './minesweeper.component';
+import { appConfig } from '../../../app.config';
 
 describe('MinesweeperComponent', () => {
   let component: MinesweeperComponent;
@@ -8,7 +9,8 @@ describe('MinesweeperComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [MinesweeperComponent]
+      imports: [MinesweeperComponent],
+      providers: appConfig.providers,
     })
     .compileComponents();
 

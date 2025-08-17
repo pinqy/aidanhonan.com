@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { GameNotFoundComponent } from './game-not-found.component';
+import { appConfig } from '../../../app.config';
 
 describe('GameNotFoundComponent', () => {
   let component: GameNotFoundComponent;
@@ -8,7 +9,8 @@ describe('GameNotFoundComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GameNotFoundComponent]
+      imports: [GameNotFoundComponent],
+      providers: appConfig.providers,
     })
     .compileComponents();
 
