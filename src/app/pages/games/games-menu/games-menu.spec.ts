@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { GamesMenuComponent } from './games-menu';
+import { appConfig } from '../../../app.config';
 
 describe('GamesMenu', () => {
   let component: GamesMenuComponent;
@@ -8,7 +9,8 @@ describe('GamesMenu', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GamesMenuComponent]
+      imports: [GamesMenuComponent],
+      providers: appConfig.providers,
     })
     .compileComponents();
 
