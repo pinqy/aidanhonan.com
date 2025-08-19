@@ -1,4 +1,4 @@
-import { GamesMenuComponent } from "./games-menu/games-menu";
+import { EmptyComponent } from "../../common/empty-component/empty";
 import { MinesweeperComponent } from "./minesweeper/minesweeper.component";
 
 export interface Game {
@@ -18,6 +18,6 @@ export const GAMES: Game[] = [
     {
         displayName: "Test Game",
         path: 'test',
-        component: GamesMenuComponent,
+        component: EmptyComponent,
     },
 ]

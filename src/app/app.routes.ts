@@ -6,7 +6,7 @@ import { GamesComponent } from './pages/games/games.component';
 import { GAMES } from './pages/games/games-constants';
 import { TITLE_SUFFIX } from './constants';
 import { GameNotFoundComponent } from './pages/games/game-not-found/game-not-found.component';
-import { GamesMenuComponent } from './pages/games/games-menu/games-menu';
+import { EmptyComponent } from './common/empty-component/empty';
 
 function titleWithSuffix(titleBase: string) : string {
     return titleBase + TITLE_SUFFIX
@@ -17,7 +17,7 @@ export const routes: Routes = [
     { path: 'backend-test', title: titleWithSuffix('Backend Test'), component: BackendTestComponent },
     { path: 'games', title: titleWithSuffix('Games'), component: GamesComponent,
         children: [
-            { path: '', component: GamesMenuComponent },
+            { path: '', component: EmptyComponent },
             ...GAMES.map<Route>((game) => {
                 return { path: game.path, title: titleWithSuffix(game.displayName), component: game.component } as Route
             }),
