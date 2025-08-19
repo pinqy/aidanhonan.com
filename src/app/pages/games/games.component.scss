@@ -1,3 +1,8 @@
+@use '../../../styles';
+
+$menu-item-size: 75px;
+$menu-item-text-size: 20px;
+
 .games-component {
   box-sizing: border-box;
   display: flex;
@@ -32,4 +37,67 @@
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
+}
+
+.games-menu-component {
+  height: 100%;
+  width: 100%;
+}
+
+.games-menu-grid {
+  height: 100%;
+  max-width: 100%;
+  float: left;
+  padding: 20px;
+
+  display: grid;
+  gap: 20px;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(auto-fill, $menu-item-size + $menu-item-text-size);
+}
+
+.games-menu-item {
+  width: $menu-item-size;
+  height: 100%;
+  min-height: 100%;
+  
+  display: flex;
+  flex-direction: column;
+
+  text-decoration: none;
+  color: inherit;
+
+  height: 100%;
+
+  :hover {
+    @include styles.default-link-hover();
+  }
+
+  :visited {
+    text-decoration: none;
+  }
+}
+
+.games-menu-item-logo {
+  width: $menu-item-size;
+  height: $menu-item-size;
+
+  margin: 0;
+  padding: 4px;
+
+  box-sizing: border-box;
+  border: 1px solid white;
+  border-radius: 5px;
+
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.games-menu-item-text {
+  width: $menu-item-size;
+  margin-top: 3px;
+
+  color: white;
+  text-shadow: 1px 1px black;
+  font-size: 12px;
+  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 }
