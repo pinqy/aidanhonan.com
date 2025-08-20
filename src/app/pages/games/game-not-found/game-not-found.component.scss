@@ -1,0 +1,63 @@
+@use '../../../../styles';
+
+$popup-header-height: 40px;
+
+.game-not-found-component {
+  height: 100%;
+  width: 100%;
+
+  align-content: center;
+}
+
+.game-not-found-popup {
+  margin: auto;
+  height: 150px;
+  width: 300px;
+
+  box-sizing: border-box;
+  border: 1px solid black;
+  border-radius: 10px;
+  overflow: hidden;
+
+  display: inline-flex;
+  flex-direction: column;
+
+  box-shadow: 2px 3px 5px #000000
+}
+
+.game-not-found-popup-header {
+  background-color: darkgray;
+  border-bottom: 1px solid black;
+
+  height: $popup-header-height;
+}
+
+.game-not-found-close-button {
+  align-content: center;
+  text-align: center;
+  text-decoration: none;
+  color: inherit;
+
+  height: 100%;
+  float: right;
+  width: $popup-header-height;
+
+  background-color: inherit;
+  border: none;
+  border-left: 1px solid black;
+  outline: none;
+  transition-duration: 175ms;
+}
+
+.game-not-found-close-button:hover {
+  background-color: lightcoral;
+}
+
+.game-not-found-popup-body {
+  background-color: lightgray;
+  height: 100%;
+
+  align-content: center;
+  text-align: center;
+  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
