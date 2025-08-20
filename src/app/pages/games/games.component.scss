@@ -1,8 +1,5 @@
 @use '../../../styles';
 
-$menu-item-size: 75px;
-$menu-item-text-size: 20px;
-
 .games-component {
   box-sizing: border-box;
   display: flex;
@@ -25,6 +22,7 @@ $menu-item-text-size: 20px;
 }
 
 .games-screen {
+  position: relative;
   box-sizing: border-box;
   height: 100%;
   width: 100%;
@@ -39,9 +37,23 @@ $menu-item-text-size: 20px;
   background-position: center;
 }
 
-.games-menu-component {
+// | ---------------------------------- |
+// |  Games Menu + Game Detail Styling  |
+// | ---------------------------------- |
+
+$menu-item-size: 75px;
+$menu-item-text-size: 20px;
+
+.games-screen-component {
+  position: absolute;
   height: 100%;
   width: 100%;
+  top: 0;
+  left: 0;
+}
+
+.games-menu-component {
+  z-index: 1;
 }
 
 .games-menu-grid {
@@ -78,6 +90,10 @@ $menu-item-text-size: 20px;
   }
 }
 
+.games-menu-item-disabled {
+  pointer-events: none;
+}
+
 .games-menu-item-logo {
   width: $menu-item-size;
   height: $menu-item-size;
@@ -100,4 +116,12 @@ $menu-item-text-size: 20px;
   text-shadow: 1px 1px black;
   font-size: 12px;
   font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.game-detail-focus {
+  z-index: 99;
+}
+
+.game-detail-unfocus {
+  z-index: -1;
 }

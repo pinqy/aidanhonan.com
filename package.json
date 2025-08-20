@@ -4,12 +4,13 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "npm run lint && ng build && npm run test:headless",
+    "build": "npm install && npm run lint && ng build && npm run test:headless",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "test:headless": "ng test --watch=false --browsers=ChromeHeadless --code-coverage",
     "lint": "ng lint",
-    "format": "ng lint --fix"
+    "format": "ng lint --fix",
+    "clean": "rm -rf node_modules && rm -rf dist && rm -rf coverage"
   },
   "private": true,
   "dependencies": {
