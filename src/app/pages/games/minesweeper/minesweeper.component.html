@@ -1,5 +1,5 @@
 <body class="minesweeper-component">
-  <div class="minesweeper-game minesweeper-extrude">
+  <div class="minesweeper-game minesweeper-extrude" (contextmenu)="suppress_context_menu($event)">
     <div class="minesweeper-header">
       <button (click)="returnToGamesMenu()" class="minesweeper-close-button">&#10006;</button>
     </div>
@@ -10,12 +10,20 @@
       @for (col of board; track $index) {
         <div class="minesweeper-column">
           @for (item of col; track item.id) {
-            <div id="{{item.id}}" class="minesweeper-tile" [class]="get_tile_classes(item)" [style.color]="get_number_tile_color(item)">
-              @if (item.isOpen && item.number > 0 && !item.isBomb) {
+            <div id="{{item.id}}" class="minesweeper-tile" [class]="get_tile_classes(item)" [style.color]="get_number_tile_color(item)" 
+              (mousedown)="press_tile($event, item)" (mouseleave)="unpress_tile(item)" (mouseenter)="enter_tile(item)" (mouseup)="click_tile($event, item)">
+
+              @if (item.isOpen() && item.number > 0 && !item.isBomb) {
                 {{item.number}}
               }
-              @if (item.isOpen && item.isBomb) {
+              @if (item.isOpen() && item.isBomb) {
                 B
+              }
+              @if (!item.isOpen() && item.isFlagged()) {
+                F
+              }
+              @if (!item.isOpen() && item.isQuestioned()) {
+                ?
               }
             </div>
           }

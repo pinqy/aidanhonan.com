@@ -89,6 +89,7 @@ $minesweeper-header-height: 20px;
   width: 16px;
   box-sizing: border-box;
   font-size: 12px;
+  user-select: none;
 }
 
 .tile-open {

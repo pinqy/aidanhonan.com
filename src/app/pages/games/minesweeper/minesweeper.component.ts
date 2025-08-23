@@ -1,6 +1,6 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal, WritableSignal } from '@angular/core';
 import { Router } from '@angular/router';
-import { MinesweeperDifficulty, MinesweeperSquare, TEST_BOARD } from './minesweeper-constants';
+import { MinesweeperDifficulty, MinesweeperSquare } from './minesweeper-constants';
 
 @Component({
   selector: 'app-minesweeper',
@@ -31,13 +31,23 @@ export class MinesweeperComponent {
 
   board: MinesweeperSquare[][] = []
 
+  mouse_down_in_game: WritableSignal<boolean> = signal(false)
+
   constructor() {
     this.tiles_x = 16
     this.tiles_y = 16
     this.num_bombs = 40
 
-    this.board = TEST_BOARD
     this.new_game()
+
+    // this accounts for holding mouse down on a tile, dragging off game, and
+    // releasing. Without this we would treat it as a mouse down during (mouseenter)
+    document.addEventListener("mouseup", () => {this.mouse_down_in_game.set(false)})
+  }
+
+  // used to hide right-click menu in game window
+  suppress_context_menu(event: Event) {
+    event.preventDefault()
   }
 
   new_game(): void {
@@ -48,9 +58,10 @@ export class MinesweeperComponent {
       for (let j = 0; j < this.tiles_y; j++) {
         new_board[i].push({
           isBomb: false,
-          isFlagged: false,
-          isQuestioned: false,
-          isOpen: true,
+          isFlagged: signal(false),
+          isQuestioned: signal(false),
+          isOpen: signal(false),
+          isPressed: signal(false),
           number: 0,
           id: `${i}_${j}`,
         });
@@ -122,19 +133,19 @@ export class MinesweeperComponent {
   get_tile_classes(tile: MinesweeperSquare): string {
     const classes = []
 
-    if (tile.isOpen) {
+    if (tile.isOpen() || tile.isPressed()) {
       classes.push("tile-open")
     } else {
       classes.push("tile-closed")
-      if (tile.isFlagged) classes.push("tile-flagged")
-      else if (tile.isQuestioned) classes.push("tile-questioned")
+      if (tile.isFlagged()) classes.push("tile-flagged")
+      else if (tile.isQuestioned()) classes.push("tile-questioned")
     }
 
     return classes.join(" ")
   }
 
   get_number_tile_color(tile: MinesweeperSquare): string {
-    if (!tile.isOpen) return ""
+    if (!tile.isOpen()) return ""
 
     switch (tile.number) {
       case 1:
@@ -156,5 +167,87 @@ export class MinesweeperComponent {
       default:
         return ""
     }
+  }
+
+  press_tile(event: MouseEvent, tile: MinesweeperSquare): void {
+    if (event.button == 0) { // left click
+      tile.isPressed.set(true)
+      this.mouse_down_in_game.set(true)
+    } else if (event.button == 2) { // right click
+      if (tile.isOpen()) return // no-op when open
+      
+      // Nothing -> Flagged -> Questioned -> Nothing -> ...
+      if (tile.isFlagged()) {
+        tile.isFlagged.set(false)
+        tile.isQuestioned.set(true)
+      } else if (tile.isQuestioned()) {
+        tile.isQuestioned.set(false)
+      } else {
+        tile.isFlagged.set(true)
+      }
+    }
+  }
+
+  unpress_tile(tile: MinesweeperSquare): void {
+    tile.isPressed.set(false)
+  }
+
+  enter_tile(tile: MinesweeperSquare): void {
+    if (this.mouse_down_in_game()) {
+      tile.isPressed.set(true)
+    }
+  }
+
+  click_tile(event: MouseEvent, tile: MinesweeperSquare): void {
+    if (event.button != 0) return // do nothing except on left click
+
+    this.mouse_down_in_game.set(false)
+    tile.isPressed.set(false)
+
+    // click only matters if it's on a hidden space
+    if (!tile.isOpen()) {
+      this.handle_game_click(tile)
+    }
+  }
+
+  handle_game_click(tile: MinesweeperSquare): void {
+    if (tile.isFlagged()) return // can't click on a flagged square
+
+    tile.isOpen.set(true)
+    
+    if (tile.isBomb) {
+      // TODO: add loss logic
+      return
+    }
+
+    if (tile.number == 0) {
+      // open all bordering number tiles
+      this.open_surrounding_tiles(tile.id)
+    }
+  }
+
+  open_surrounding_tiles(tile_id: string): void {
+    const coords = tile_id.split("_")
+    const x = +coords[0]
+    const y = +coords[1]
+
+    if (x > 0) {
+      this.process_open_surrounding_tile(this.board[x-1][y]) // left
+      if (y > 0) this.process_open_surrounding_tile(this.board[x-1][y-1]) // top left
+      if (y < this.tiles_y-1) this.process_open_surrounding_tile(this.board[x-1][y+1]) // bottom left
+    }
+    if (y > 0) this.process_open_surrounding_tile(this.board[x][y-1]) // top
+    if (y < this.tiles_y-1) this.process_open_surrounding_tile(this.board[x][y+1]) // bottom
+    if (x < this.tiles_x-1) {
+      this.process_open_surrounding_tile(this.board[x+1][y]) // right
+      if (y > 0) this.process_open_surrounding_tile(this.board[x+1][y-1]) // top right
+      if (y < this.tiles_y-1) this.process_open_surrounding_tile(this.board[x+1][y+1]) // bottom right
+    }
+  }
+
+  process_open_surrounding_tile(tile: MinesweeperSquare): void {
+    if (tile.isOpen()) return // tile has already been processed
+    tile.isOpen.set(true) // open current tile
+    if (tile.number == 0) this.open_surrounding_tiles(tile.id) // recursively open surrounding "0" tiles
   }
 }
