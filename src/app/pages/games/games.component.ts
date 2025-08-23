@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, WritableSignal } from '@angular/core';
 import { Event, NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { Game, GAMES } from './games-constants';
 import { CommonModule } from '@angular/common';
@@ -13,7 +13,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 export class GamesComponent {
   private readonly router = inject(Router)
   private readonly gameDetailRegex: RegExp = /\/games\/\S+/
-  isGameDetailView = signal(false)
+  isGameDetailView: WritableSignal<boolean> = signal(false)
 
   games: Game[] = []
   gameIconPathDefault = "games/game-icon-default.png"
