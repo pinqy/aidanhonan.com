@@ -14,7 +14,7 @@ export const GAMES: Game[] = [
         displayName: "Minesweeper", 
         path: "minesweeper",
         component: MinesweeperComponent,
-        iconPath: "game-icon-minesweeper.png",
+        iconPath: "games/game-icon-minesweeper.png",
     },
     {
         displayName: "Test Game",

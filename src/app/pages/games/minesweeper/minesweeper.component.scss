@@ -1,6 +1,6 @@
 @use '../../../../styles';
 
-$minesweeper-header-height: 15px;
+$minesweeper-header-height: 20px;
 
 .minesweeper-inlay {
   border-left: 2px solid gray;
@@ -21,11 +21,6 @@ $minesweeper-header-height: 15px;
   width: 100%;
 
   align-content: center;
-}
-
-.minesweeper-diff-int {
-  //height: 285px;
-  //width: 215px;
 }
 
 .minesweeper-game {
@@ -90,8 +85,8 @@ $minesweeper-header-height: 15px;
 }
 
 .minesweeper-tile {
-  height: 15px;
-  width: 15px;
+  height: 16px;
+  width: 16px;
   box-sizing: border-box;
   font-size: 12px;
 }
@@ -99,6 +94,8 @@ $minesweeper-header-height: 15px;
 .tile-open {
   border-left: 1px solid gray;
   border-top: 1px solid gray;
+  font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  font-weight: bolder;
 }
    
 .tile-closed {
