@@ -20,6 +20,7 @@ export class MinesweeperComponent {
    * Minesweeper Game Logic
    * 
    * TODO: Add "Custom" difficulty
+   * TODO: First click always "0" space
    */
 
   // start with intermediate board by default
@@ -130,5 +131,30 @@ export class MinesweeperComponent {
     }
 
     return classes.join(" ")
+  }
+
+  get_number_tile_color(tile: MinesweeperSquare): string {
+    if (!tile.isOpen) return ""
+
+    switch (tile.number) {
+      case 1:
+        return "blue"
+      case 2:
+        return "green"
+      case 3:
+        return "red"
+      case 4:
+        return "darkblue"
+      case 5:
+        return "darkred"
+      case 6:
+        return "darkcyan"
+      case 7:
+        return "black"
+      case 8:
+        return "gray"
+      default:
+        return ""
+    }
   }
 }
