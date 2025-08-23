@@ -9,7 +9,7 @@ import { Router } from '@angular/router';
   styleUrl: './game-not-found.component.scss'
 })
 export class GameNotFoundComponent {
-  private router = inject(Router)
+  private readonly router = inject(Router)
 
   returnToGamesMenu() {
     this.router.navigate(["/games"])

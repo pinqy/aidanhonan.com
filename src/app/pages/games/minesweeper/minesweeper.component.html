@@ -7,7 +7,20 @@
 
     </div>
     <div class="minesweeper-game-body minesweeper-inlay">
-      
+      @for (col of board; track $index) {
+        <div class="minesweeper-column">
+          @for (item of col; track item.id) {
+            <div id="{{item.id}}" class="minesweeper-tile" [class]="get_tile_classes(item)">
+              @if (item.isOpen && item.number > 0 && !item.isBomb) {
+                {{item.number}}
+              }
+              @if (item.isOpen && item.isBomb) {
+                B
+              }
+            </div>
+          }
+        </div>
+      }
     </div>
   </div>
 </body>
