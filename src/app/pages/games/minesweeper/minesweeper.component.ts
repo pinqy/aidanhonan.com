@@ -37,6 +37,8 @@ export class MinesweeperComponent {
   game_lost: Signal<boolean> = computed(() => this.game_over() && this.remaining_num_tiles() > 0)
   losing_bomb_id = ""
 
+  reset_button_pressed: WritableSignal<boolean> = signal(false)
+  mouse_down_on_reset: WritableSignal<boolean> = signal(false)
   mouse_down_in_game: WritableSignal<boolean> = signal(false)
 
   constructor() {
@@ -49,7 +51,10 @@ export class MinesweeperComponent {
 
     // this accounts for holding mouse down on a tile, dragging off game, and
     // releasing. Without this we would treat it as a mouse down during (mouseenter)
-    document.addEventListener("mouseup", () => {this.mouse_down_in_game.set(false)})
+    document.addEventListener("mouseup", () => {
+      this.mouse_down_in_game.set(false)
+      this.mouse_down_on_reset.set(false)
+    })
   }
 
   // used to hide right-click menu in game window
@@ -293,5 +298,27 @@ export class MinesweeperComponent {
     }
 
     this.game_over.set(true)
+  }
+
+  reset_button_down(event: MouseEvent): void {
+    if (event.button != 0) return // do nothing except on left click
+    this.mouse_down_on_reset.set(true)
+    this.reset_button_pressed.set(true)
+  }
+
+  reset_button_up(event: MouseEvent): void {
+    if (event.button != 0) return // do nothing except on left click
+    if (this.mouse_down_on_reset()) this.new_game()
+
+    this.mouse_down_on_reset.set(false)
+    this.reset_button_pressed.set(false)
+  }
+
+  reset_button_leave(): void {
+    this.reset_button_pressed.set(false)
+  }
+
+  reset_button_enter(): void {
+    if (this.mouse_down_on_reset()) this.reset_button_pressed.set(true)
   }
 }
