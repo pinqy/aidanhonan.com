@@ -5,7 +5,9 @@
     </div>
     <div class="minesweeper-score-banner minesweeper-inlay">
       <div class="minesweeper-counter minesweeper-flag-counter">{{num_bombs - num_flags()}}</div>
-      <div class="minesweeper-reset-button" (click)="new_game()">
+      <div class="minesweeper-reset-button" (mousedown)="reset_button_down($event)" (mouseleave)="reset_button_leave()" 
+        (mouseenter)="reset_button_enter()" (mouseup)="reset_button_up($event)">
+
         @if (game_won()) {W}
         @if (game_lost()) {L}
       </div>
