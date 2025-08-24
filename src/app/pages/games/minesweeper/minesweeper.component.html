@@ -4,7 +4,12 @@
       <button (click)="returnToGamesMenu()" class="minesweeper-close-button">&#10006;</button>
     </div>
     <div class="minesweeper-score-banner minesweeper-inlay">
-
+      <div class="minesweeper-counter minesweeper-flag-counter">{{num_bombs - num_flags()}}</div>
+      <div class="minesweeper-reset-button" (click)="new_game()">
+        @if (game_won()) {W}
+        @if (game_lost()) {L}
+      </div>
+      <div class="minesweeper-counter minesweeper-timer">{{remaining_num_tiles()}}</div>
     </div>
     <div class="minesweeper-game-body minesweeper-inlay">
       @for (col of board; track $index) {
@@ -13,17 +18,23 @@
             <div id="{{item.id}}" class="minesweeper-tile" [class]="get_tile_classes(item)" [style.color]="get_number_tile_color(item)" 
               (mousedown)="press_tile($event, item)" (mouseleave)="unpress_tile(item)" (mouseenter)="enter_tile(item)" (mouseup)="click_tile($event, item)">
 
-              @if (item.isOpen() && item.number > 0 && !item.isBomb) {
-                {{item.number}}
-              }
-              @if (item.isOpen() && item.isBomb) {
-                B
-              }
-              @if (!item.isOpen() && item.isFlagged()) {
-                F
-              }
-              @if (!item.isOpen() && item.isQuestioned()) {
-                ?
+              <div class="minesweeper-tile-content">
+                @if (item.isOpen() && item.number > 0 && !item.isBomb && !item.isFlagged()) {
+                  {{item.number}}
+                }
+                @if ((item.isOpen() && item.isBomb) || (item.isOpen() && item.isFlagged() && !item.isBomb)) {
+                  B
+                }
+                @if (!item.isOpen() && item.isFlagged()) {
+                  F
+                }
+                @if (!item.isOpen() && item.isQuestioned()) {
+                  ?
+                }
+              </div>
+            
+              @if (item.isOpen() && item.isFlagged() && !item.isBomb) {
+                <div class="minesweeper-tile-content tile-incorrect-flag">&#10005;</div>
               }
             </div>
           }

@@ -7,11 +7,11 @@ export enum MinesweeperDifficulty {
 }
 
 export interface MinesweeperSquare {
+  id: string;
   isBomb: boolean;
   number: number;
   isFlagged: WritableSignal<boolean>;
   isQuestioned: WritableSignal<boolean>;
   isOpen: WritableSignal<boolean>;
   isPressed: WritableSignal<boolean>;
-  id: string;
 }
