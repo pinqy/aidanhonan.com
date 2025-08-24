@@ -1,4 +1,4 @@
-import { Component, inject, signal, WritableSignal } from '@angular/core';
+import { Component, computed, inject, Signal, signal, WritableSignal } from '@angular/core';
 import { Router } from '@angular/router';
 import { MinesweeperDifficulty, MinesweeperSquare } from './minesweeper-constants';
 
@@ -30,6 +30,12 @@ export class MinesweeperComponent {
   num_bombs!: number
 
   board: MinesweeperSquare[][] = []
+  num_flags: WritableSignal<number> = signal(0)
+  remaining_num_tiles!: WritableSignal<number>
+  game_over: WritableSignal<boolean> = signal(false)
+  game_won: Signal<boolean> = computed(() => this.game_over() && this.remaining_num_tiles() == 0)
+  game_lost: Signal<boolean> = computed(() => this.game_over() && this.remaining_num_tiles() > 0)
+  losing_bomb_id = ""
 
   mouse_down_in_game: WritableSignal<boolean> = signal(false)
 
@@ -37,6 +43,7 @@ export class MinesweeperComponent {
     this.tiles_x = 16
     this.tiles_y = 16
     this.num_bombs = 40
+    this.remaining_num_tiles = signal(this.tiles_x * this.tiles_y - this.num_bombs)
 
     this.new_game()
 
@@ -106,7 +113,11 @@ export class MinesweeperComponent {
       }
     }
 
-    // update screen
+    // reset game state
+    this.game_over.set(false)
+    this.num_flags.set(0)
+    this.losing_bomb_id = ""
+    this.remaining_num_tiles.set(this.tiles_x * this.tiles_y - this.num_bombs)
     this.board = new_board
   }
 
@@ -133,8 +144,9 @@ export class MinesweeperComponent {
   get_tile_classes(tile: MinesweeperSquare): string {
     const classes = []
 
-    if (tile.isOpen() || tile.isPressed()) {
+    if (tile.isOpen() || (tile.isPressed() && !tile.isFlagged())) {
       classes.push("tile-open")
+      if (tile.id == this.losing_bomb_id) classes.push("tile-losing-bomb")
     } else {
       classes.push("tile-closed")
       if (tile.isFlagged()) classes.push("tile-flagged")
@@ -170,6 +182,8 @@ export class MinesweeperComponent {
   }
 
   press_tile(event: MouseEvent, tile: MinesweeperSquare): void {
+    if (this.game_over()) return // disable mouse actions after loss
+
     if (event.button == 0) { // left click
       tile.isPressed.set(true)
       this.mouse_down_in_game.set(true)
@@ -180,10 +194,12 @@ export class MinesweeperComponent {
       if (tile.isFlagged()) {
         tile.isFlagged.set(false)
         tile.isQuestioned.set(true)
+        this.num_flags.update((n) => n-1)
       } else if (tile.isQuestioned()) {
         tile.isQuestioned.set(false)
       } else {
         tile.isFlagged.set(true)
+        this.num_flags.update((n) => n+1)
       }
     }
   }
@@ -199,6 +215,7 @@ export class MinesweeperComponent {
   }
 
   click_tile(event: MouseEvent, tile: MinesweeperSquare): void {
+    if (this.game_over()) return // disable mouse actions after loss
     if (event.button != 0) return // do nothing except on left click
 
     this.mouse_down_in_game.set(false)
@@ -214,9 +231,9 @@ export class MinesweeperComponent {
     if (tile.isFlagged()) return // can't click on a flagged square
 
     tile.isOpen.set(true)
-    
+
     if (tile.isBomb) {
-      // TODO: add loss logic
+      this.handle_loss(tile)
       return
     }
 
@@ -224,6 +241,9 @@ export class MinesweeperComponent {
       // open all bordering number tiles
       this.open_surrounding_tiles(tile.id)
     }
+
+    this.remaining_num_tiles.update((n) => n-1)
+    if (this.remaining_num_tiles() == 0) this.handle_win()
   }
 
   open_surrounding_tiles(tile_id: string): void {
@@ -246,8 +266,32 @@ export class MinesweeperComponent {
   }
 
   process_open_surrounding_tile(tile: MinesweeperSquare): void {
-    if (tile.isOpen()) return // tile has already been processed
+    // skip tiles that have already been processed or are flagged
+    if (tile.isOpen() || tile.isFlagged()) return
     tile.isOpen.set(true) // open current tile
+    this.remaining_num_tiles.update((n) => n-1)
     if (tile.number == 0) this.open_surrounding_tiles(tile.id) // recursively open surrounding "0" tiles
+  }
+
+  handle_loss(tile: MinesweeperSquare): void {
+    this.losing_bomb_id = tile.id
+    this.game_over.set(true)
+
+    for (const column of this.board) {
+      for (const tile of column) {
+        if (tile.isBomb && !tile.isFlagged()) tile.isOpen.set(true)
+        else if (tile.isFlagged() && !tile.isBomb) tile.isOpen.set(true) // incorrect flag
+      }
+    }
+  }
+
+  handle_win(): void {
+    for (const column of this.board) {
+      for (const tile of column) {
+        if (tile.isBomb && !tile.isFlagged()) tile.isFlagged.set(true) // flag all bombs on win
+      }
+    }
+
+    this.game_over.set(true)
   }
 }
