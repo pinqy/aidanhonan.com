@@ -10,6 +10,7 @@ import { MinesweeperDifficulty, MinesweeperSquare } from './minesweeper-constant
   styleUrl: './minesweeper.component.scss'
 })
 export class MinesweeperComponent {
+  // page navigation
   private readonly router = inject(Router)
 
   returnToGamesMenu() {
@@ -17,36 +18,33 @@ export class MinesweeperComponent {
   }
 
   /**
-   * Minesweeper Game Logic
-   * 
    * TODO: Add "Custom" difficulty
    * TODO: First click always "0" space
    */
 
-  // start with intermediate board by default
-  difficulty: MinesweeperDifficulty = MinesweeperDifficulty.Intermediate
+  // Board definition variables
+  board: MinesweeperSquare[][] = []
+  selected_difficulty: MinesweeperDifficulty = MinesweeperDifficulty.Intermediate
   tiles_x!: number
   tiles_y!: number
   num_bombs!: number
 
-  board: MinesweeperSquare[][] = []
+  // Game state variables
   num_flags: WritableSignal<number> = signal(0)
-  remaining_num_tiles!: WritableSignal<number>
+  remaining_num_tiles: WritableSignal<number> = signal(0)
   game_over: WritableSignal<boolean> = signal(false)
   game_won: Signal<boolean> = computed(() => this.game_over() && this.remaining_num_tiles() == 0)
   game_lost: Signal<boolean> = computed(() => this.game_over() && this.remaining_num_tiles() > 0)
   losing_bomb_id = ""
 
+  // Button trackers
   reset_button_pressed: WritableSignal<boolean> = signal(false)
   mouse_down_on_reset: WritableSignal<boolean> = signal(false)
   mouse_down_in_game: WritableSignal<boolean> = signal(false)
 
-  constructor() {
-    this.tiles_x = 16
-    this.tiles_y = 16
-    this.num_bombs = 40
-    this.remaining_num_tiles = signal(this.tiles_x * this.tiles_y - this.num_bombs)
 
+  constructor() {
+    this.set_difficulty(this.selected_difficulty)
     this.new_game()
 
     // this accounts for holding mouse down on a tile, dragging off game, and
@@ -57,10 +55,10 @@ export class MinesweeperComponent {
     })
   }
 
-  // used to hide right-click menu in game window
-  suppress_context_menu(event: Event) {
-    event.preventDefault()
-  }
+
+  /**
+   * Functions for managing game state
+   */
 
   new_game(): void {
     // create new board
@@ -126,7 +124,7 @@ export class MinesweeperComponent {
     this.board = new_board
   }
 
-  change_difficulty(difficulty: MinesweeperDifficulty): void {
+  set_difficulty(difficulty: MinesweeperDifficulty): void {
     switch (difficulty) {
       case MinesweeperDifficulty.Beginner:
         this.tiles_x = 9
@@ -144,8 +142,38 @@ export class MinesweeperComponent {
         this.num_bombs = 99
         break
     }
+
+    this.selected_difficulty = difficulty
   }
 
+  handle_loss(tile: MinesweeperSquare): void {
+    this.losing_bomb_id = tile.id
+    this.game_over.set(true)
+
+    for (const column of this.board) {
+      for (const tile of column) {
+        if (tile.isBomb && !tile.isFlagged()) tile.isOpen.set(true)
+        else if (tile.isFlagged() && !tile.isBomb) tile.isOpen.set(true) // incorrect flag
+      }
+    }
+  }
+
+  handle_win(): void {
+    for (const column of this.board) {
+      for (const tile of column) {
+        if (tile.isBomb && !tile.isFlagged()) tile.isFlagged.set(true) // flag all bombs on win
+      }
+    }
+
+    this.game_over.set(true)
+  }
+
+
+  /** 
+   * Dynamic style functions
+   */
+
+  // Get classes for single tile based on tile state
   get_tile_classes(tile: MinesweeperSquare): string {
     const classes = []
 
@@ -185,6 +213,31 @@ export class MinesweeperComponent {
         return ""
     }
   }
+
+  // used to hide right-click menu in game window
+  suppress_context_menu(event: Event) {
+    event.preventDefault()
+  }
+
+  get_reset_button_classes(): string {
+    const classes: string[] = []
+
+    if (this.reset_button_pressed()) classes.push("reset-button-smile") // :) when reset button pressed
+    else if (this.game_lost()) classes.push("reset-button-loss") // X( when game lost
+    else if (this.game_won()) classes.push("reset-button-win") // B) when game won
+    else if (this.mouse_down_in_game()) classes.push("reset-button-ooh") // :o when mouse pressed on tile
+    else classes.push("reset-button-smile") // :) all other times
+
+    if (this.reset_button_pressed()) classes.push("minesweeper-inlay")
+    else classes.push("minesweeper-extrude")
+
+    return classes.join(" ")
+  }
+
+
+  /**
+   * Functions for handling tile mouse actions
+   */
 
   press_tile(event: MouseEvent, tile: MinesweeperSquare): void {
     if (this.game_over()) return // disable mouse actions after loss
@@ -278,27 +331,10 @@ export class MinesweeperComponent {
     if (tile.number == 0) this.open_surrounding_tiles(tile.id) // recursively open surrounding "0" tiles
   }
 
-  handle_loss(tile: MinesweeperSquare): void {
-    this.losing_bomb_id = tile.id
-    this.game_over.set(true)
 
-    for (const column of this.board) {
-      for (const tile of column) {
-        if (tile.isBomb && !tile.isFlagged()) tile.isOpen.set(true)
-        else if (tile.isFlagged() && !tile.isBomb) tile.isOpen.set(true) // incorrect flag
-      }
-    }
-  }
-
-  handle_win(): void {
-    for (const column of this.board) {
-      for (const tile of column) {
-        if (tile.isBomb && !tile.isFlagged()) tile.isFlagged.set(true) // flag all bombs on win
-      }
-    }
-
-    this.game_over.set(true)
-  }
+  /**
+   * Functions for handling reset button mouse actions
+   */
 
   reset_button_down(event: MouseEvent): void {
     if (event.button != 0) return // do nothing except on left click
