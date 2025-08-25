@@ -5,11 +5,14 @@
     </div>
     <div class="minesweeper-score-banner minesweeper-inlay">
       <div class="minesweeper-counter minesweeper-flag-counter">{{num_bombs - num_flags()}}</div>
-      <div class="minesweeper-reset-button" (mousedown)="reset_button_down($event)" (mouseleave)="reset_button_leave()" 
-        (mouseenter)="reset_button_enter()" (mouseup)="reset_button_up($event)">
+      <div class="minesweeper-reset-button" [class]="get_reset_button_classes()" (mousedown)="reset_button_down($event)"
+        (mouseleave)="reset_button_leave()" (mouseenter)="reset_button_enter()" (mouseup)="reset_button_up($event)">
 
-        @if (game_won()) {W}
-        @if (game_lost()) {L}
+        @if (reset_button_pressed()) {:)}
+        @else if (game_won()) {W}
+        @else if (game_lost()) {L}
+        @else if (mouse_down_in_game()) {:o}
+        @else {:)}
       </div>
       <div class="minesweeper-counter minesweeper-timer">{{remaining_num_tiles()}}</div>
     </div>
