@@ -109,10 +109,32 @@ $minesweeper-header-height: 20px;
   border-top: 1px solid black;
   border-right: 1px solid gray;
   border-bottom: 1px solid gray;
-  padding: 1px;
 
   font-family: Helvetica;
   font-size: 12px;
+}
+
+.minesweeper-menu-item {
+  display: flex;
+  flex-direction: row;
+  height: 14px;
+  line-height: 14px;
+}
+
+.minesweeper-menu-item-check {
+  width: 10px;
+  margin-left: 1px;
+}
+
+.minesweeper-menu-item-button {
+  @include styles.button-no-decoration();
+  font-family: Helvetica;
+  font-size: 12px;
+  margin: 0px 2px;
+}
+
+.minesweeper-menu-item-button:hover {
+  color: blue;
 }
 
 .minesweeper-score-banner {

@@ -1,4 +1,4 @@
-import { WritableSignal } from "@angular/core";
+import { Signal, WritableSignal } from "@angular/core";
 
 export enum MinesweeperDifficulty {
   Beginner = 'Beginner',
@@ -23,7 +23,13 @@ export enum MinesweeperMenu {
   None = 'None',
 }
 
+export interface MinesweeperMenuContent {
+  hasSelectableItems: boolean;
+  sections: MinesweeperMenuItem[][];
+}
+
 export interface MinesweeperMenuItem {
   text: string;
-  isSelected: WritableSignal<boolean>;
+  isSelected?: Signal<boolean>;
+  action: () => void;
 }
