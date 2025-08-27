@@ -1,6 +1,9 @@
 <body class="minesweeper-component">
   <div class="minesweeper-game minesweeper-extrude" (contextmenu)="suppress_context_menu($event)">
     <div class="minesweeper-header">
+      @for (menu of menu_buttons; track menu) {
+        <button class="minesweeper-menu-button" (click)="handleMenuButtonClick(menu)" (mouseenter)="handleMenuButtonEnter(menu)">{{menu}}</button>
+      }
       <button (click)="returnToGamesMenu()" class="minesweeper-close-button">&#10006;</button>
     </div>
     <div class="minesweeper-score-banner minesweeper-inlay">
@@ -43,6 +46,14 @@
               }
             </div>
           }
+        </div>
+      }
+      
+      @if (menu_open()) {
+        <div class="minesweeper-menu" [class]="get_menu_class(selected_menu())">
+          <div class="minesweeper-menu-content">
+            {{selected_menu()}}
+          </div>
         </div>
       }
     </div>
