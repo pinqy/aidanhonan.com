@@ -15,3 +15,15 @@ export interface MinesweeperSquare {
   isOpen: WritableSignal<boolean>;
   isPressed: WritableSignal<boolean>;
 }
+
+export enum MinesweeperMenu {
+  Game = 'Game',
+  Options = 'Options',
+  Help = 'Help',
+  None = 'None',
+}
+
+export interface MinesweeperMenuItem {
+  text: string;
+  isSelected: WritableSignal<boolean>;
+}
