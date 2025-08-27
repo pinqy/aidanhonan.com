@@ -1,6 +1,6 @@
 import { Component, computed, inject, Signal, signal, WritableSignal } from '@angular/core';
 import { Router } from '@angular/router';
-import { MinesweeperDifficulty, MinesweeperSquare } from './minesweeper-constants';
+import { MinesweeperDifficulty, MinesweeperMenu, MinesweeperSquare } from './minesweeper-constants';
 
 @Component({
   selector: 'app-minesweeper',
@@ -20,7 +20,13 @@ export class MinesweeperComponent {
   /**
    * TODO: Add "Custom" difficulty
    * TODO: First click always "0" space
+   * TODO: Add icons: bomb, flag, reset-button faces
    */
+
+  // Menu state variables
+  menu_buttons = [MinesweeperMenu.Game, MinesweeperMenu.Options, MinesweeperMenu.Help]
+  selected_menu: WritableSignal<MinesweeperMenu> = signal(MinesweeperMenu.None)
+  menu_open: Signal<boolean> = computed(() => this.selected_menu() != MinesweeperMenu.None)
 
   // Board definition variables
   board: MinesweeperSquare[][] = []
@@ -356,5 +362,28 @@ export class MinesweeperComponent {
 
   reset_button_enter(): void {
     if (this.mouse_down_on_reset()) this.reset_button_pressed.set(true)
+  }
+
+
+  /**
+   * Function for handling Menu actions
+   */
+  handleMenuButtonClick(menu_str: string): void {
+    if (this.menu_open()) {
+      this.selected_menu.set(MinesweeperMenu.None)
+      return
+    }
+
+    this.selected_menu.set(menu_str as MinesweeperMenu)
+  }
+
+  handleMenuButtonEnter(menu_str: string): void {
+    if (this.menu_open() && this.selected_menu() != (menu_str as MinesweeperMenu)) {
+      this.selected_menu.set(menu_str as MinesweeperMenu)
+    }
+  }
+
+  get_menu_class(menu: string): string {
+    return `minesweeper-menu-${menu.toLowerCase()}`
   }
 }
