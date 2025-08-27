@@ -50,9 +50,25 @@
       }
       
       @if (menu_open()) {
-        <div class="minesweeper-menu" [class]="get_menu_class(selected_menu())">
+        @let selected_menu_ = selected_menu();
+        @let menu_content_ = menu_content[selected_menu_];
+        <div class="minesweeper-menu" [class]="get_menu_class(selected_menu_)">
           <div class="minesweeper-menu-content">
-            {{selected_menu()}}
+            @for (section of menu_content_.sections; track $index) {
+              @for (item of section; track item.text) {
+                <div class="minesweeper-menu-item">
+                  @if (menu_content_.hasSelectableItems) {
+                    <div class="minesweeper-menu-item-check">
+                      @if (item.isSelected && item.isSelected()) {&#10003;}
+                    </div>
+                  }
+                  <button class="minesweeper-menu-item-button" (click)="item.action()">{{item.text}}</button>
+                </div>
+              }
+              @if (!$last) {
+                <hr>
+              }
+            }
           </div>
         </div>
       }

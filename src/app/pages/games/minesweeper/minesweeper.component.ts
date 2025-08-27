@@ -1,6 +1,6 @@
 import { Component, computed, inject, Signal, signal, WritableSignal } from '@angular/core';
 import { Router } from '@angular/router';
-import { MinesweeperDifficulty, MinesweeperMenu, MinesweeperSquare } from './minesweeper-constants';
+import { MinesweeperDifficulty, MinesweeperMenu, MinesweeperMenuContent, MinesweeperSquare } from './minesweeper-constants';
 
 @Component({
   selector: 'app-minesweeper',
@@ -27,10 +27,17 @@ export class MinesweeperComponent {
   menu_buttons = [MinesweeperMenu.Game, MinesweeperMenu.Options, MinesweeperMenu.Help]
   selected_menu: WritableSignal<MinesweeperMenu> = signal(MinesweeperMenu.None)
   menu_open: Signal<boolean> = computed(() => this.selected_menu() != MinesweeperMenu.None)
+  menu_content!: Record<MinesweeperMenu, MinesweeperMenuContent>
+
+  // Menu settings options
+  setting_opening_move: WritableSignal<boolean> = signal(true) // TODO: implementation
+  setting_question_marks: WritableSignal<boolean> = signal(true) // TODO: implementation
+  setting_area_open: WritableSignal<boolean> = signal(true) // TODO: implementation
+  setting_open_remaining: WritableSignal<boolean> = signal(false) // TODO: implementation
 
   // Board definition variables
   board: MinesweeperSquare[][] = []
-  selected_difficulty: MinesweeperDifficulty = MinesweeperDifficulty.Intermediate
+  selected_difficulty: WritableSignal<MinesweeperDifficulty> = signal(MinesweeperDifficulty.Beginner); // this will be overridden in constructor()
   tiles_x!: number
   tiles_y!: number
   num_bombs!: number
@@ -50,7 +57,8 @@ export class MinesweeperComponent {
 
 
   constructor() {
-    this.set_difficulty(this.selected_difficulty)
+    this.set_difficulty(MinesweeperDifficulty.Intermediate)
+    this.menu_content = this.get_initial_menu_state()
     this.new_game()
 
     // this accounts for holding mouse down on a tile, dragging off game, and
@@ -128,9 +136,15 @@ export class MinesweeperComponent {
     this.losing_bomb_id = ""
     this.remaining_num_tiles.set(this.tiles_x * this.tiles_y - this.num_bombs)
     this.board = new_board
+    
+    // close menu if open
+    this.selected_menu.set(MinesweeperMenu.None)
   }
 
   set_difficulty(difficulty: MinesweeperDifficulty): void {
+    // no-op if difficulty is same, don't want to start new game
+    if (difficulty == this.selected_difficulty()) return
+
     switch (difficulty) {
       case MinesweeperDifficulty.Beginner:
         this.tiles_x = 9
@@ -149,7 +163,8 @@ export class MinesweeperComponent {
         break
     }
 
-    this.selected_difficulty = difficulty
+    this.selected_difficulty.set(difficulty)
+    this.new_game()
   }
 
   handle_loss(tile: MinesweeperSquare): void {
@@ -247,6 +262,8 @@ export class MinesweeperComponent {
 
   press_tile(event: MouseEvent, tile: MinesweeperSquare): void {
     if (this.game_over()) return // disable mouse actions after loss
+
+    this.selected_menu.set(MinesweeperMenu.None) // close menu if open
 
     if (event.button == 0) { // left click
       tile.isPressed.set(true)
@@ -385,5 +402,88 @@ export class MinesweeperComponent {
 
   get_menu_class(menu: string): string {
     return `minesweeper-menu-${menu.toLowerCase()}`
+  }
+
+  get_initial_menu_state(): Record<MinesweeperMenu, MinesweeperMenuContent> {
+    return {
+      [MinesweeperMenu.Game]: {
+        hasSelectableItems: true,
+        sections: [
+          [{
+            text: "New",
+            action: () => {this.new_game()}
+          }],
+          [
+            {
+              text: "Beginner",
+              isSelected: computed(() => this.selected_difficulty() == MinesweeperDifficulty.Beginner),
+              action: () => {this.set_difficulty(MinesweeperDifficulty.Beginner)}
+            },
+            {
+              text: "Intermediate",
+              isSelected: computed(() => this.selected_difficulty() == MinesweeperDifficulty.Intermediate),
+              action: () => {this.set_difficulty(MinesweeperDifficulty.Intermediate)}
+            },
+            {
+              text: "Expert",
+              isSelected: computed(() => this.selected_difficulty() == MinesweeperDifficulty.Expert),
+              action: () => {this.set_difficulty(MinesweeperDifficulty.Expert)}
+            }
+          ],
+          [{
+            text: "Exit",
+            action: () => {this.returnToGamesMenu()}
+          }]
+        ]
+      },
+      [MinesweeperMenu.Options]: {
+        hasSelectableItems: true,
+        sections: [
+          [
+            {
+              text: "Opening Move",
+              isSelected: computed(() => this.setting_opening_move()),
+              action: () => {this.setting_opening_move.update((b) => !b)}
+            },
+            {
+              text: "Question Marks",
+              isSelected: computed(() => this.setting_question_marks()),
+              action: () => {this.setting_question_marks.update((b) => !b)}
+            },
+            {
+              text: "Area Open",
+              isSelected: computed(() => this.setting_area_open()),
+              action: () => {this.setting_area_open.update((b) => !b)}
+            },
+            {
+              text: "Open Remaining",
+              isSelected: computed(() => this.setting_open_remaining()),
+              action: () => {this.setting_open_remaining.update((b) => !b)}
+            }
+          ]
+        ]
+      },
+      [MinesweeperMenu.Help]: {
+        hasSelectableItems: false,
+        sections: [
+          [
+            {
+              text: "Instructions",
+              action: () => {return}, // TODO: implement
+            },
+          ],
+          [
+            {
+              text: "About",
+              action: () => {return}, // TODO: implement
+            },
+          ]
+        ]
+      },
+      [MinesweeperMenu.None]: {
+        hasSelectableItems: false,
+        sections: [],
+      },
+    }
   }
 }
