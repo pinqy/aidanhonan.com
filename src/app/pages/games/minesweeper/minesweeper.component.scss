@@ -148,6 +148,7 @@ $minesweeper-header-height: 20px;
 }
 
 .minesweeper-counter {
+  @include styles.button-no-decoration();
   height: 23px;
   width: 39px;
   background-color: black;
@@ -158,6 +159,11 @@ $minesweeper-header-height: 20px;
 
 .minesweeper-flag-counter {
   margin: 4px 0px 5px 6px;
+  font: inherit;
+}
+
+.minesweeper-flag-counter-button {
+  color: cyan;
 }
 
 .minesweeper-reset-button {

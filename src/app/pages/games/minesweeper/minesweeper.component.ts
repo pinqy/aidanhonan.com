@@ -34,7 +34,7 @@ export class MinesweeperComponent {
   setting_opening_move: WritableSignal<boolean> = signal(true)
   setting_question_marks: WritableSignal<boolean> = signal(true)
   setting_area_open: WritableSignal<boolean> = signal(true)
-  setting_open_remaining: WritableSignal<boolean> = signal(false) // TODO: implementation
+  setting_open_remaining: WritableSignal<boolean> = signal(false)
 
   // Board definition variables
   board: MinesweeperSquare[][] = []
@@ -49,18 +49,21 @@ export class MinesweeperComponent {
   game_over: WritableSignal<boolean> = signal(false)
   game_won: Signal<boolean> = computed(() => this.game_over() && this.remaining_num_tiles() == 0)
   game_lost: Signal<boolean> = computed(() => this.game_over() && this.remaining_num_tiles() > 0)
-  losing_bomb_id = ""
+  losing_bomb_tiles: MinesweeperSquare[] = []
 
   // Button trackers
   reset_button_pressed: WritableSignal<boolean> = signal(false)
   mouse_down_on_reset: WritableSignal<boolean> = signal(false)
   mouse_down_in_game: WritableSignal<boolean> = signal(false)
+  open_remaining_button_enabled!: Signal<boolean>
 
 
   constructor() {
     this.set_difficulty(MinesweeperDifficulty.Intermediate)
     this.menu_content = this.get_initial_menu_state()
     this.new_game()
+
+    this.open_remaining_button_enabled = computed(() => {return this.setting_open_remaining() && this.num_bombs == this.num_flags()})
 
     // this accounts for holding mouse down on a tile, dragging off game, and
     // releasing. Without this we would treat it as a mouse down during (mouseenter)
@@ -98,7 +101,7 @@ export class MinesweeperComponent {
     // reset game state
     this.game_over.set(false)
     this.num_flags.set(0)
-    this.losing_bomb_id = ""
+    this.losing_bomb_tiles = []
     this.remaining_num_tiles.set(this.tiles_x * this.tiles_y - this.num_bombs)
     
     // close menu if open
@@ -106,8 +109,8 @@ export class MinesweeperComponent {
   }
 
   // initialize game after first click
-  initialize_game(first_tile: MinesweeperSquare): void {
-    const coords = first_tile.id.split("_")
+  initialize_game(first_tile: MinesweeperSquare | undefined): void {
+    const coords = first_tile ? first_tile.id.split("_") : "500_500"
     const x0 = +coords[0]
     const y0 = +coords[1]
 
@@ -168,8 +171,8 @@ export class MinesweeperComponent {
     this.new_game()
   }
 
-  handle_loss(tile: MinesweeperSquare): void {
-    this.losing_bomb_id = tile.id
+  handle_loss(tile: MinesweeperSquare | undefined): void {
+    if (tile) this.losing_bomb_tiles.push(tile)
     this.game_over.set(true)
 
     for (const column of this.board) {
@@ -204,7 +207,7 @@ export class MinesweeperComponent {
 
     if (tile.isOpen() || (tile.isPressed() && !tile.isFlagged())) {
       classes.push("tile-open")
-      if (tile.id == this.losing_bomb_id) classes.push("tile-losing-bomb")
+      if (this.losing_bomb_tiles.find((l_tile) => l_tile.id == tile.id)) classes.push("tile-losing-bomb")
     } else {
       classes.push("tile-closed")
       if (tile.isFlagged()) classes.push("tile-flagged")
@@ -346,13 +349,17 @@ export class MinesweeperComponent {
       this.process_open_surrounding_tile(surr_tile)
       return 0
     })
+    if (this.losing_bomb_tiles.length > 0) this.handle_loss(undefined)
   }
 
   process_open_surrounding_tile(tile: MinesweeperSquare): void {
     // skip tiles that have already been processed or are flagged
     if (tile.isOpen() || tile.isFlagged()) return
     tile.isOpen.set(true) // open current tile
-    if (tile.isBomb) this.handle_loss(tile) // this is possible with area-open setting
+    if (tile.isBomb) { // this is possible with area-open setting
+      this.losing_bomb_tiles.push(tile)
+      return
+    }
     this.remaining_num_tiles.update((n) => n-1)
     if (tile.number == 0) this.open_surrounding_tiles(tile) // recursively open surrounding "0" tiles
   }
@@ -379,6 +386,22 @@ export class MinesweeperComponent {
     }
 
     return ret
+  }
+
+  open_remaining_tiles(): void {
+    if (!this.open_remaining_button_enabled()) return
+
+    // if nothing has been clicked, intialize the game
+    if (this.remaining_num_tiles() == this.tiles_x * this.tiles_y - this.num_bombs) this.initialize_game(undefined)
+
+    for (const column of this.board) {
+      for (const tile of column) {
+        if (!(tile.isBomb && tile.isFlagged()) && !tile.isOpen()) {
+          tile.isOpen.set(true)
+          if (tile.isBomb) this.losing_bomb_tiles.push(tile)
+        }
+      }
+    }
   }
 
 
