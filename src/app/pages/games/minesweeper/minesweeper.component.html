@@ -7,7 +7,10 @@
       <button (click)="returnToGamesMenu()" class="minesweeper-close-button">&#10006;</button>
     </div>
     <div class="minesweeper-score-banner minesweeper-inlay">
-      <div class="minesweeper-counter minesweeper-flag-counter">{{num_bombs - num_flags()}}</div>
+      <button class="minesweeper-counter minesweeper-flag-counter" [disabled]="!open_remaining_button_enabled()" 
+        [class.minesweeper-flag-counter-button]="open_remaining_button_enabled()" (click)="open_remaining_tiles()">
+        {{num_bombs - num_flags()}}
+      </button>
       <div class="minesweeper-reset-button" [class]="get_reset_button_classes()" (mousedown)="reset_button_down($event)"
         (mouseleave)="reset_button_leave()" (mouseenter)="reset_button_enter()" (mouseup)="reset_button_up($event)">
 
