@@ -62,7 +62,7 @@
                       @if (item.isSelected && item.isSelected()) {&#10003;}
                     </div>
                   }
-                  <button class="minesweeper-menu-item-button" (click)="item.action()">{{item.text}}</button>
+                  <button class="minesweeper-menu-item-button" title={{item.hoverText}} (click)="item.action()">{{item.text}}</button>
                 </div>
               }
               @if (!$last) {

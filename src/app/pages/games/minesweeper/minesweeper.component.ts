@@ -21,6 +21,7 @@ export class MinesweeperComponent {
    * TODO: Add "Custom" difficulty
    * TODO: First click always "0" space
    * TODO: Add icons: bomb, flag, reset-button faces
+   * TODO: Add timer
    */
 
   // Menu state variables
@@ -30,9 +31,9 @@ export class MinesweeperComponent {
   menu_content!: Record<MinesweeperMenu, MinesweeperMenuContent>
 
   // Menu settings options
-  setting_opening_move: WritableSignal<boolean> = signal(true) // TODO: implementation
-  setting_question_marks: WritableSignal<boolean> = signal(true) // TODO: implementation
-  setting_area_open: WritableSignal<boolean> = signal(true) // TODO: implementation
+  setting_opening_move: WritableSignal<boolean> = signal(true)
+  setting_question_marks: WritableSignal<boolean> = signal(true)
+  setting_area_open: WritableSignal<boolean> = signal(true)
   setting_open_remaining: WritableSignal<boolean> = signal(false) // TODO: implementation
 
   // Board definition variables
@@ -92,53 +93,53 @@ export class MinesweeperComponent {
       }
     }
 
-    // set bomb positions
-    for (let i = 0; i < this.num_bombs; i++) {
-      let b_x = 0
-      let b_y = 0
-
-      // generate new bomb positions until finding a unique spot 
-      do {
-        b_x = Math.floor(Math.random() * this.tiles_x)
-        b_y = Math.floor(Math.random() * this.tiles_y)
-      } while (new_board[b_x][b_y].isBomb)
-
-      new_board[b_x][b_y].isBomb = true
-    }
-
-    // calculate number values
-    for (let i = 0; i < this.tiles_x; i++) {
-      for (let j = 0; j < this.tiles_y; j++) {
-        let bomb_ct = 0
-
-        if (new_board[i][j].isBomb) continue
-
-        if (i > 0) {
-          bomb_ct += new_board[i-1][j].isBomb ? 1 : 0 // left
-          if (j > 0) bomb_ct += new_board[i-1][j-1].isBomb ? 1 : 0 // top left
-          if (j < this.tiles_y-1) bomb_ct += new_board[i-1][j+1].isBomb ? 1 : 0 // bottom left
-        }
-        if (j > 0) bomb_ct += new_board[i][j-1].isBomb ? 1 : 0 // top
-        if (j < this.tiles_y-1) bomb_ct += new_board[i][j+1].isBomb ? 1 : 0 // bottom
-        if (i < this.tiles_x-1) {
-          bomb_ct += new_board[i+1][j].isBomb ? 1 : 0 // right
-          if (j > 0) bomb_ct += new_board[i+1][j-1].isBomb ? 1 : 0 // top right
-          if (j < this.tiles_y-1) bomb_ct += new_board[i+1][j+1].isBomb ? 1 : 0 // bottom right
-        }
-
-        new_board[i][j].number = bomb_ct
-      }
-    }
+    this.board = new_board
 
     // reset game state
     this.game_over.set(false)
     this.num_flags.set(0)
     this.losing_bomb_id = ""
     this.remaining_num_tiles.set(this.tiles_x * this.tiles_y - this.num_bombs)
-    this.board = new_board
     
     // close menu if open
     this.selected_menu.set(MinesweeperMenu.None)
+  }
+
+  // initialize game after first click
+  initialize_game(first_tile: MinesweeperSquare): void {
+    const coords = first_tile.id.split("_")
+    const x0 = +coords[0]
+    const y0 = +coords[1]
+
+    // set bomb positions
+    for (let i = 0; i < this.num_bombs; i++) {
+      let b_x = 0
+      let b_y = 0
+
+      // generate new bomb positions until finding a unique spot
+      let retry = false
+      do {
+        b_x = Math.floor(Math.random() * this.tiles_x)
+        b_y = Math.floor(Math.random() * this.tiles_y)
+        retry = this.board[b_x][b_y].isBomb
+
+        if (this.setting_opening_move()) {
+          retry = retry || (Math.abs(b_x - x0) <= 1 && Math.abs(b_y - y0) <= 1)
+        }
+      } while (retry)
+
+      this.board[b_x][b_y].isBomb = true
+    }
+
+    // calculate number values
+    for (let i = 0; i < this.tiles_x; i++) {
+      for (let j = 0; j < this.tiles_y; j++) {
+        const current_tile = this.board[i][j]
+        if (current_tile.isBomb) continue
+
+        current_tile.number = this.operate_on_surrounding_tiles(current_tile, (surr_tile: MinesweeperSquare) => {return surr_tile.isBomb ? 1 : 0})
+      }
+    }
   }
 
   set_difficulty(difficulty: MinesweeperDifficulty): void {
@@ -182,7 +183,10 @@ export class MinesweeperComponent {
   handle_win(): void {
     for (const column of this.board) {
       for (const tile of column) {
-        if (tile.isBomb && !tile.isFlagged()) tile.isFlagged.set(true) // flag all bombs on win
+        if (tile.isBomb && !tile.isFlagged()) {
+          tile.isFlagged.set(true) // flag all bombs on win
+          this.num_flags.update((n) => n+1)
+        }
       }
     }
 
@@ -271,10 +275,10 @@ export class MinesweeperComponent {
     } else if (event.button == 2) { // right click
       if (tile.isOpen()) return // no-op when open
       
-      // Nothing -> Flagged -> Questioned -> Nothing -> ...
+      // Nothing -> Flagged (-> Questioned) -> Nothing -> ...
       if (tile.isFlagged()) {
         tile.isFlagged.set(false)
-        tile.isQuestioned.set(true)
+        if (this.setting_question_marks()) tile.isQuestioned.set(true)
         this.num_flags.update((n) => n-1)
       } else if (tile.isQuestioned()) {
         tile.isQuestioned.set(false)
@@ -302,9 +306,19 @@ export class MinesweeperComponent {
     this.mouse_down_in_game.set(false)
     tile.isPressed.set(false)
 
-    // click only matters if it's on a hidden space
+    // if this is first square pressed, initialize game
+    if (this.remaining_num_tiles() == this.tiles_x * this.tiles_y - this.num_bombs) this.initialize_game(tile)
+
+    // handle click on a closed square
     if (!tile.isOpen()) {
       this.handle_game_click(tile)
+    }
+    // handle click on an open tile if area-open enabled
+    else if (this.setting_area_open()) {
+      // if number of flags around this square is correct, open all neighbors
+      if (tile.number == this.operate_on_surrounding_tiles(tile, (surr_tile: MinesweeperSquare) => {return surr_tile.isFlagged() ? 1 : 0})) {
+        this.open_surrounding_tiles(tile)
+      }
     }
   }
 
@@ -320,38 +334,51 @@ export class MinesweeperComponent {
 
     if (tile.number == 0) {
       // open all bordering number tiles
-      this.open_surrounding_tiles(tile.id)
+      this.open_surrounding_tiles(tile)
     }
 
     this.remaining_num_tiles.update((n) => n-1)
     if (this.remaining_num_tiles() == 0) this.handle_win()
   }
 
-  open_surrounding_tiles(tile_id: string): void {
-    const coords = tile_id.split("_")
-    const x = +coords[0]
-    const y = +coords[1]
-
-    if (x > 0) {
-      this.process_open_surrounding_tile(this.board[x-1][y]) // left
-      if (y > 0) this.process_open_surrounding_tile(this.board[x-1][y-1]) // top left
-      if (y < this.tiles_y-1) this.process_open_surrounding_tile(this.board[x-1][y+1]) // bottom left
-    }
-    if (y > 0) this.process_open_surrounding_tile(this.board[x][y-1]) // top
-    if (y < this.tiles_y-1) this.process_open_surrounding_tile(this.board[x][y+1]) // bottom
-    if (x < this.tiles_x-1) {
-      this.process_open_surrounding_tile(this.board[x+1][y]) // right
-      if (y > 0) this.process_open_surrounding_tile(this.board[x+1][y-1]) // top right
-      if (y < this.tiles_y-1) this.process_open_surrounding_tile(this.board[x+1][y+1]) // bottom right
-    }
+  open_surrounding_tiles(tile: MinesweeperSquare): void {
+    this.operate_on_surrounding_tiles(tile, (surr_tile: MinesweeperSquare) => {
+      this.process_open_surrounding_tile(surr_tile)
+      return 0
+    })
   }
 
   process_open_surrounding_tile(tile: MinesweeperSquare): void {
     // skip tiles that have already been processed or are flagged
     if (tile.isOpen() || tile.isFlagged()) return
     tile.isOpen.set(true) // open current tile
+    if (tile.isBomb) this.handle_loss(tile) // this is possible with area-open setting
     this.remaining_num_tiles.update((n) => n-1)
-    if (tile.number == 0) this.open_surrounding_tiles(tile.id) // recursively open surrounding "0" tiles
+    if (tile.number == 0) this.open_surrounding_tiles(tile) // recursively open surrounding "0" tiles
+  }
+
+  // generic function to operate on all surrounding tiles (number returned is only used in some cases)
+  operate_on_surrounding_tiles(target: MinesweeperSquare, operation: (tile: MinesweeperSquare) => number): number {
+    const coords = target.id.split("_")
+    const x = +coords[0]
+    const y = +coords[1]
+
+    let ret = 0
+
+    if (x > 0) {
+      ret += operation(this.board[x-1][y]) // left
+      if (y > 0) ret += operation(this.board[x-1][y-1]) // top left
+      if (y < this.tiles_y-1) ret += operation(this.board[x-1][y+1]) // bottom left
+    }
+    if (y > 0) ret += operation(this.board[x][y-1]) // top
+    if (y < this.tiles_y-1) ret += operation(this.board[x][y+1]) // bottom
+    if (x < this.tiles_x-1) {
+      ret += operation(this.board[x+1][y]) // right
+      if (y > 0) ret += operation(this.board[x+1][y-1]) // top right
+      if (y < this.tiles_y-1) ret += operation(this.board[x+1][y+1]) // bottom right
+    }
+
+    return ret
   }
 
 
@@ -443,22 +470,26 @@ export class MinesweeperComponent {
             {
               text: "Opening Move",
               isSelected: computed(() => this.setting_opening_move()),
-              action: () => {this.setting_opening_move.update((b) => !b)}
+              action: () => {this.setting_opening_move.update((b) => !b)},
+              hoverText: "The first move will always open a useful series of squares",
             },
             {
               text: "Question Marks",
               isSelected: computed(() => this.setting_question_marks()),
-              action: () => {this.setting_question_marks.update((b) => !b)}
+              action: () => {this.setting_question_marks.update((b) => !b)},
+              hoverText: "Second right-click changes bomb marking to a question mark",
             },
             {
               text: "Area Open",
               isSelected: computed(() => this.setting_area_open()),
-              action: () => {this.setting_area_open.update((b) => !b)}
+              action: () => {this.setting_area_open.update((b) => !b)},
+              hoverText: "Clicking on numbered/satisfied square will open all its neighbors",
             },
             {
               text: "Open Remaining",
               isSelected: computed(() => this.setting_open_remaining()),
-              action: () => {this.setting_open_remaining.update((b) => !b)}
+              action: () => {this.setting_open_remaining.update((b) => !b)},
+              hoverText: "When 0 bombs are left unmarked, click the bomb counter 000 to open all remaining",
             }
           ]
         ]

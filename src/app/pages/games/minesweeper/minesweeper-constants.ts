@@ -32,4 +32,5 @@ export interface MinesweeperMenuItem {
   text: string;
   isSelected?: Signal<boolean>;
   action: () => void;
+  hoverText?: string;
 }
