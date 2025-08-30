@@ -1,24 +1,21 @@
-import { Type } from "@angular/core";
-import { GameNotFoundComponent } from "./game-not-found/game-not-found.component";
-import { MinesweeperComponent } from "./minesweeper/minesweeper.component";
-
 export interface Game {
     displayName: string,
     path: string,
-    component: Type<MinesweeperComponent> | Type<GameNotFoundComponent>,
     iconPath?: string,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    lazyLoad: () => any,
 }
 
 export const GAMES: Game[] = [
     {
         displayName: "Minesweeper", 
         path: "minesweeper",
-        component: MinesweeperComponent,
         iconPath: "games/game-icon-minesweeper.png",
+        lazyLoad: () => import('./minesweeper/minesweeper.component').then(m => m.MinesweeperComponent)
     },
     {
         displayName: "Test Game",
         path: 'test',
-        component: GameNotFoundComponent,
+        lazyLoad: () => import('./game-not-found/game-not-found.component').then(m => m.GameNotFoundComponent)
     },
 ]
