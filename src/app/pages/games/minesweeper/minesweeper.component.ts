@@ -47,8 +47,8 @@ export class MinesweeperComponent {
   num_flags: WritableSignal<number> = signal(0)
   remaining_num_tiles: WritableSignal<number> = signal(0)
   game_over: WritableSignal<boolean> = signal(false)
-  game_won: Signal<boolean> = computed(() => this.game_over() && this.remaining_num_tiles() == 0)
-  game_lost: Signal<boolean> = computed(() => this.game_over() && this.remaining_num_tiles() > 0)
+  game_won: Signal<boolean> = computed(() => this.game_over() && this.remaining_num_tiles() == 0 && this.losing_bomb_tiles.length == 0)
+  game_lost: Signal<boolean> = computed(() => this.game_over() && this.remaining_num_tiles() > 0 && this.losing_bomb_tiles.length > 0)
   losing_bomb_tiles: MinesweeperSquare[] = []
 
   // Button trackers
@@ -320,9 +320,6 @@ export class MinesweeperComponent {
     this.mouse_down_in_game.set(false)
     tile.isPressed.set(false)
 
-    // if this is first square pressed, initialize game
-    if (this.remaining_num_tiles() == this.tiles_x * this.tiles_y - this.num_bombs) this.initialize_game(tile)
-
     // handle click on a closed square
     if (!tile.isOpen()) {
       this.handle_game_click(tile)
@@ -340,6 +337,9 @@ export class MinesweeperComponent {
   handle_game_click(tile: MinesweeperSquare): void {
     if (tile.isFlagged()) return // can't click on a flagged square
 
+    // if this is first square pressed, initialize game
+    if (this.remaining_num_tiles() == this.tiles_x * this.tiles_y - this.num_bombs) this.initialize_game(tile)
+      
     tile.isOpen.set(true)
 
     if (tile.isBomb) {

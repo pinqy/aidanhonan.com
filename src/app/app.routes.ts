@@ -19,7 +19,11 @@ export const routes: Routes = [
         children: [
             { path: '', component: EmptyComponent },
             ...GAMES.map<Route>((game) => {
-                return { path: game.path, title: titleWithSuffix(game.displayName), component: game.component } as Route
+                return {
+                    path: game.path,
+                    title: titleWithSuffix(game.displayName),
+                    loadComponent: game.lazyLoad
+                } as Route
             }),
             { path: "**", title: titleWithSuffix("Game Not Found"), component: GameNotFoundComponent },
         ] 
