@@ -1,4 +1,4 @@
-import { Component, computed, inject, Signal, signal, WritableSignal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, Signal, signal, WritableSignal } from '@angular/core';
 import { Router } from '@angular/router';
 import { MinesweeperDifficulty, MinesweeperMenu, MinesweeperMenuContent, MinesweeperSquare } from './minesweeper-constants';
 
@@ -19,9 +19,8 @@ export class MinesweeperComponent {
 
   /**
    * TODO: Add "Custom" difficulty
-   * TODO: First click always "0" space
-   * TODO: Add icons: bomb, flag, reset-button faces
-   * TODO: Add timer
+   * TODO: Add local storage for settings/scores
+   * maybe: add backend for high scores
    */
 
   // Menu state variables
@@ -39,13 +38,15 @@ export class MinesweeperComponent {
   // Board definition variables
   board: MinesweeperSquare[][] = []
   selected_difficulty: WritableSignal<MinesweeperDifficulty> = signal(MinesweeperDifficulty.Beginner); // this will be overridden in constructor()
-  tiles_x!: number
-  tiles_y!: number
-  num_bombs!: number
+  tiles_x = 9
+  tiles_y = 9
+  num_bombs = 10
 
   // Game state variables
   num_flags: WritableSignal<number> = signal(0)
+  remaining_bombs: Signal<number> = computed(() => {return this.num_bombs - this.num_flags()})
   remaining_num_tiles: WritableSignal<number> = signal(0)
+  game_started: WritableSignal<boolean> = signal(false)
   game_over: WritableSignal<boolean> = signal(false)
   game_won: Signal<boolean> = computed(() => this.game_over() && this.remaining_num_tiles() == 0 && this.losing_bomb_tiles.length == 0)
   game_lost: Signal<boolean> = computed(() => this.game_over() && this.remaining_num_tiles() > 0 && this.losing_bomb_tiles.length > 0)
@@ -55,15 +56,21 @@ export class MinesweeperComponent {
   reset_button_pressed: WritableSignal<boolean> = signal(false)
   mouse_down_on_reset: WritableSignal<boolean> = signal(false)
   mouse_down_in_game: WritableSignal<boolean> = signal(false)
-  open_remaining_button_enabled!: Signal<boolean>
+  open_remaining_button_enabled: Signal<boolean>= computed(() => {return this.setting_open_remaining() && this.remaining_bombs() == 0 && !this.game_over()})
 
+  // Counter signals
+  bomb_counter_100s: Signal<string> = computed(() => {return this.open_remaining_button_enabled() ? "0_alt" : this.get_100s(this.remaining_bombs())})
+  bomb_counter_10s: Signal<string> = computed(() => {return this.open_remaining_button_enabled() ? "0_alt" : this.get_10s(this.remaining_bombs())})
+  bomb_counter_1s: Signal<string> = computed(() => {return this.open_remaining_button_enabled() ? "0_alt" : this.get_1s(this.remaining_bombs())})
+  timer_seconds: WritableSignal<number> = signal(0)
+  timer_100s: Signal<string> = computed(() => {return this.get_100s(this.timer_seconds())})
+  timer_10s: Signal<string> = computed(() => {return this.get_10s(this.timer_seconds())})
+  timer_1s: Signal<string> = computed(() => {return this.get_1s(this.timer_seconds())})
 
   constructor() {
     this.set_difficulty(MinesweeperDifficulty.Intermediate)
     this.menu_content = this.get_initial_menu_state()
     this.new_game()
-
-    this.open_remaining_button_enabled = computed(() => {return this.setting_open_remaining() && this.num_bombs == this.num_flags()})
 
     // this accounts for holding mouse down on a tile, dragging off game, and
     // releasing. Without this we would treat it as a mouse down during (mouseenter)
@@ -71,6 +78,16 @@ export class MinesweeperComponent {
       this.mouse_down_in_game.set(false)
       this.mouse_down_on_reset.set(false)
     })
+
+    // initialize timer that will "tick" every second and update the game clock
+    const timer_obj = setInterval(() => {
+      if (this.game_started() && !this.game_over()) {
+        this.timer_seconds.update((v) => Math.min(v+1, 999))
+      }
+    }, 1000)
+
+    const destroy_ref = inject(DestroyRef)
+    destroy_ref.onDestroy(() => {clearInterval(timer_obj)})
   }
 
 
@@ -99,7 +116,10 @@ export class MinesweeperComponent {
     this.board = new_board
 
     // reset game state
+    this.timer_seconds.set(0)
+    this.game_started.set(false)
     this.game_over.set(false)
+    this.num_flags.set(1) // force signal refresh if num_flags is already 0
     this.num_flags.set(0)
     this.losing_bomb_tiles = []
     this.remaining_num_tiles.set(this.tiles_x * this.tiles_y - this.num_bombs)
@@ -275,6 +295,25 @@ export class MinesweeperComponent {
 
 
   /**
+   * Counter functions
+   */
+  get_100s(n: number): string {
+    if (n < 0) return "-"
+    else if (n > 999) return "9"
+    else return `${Math.floor(n/100)}`
+  }
+
+  get_10s(n: number): string {
+    if (n < -99 || n > 999) return "9"
+    else return `${Math.floor(Math.abs(n%100)/10)}`
+  }
+
+  get_1s(n: number): string {
+    if (n < -99 || n > 999) return "9"
+    else return `${Math.abs(n%10)}`
+  }
+
+  /**
    * Functions for handling tile mouse actions
    */
 
@@ -338,8 +377,11 @@ export class MinesweeperComponent {
     if (tile.isFlagged()) return // can't click on a flagged square
 
     // if this is first square pressed, initialize game
-    if (this.remaining_num_tiles() == this.tiles_x * this.tiles_y - this.num_bombs) this.initialize_game(tile)
-      
+    if (this.remaining_num_tiles() == this.tiles_x * this.tiles_y - this.num_bombs) {
+      this.initialize_game(tile)
+      this.game_started.set(true)
+    }
+
     tile.isOpen.set(true)
 
     if (tile.isBomb) {
