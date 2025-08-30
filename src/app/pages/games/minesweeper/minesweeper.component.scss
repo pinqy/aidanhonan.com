@@ -155,6 +155,14 @@ $minesweeper-header-height: 20px;
   color: red;
   align-content: center;
   text-align: center;
+
+  display: flex;
+  flex-direction: row;
+}
+
+.minesweeper-counter-digit {
+  width: 13px;
+  height: 23px;
 }
 
 .minesweeper-flag-counter {

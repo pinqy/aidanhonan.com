@@ -9,12 +9,18 @@
     <div class="minesweeper-score-banner minesweeper-inlay">
       <button class="minesweeper-counter minesweeper-flag-counter" [disabled]="!open_remaining_button_enabled()" 
         [class.minesweeper-flag-counter-button]="open_remaining_button_enabled()" (click)="open_remaining_tiles()">
-        {{num_bombs - num_flags()}}
+        <img class="minesweeper-counter-digit" src="games/minesweeper/time{{bomb_counter_100s()}}.png" alt="bomb counter 100s" />
+        <img class="minesweeper-counter-digit" src="games/minesweeper/time{{bomb_counter_10s()}}.png" alt="bomb counter 10s" />
+        <img class="minesweeper-counter-digit" src="games/minesweeper/time{{bomb_counter_1s()}}.png" alt="bomb counter 1s" />
       </button>
       <div class="minesweeper-reset-button" [class]="get_reset_button_classes()" (mousedown)="reset_button_down($event)"
         (mouseleave)="reset_button_leave()" (mouseenter)="reset_button_enter()" (mouseup)="reset_button_up($event)">
       </div>
-      <div class="minesweeper-counter minesweeper-timer">{{remaining_num_tiles()}}</div>
+      <div class="minesweeper-counter minesweeper-timer">
+        <img class="minesweeper-counter-digit" src="games/minesweeper/time{{timer_100s()}}.png" alt="timer clock 100s" />
+        <img class="minesweeper-counter-digit" src="games/minesweeper/time{{timer_10s()}}.png" alt="timer clock 10s" />
+        <img class="minesweeper-counter-digit" src="games/minesweeper/time{{timer_1s()}}.png" alt="timer clock 1s" />
+      </div>
     </div>
     <div class="minesweeper-game-body minesweeper-inlay">
       @for (col of board; track $index) {
