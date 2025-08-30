@@ -167,12 +167,32 @@ $minesweeper-header-height: 20px;
 }
 
 .minesweeper-reset-button {
-  width: 26px;
-  height: 26px;
+  width: 25px;
+  height: 25px;
 
   margin: auto;
   box-sizing: border-box;
   outline: 1px solid gray;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.reset-button-smile {
+  background-image: url('../../../../../public/games/minesweeper/smiley-face.png');
+  
+}
+
+.reset-button-dead {
+  background-image: url('../../../../../public/games/minesweeper/dead-face.png');
+}
+
+.reset-button-cool {
+  background-image: url('../../../../../public/games/minesweeper/cool-face.png');
+}
+
+.reset-button-ooh {
+  background-image: url('../../../../../public/games/minesweeper/ooh-face.png');
 }
 
 .minesweeper-timer {
@@ -199,7 +219,7 @@ $minesweeper-header-height: 20px;
   height: 16px;
   width: 16px;
   box-sizing: border-box;
-  line-height: 16px;
+  line-height: 15px;
   font-size: 13px;
   position: relative;
 
@@ -231,11 +251,24 @@ $minesweeper-header-height: 20px;
 }
 
 .tile-flagged {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url('../../../../../public/games/minesweeper/flag.png');
+}
 
+.tile-bomb {
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url('../../../../../public/games/minesweeper/bomb.png');
 }
       
 .tile-questioned {
-
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url('../../../../../public/games/minesweeper/question.png');
 }
 
 .tile-losing-bomb {
