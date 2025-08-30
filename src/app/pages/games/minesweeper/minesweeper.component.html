@@ -13,12 +13,6 @@
       </button>
       <div class="minesweeper-reset-button" [class]="get_reset_button_classes()" (mousedown)="reset_button_down($event)"
         (mouseleave)="reset_button_leave()" (mouseenter)="reset_button_enter()" (mouseup)="reset_button_up($event)">
-
-        @if (reset_button_pressed()) {:)}
-        @else if (game_won()) {W}
-        @else if (game_lost()) {L}
-        @else if (mouse_down_in_game()) {:o}
-        @else {:)}
       </div>
       <div class="minesweeper-counter minesweeper-timer">{{remaining_num_tiles()}}</div>
     </div>
@@ -29,18 +23,9 @@
             <div id="{{item.id}}" class="minesweeper-tile" [class]="get_tile_classes(item)" [style.color]="get_number_tile_color(item)" 
               (mousedown)="press_tile($event, item)" (mouseleave)="unpress_tile(item)" (mouseenter)="enter_tile(item)" (mouseup)="click_tile($event, item)">
 
-              <div class="minesweeper-tile-content">
+              <div class="minesweeper-tile-content" [class]="get_tile_content_classes(item)">
                 @if (item.isOpen() && item.number > 0 && !item.isBomb && !item.isFlagged()) {
                   {{item.number}}
-                }
-                @if ((item.isOpen() && item.isBomb) || (item.isOpen() && item.isFlagged() && !item.isBomb)) {
-                  B
-                }
-                @if (!item.isOpen() && item.isFlagged()) {
-                  F
-                }
-                @if (!item.isOpen() && item.isQuestioned()) {
-                  ?
                 }
               </div>
             

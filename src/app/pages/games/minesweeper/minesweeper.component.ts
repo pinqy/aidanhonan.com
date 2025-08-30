@@ -207,9 +207,20 @@ export class MinesweeperComponent {
 
     if (tile.isOpen() || (tile.isPressed() && !tile.isFlagged())) {
       classes.push("tile-open")
-      if (this.losing_bomb_tiles.find((l_tile) => l_tile.id == tile.id)) classes.push("tile-losing-bomb")
     } else {
       classes.push("tile-closed")
+    }
+
+    return classes.join(" ")
+  }
+
+  get_tile_content_classes(tile: MinesweeperSquare) {
+    const classes = []
+
+    if (tile.isOpen()) {
+      if (tile.isBomb || (!tile.isBomb && tile.isFlagged())) classes.push("tile-bomb")
+      if (this.losing_bomb_tiles.find((l_tile) => l_tile.id == tile.id)) classes.push("tile-losing-bomb")
+    } else {
       if (tile.isFlagged()) classes.push("tile-flagged")
       else if (tile.isQuestioned()) classes.push("tile-questioned")
     }
@@ -251,8 +262,8 @@ export class MinesweeperComponent {
     const classes: string[] = []
 
     if (this.reset_button_pressed()) classes.push("reset-button-smile") // :) when reset button pressed
-    else if (this.game_lost()) classes.push("reset-button-loss") // X( when game lost
-    else if (this.game_won()) classes.push("reset-button-win") // B) when game won
+    else if (this.game_lost()) classes.push("reset-button-dead") // X( when game lost
+    else if (this.game_won()) classes.push("reset-button-cool") // B) when game won
     else if (this.mouse_down_in_game()) classes.push("reset-button-ooh") // :o when mouse pressed on tile
     else classes.push("reset-button-smile") // :) all other times
 
@@ -321,6 +332,7 @@ export class MinesweeperComponent {
       // if number of flags around this square is correct, open all neighbors
       if (tile.number == this.operate_on_surrounding_tiles(tile, (surr_tile: MinesweeperSquare) => {return surr_tile.isFlagged() ? 1 : 0})) {
         this.open_surrounding_tiles(tile)
+        if (this.remaining_num_tiles() == 0) this.handle_win()
       }
     }
   }
@@ -389,7 +401,7 @@ export class MinesweeperComponent {
   }
 
   open_remaining_tiles(): void {
-    if (!this.open_remaining_button_enabled()) return
+    if (!this.open_remaining_button_enabled() && !this.game_over()) return
 
     // if nothing has been clicked, intialize the game
     if (this.remaining_num_tiles() == this.tiles_x * this.tiles_y - this.num_bombs) this.initialize_game(undefined)
@@ -399,9 +411,13 @@ export class MinesweeperComponent {
         if (!(tile.isBomb && tile.isFlagged()) && !tile.isOpen()) {
           tile.isOpen.set(true)
           if (tile.isBomb) this.losing_bomb_tiles.push(tile)
+          else this.remaining_num_tiles.update((n) => n-1)
         }
       }
     }
+
+    if (this.losing_bomb_tiles.length > 0) this.handle_loss(undefined)
+    else this.handle_win()
   }
 
 
