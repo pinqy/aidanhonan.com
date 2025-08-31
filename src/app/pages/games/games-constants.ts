@@ -10,7 +10,7 @@ export const GAMES: Game[] = [
     {
         displayName: "Minesweeper", 
         path: "minesweeper",
-        iconPath: "games/game-icon-minesweeper.png",
+        iconPath: "assets/games/game-icon-minesweeper.png",
         lazyLoad: () => import('./minesweeper/minesweeper.component').then(m => m.MinesweeperComponent)
     },
     {
