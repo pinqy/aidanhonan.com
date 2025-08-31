@@ -16,7 +16,7 @@ export class GamesComponent {
   isGameDetailView: WritableSignal<boolean> = signal(false)
 
   games: Game[] = []
-  gameIconPathDefault = "games/game-icon-default.png"
+  gameIconPathDefault = "assets/games/game-icon-default.png"
 
   constructor() {
     // When navigating off of "/games" page, disable games menu links
