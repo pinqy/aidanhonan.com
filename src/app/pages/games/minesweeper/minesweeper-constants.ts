@@ -34,3 +34,18 @@ export interface MinesweeperMenuItem {
   action: () => void;
   hoverText?: string;
 }
+
+export enum MinesweeperSetting {
+  OpeningMove = "opening_move",
+  QuestionMarks = "question_marks",
+  AreaOpen = "area_open",
+  OpenRemaining = "open_remaining",
+}
+
+export enum MinesweeperCookie {
+  Difficulty = "mines_difficulty",
+  OpeningMove = "mines_opening_move",
+  QuestionMarks = "mines_question_marks",
+  AreaOpen = "mines_area_open",
+  OpenRemaining = "mines_open_remaining",
+}
