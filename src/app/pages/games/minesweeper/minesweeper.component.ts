@@ -1,11 +1,13 @@
 import { Component, computed, DestroyRef, inject, Signal, signal, WritableSignal } from '@angular/core';
 import { Router } from '@angular/router';
-import { MinesweeperDifficulty, MinesweeperMenu, MinesweeperMenuContent, MinesweeperSquare } from './minesweeper-constants';
+import { MinesweeperCookie, MinesweeperDifficulty, MinesweeperMenu, MinesweeperMenuContent, MinesweeperSetting, MinesweeperSquare } from './minesweeper-constants';
+import { CookieService } from 'ngx-cookie-service';
 
 @Component({
   selector: 'app-minesweeper',
   standalone: true,
   imports: [],
+  providers: [CookieService],
   templateUrl: './minesweeper.component.html',
   styleUrl: './minesweeper.component.scss'
 })
@@ -17,9 +19,12 @@ export class MinesweeperComponent {
     this.router.navigate(["/games"])
   }
 
+  // cookie service
+  private readonly cookieService = inject(CookieService)
+
   /**
    * TODO: Add "Custom" difficulty
-   * TODO: Add local storage for settings/scores
+   * TODO: Add instruction/about page
    * maybe: add backend for high scores
    */
 
@@ -45,7 +50,7 @@ export class MinesweeperComponent {
   // Game state variables
   num_flags: WritableSignal<number> = signal(0)
   remaining_bombs: Signal<number> = computed(() => {return this.num_bombs - this.num_flags()})
-  remaining_num_tiles: WritableSignal<number> = signal(0)
+  remaining_num_tiles: WritableSignal<number> = signal(-1) // -1 is just to signal that the page is loading for the first time
   game_started: WritableSignal<boolean> = signal(false)
   game_over: WritableSignal<boolean> = signal(false)
   game_won: Signal<boolean> = computed(() => this.game_over() && this.remaining_num_tiles() == 0 && this.losing_bomb_tiles.length == 0)
@@ -68,9 +73,8 @@ export class MinesweeperComponent {
   timer_1s: Signal<string> = computed(() => {return this.get_1s(this.timer_seconds())})
 
   constructor() {
-    this.set_difficulty(MinesweeperDifficulty.Intermediate)
     this.menu_content = this.get_initial_menu_state()
-    this.new_game()
+    this.load_settings()
 
     // this accounts for holding mouse down on a tile, dragging off game, and
     // releasing. Without this we would treat it as a mouse down during (mouseenter)
@@ -88,6 +92,32 @@ export class MinesweeperComponent {
 
     const destroy_ref = inject(DestroyRef)
     destroy_ref.onDestroy(() => {clearInterval(timer_obj)})
+  }
+
+  /**
+   * Load settings from cookies
+   */
+
+  load_settings(): void {
+    // settings
+    if (this.cookieService.get(MinesweeperCookie.OpeningMove) == "false") this.setting_opening_move.set(false)
+    if (this.cookieService.get(MinesweeperCookie.QuestionMarks) == "false") this.setting_question_marks.set(false)
+    if (this.cookieService.get(MinesweeperCookie.AreaOpen) == "false") this.setting_area_open.set(false)
+    if (this.cookieService.get(MinesweeperCookie.OpenRemaining) == "true") this.setting_open_remaining.set(true)
+    
+    // difficulty
+    const saved_diff = this.cookieService.get(MinesweeperCookie.Difficulty)
+    switch(saved_diff) {
+      case MinesweeperDifficulty.Beginner:
+      case MinesweeperDifficulty.Intermediate:
+      case MinesweeperDifficulty.Expert:
+        this.set_difficulty(saved_diff)
+        break
+      // TODO: case MinesweeperDifficulty.Custom'
+      default: 
+        this.set_difficulty(MinesweeperDifficulty.Intermediate)
+        break
+    }
   }
 
 
@@ -130,7 +160,7 @@ export class MinesweeperComponent {
 
   // initialize game after first click
   initialize_game(first_tile: MinesweeperSquare | undefined): void {
-    const coords = first_tile ? first_tile.id.split("_") : "500_500"
+    const coords = first_tile ? first_tile.id.split("_") : [500, 500]
     const x0 = +coords[0]
     const y0 = +coords[1]
 
@@ -166,8 +196,8 @@ export class MinesweeperComponent {
   }
 
   set_difficulty(difficulty: MinesweeperDifficulty): void {
-    // no-op if difficulty is same, don't want to start new game
-    if (difficulty == this.selected_difficulty()) return
+    // no-op if difficulty is same, don't want to start new game (unless it's the initial page load)
+    if (difficulty == this.selected_difficulty() && this.remaining_num_tiles() >= 0) return
 
     switch (difficulty) {
       case MinesweeperDifficulty.Beginner:
@@ -189,6 +219,8 @@ export class MinesweeperComponent {
 
     this.selected_difficulty.set(difficulty)
     this.new_game()
+
+    this.cookieService.set(MinesweeperCookie.Difficulty, difficulty, 7)
   }
 
   handle_loss(tile: MinesweeperSquare | undefined): void {
@@ -512,6 +544,35 @@ export class MinesweeperComponent {
     return `minesweeper-menu-${menu.toLowerCase()}`
   }
 
+  update_setting(setting: MinesweeperSetting): void {
+    // Invert the selected setting + add cookie if non-default, delete cookie if default
+    switch(setting) {
+      case MinesweeperSetting.OpeningMove:
+        this.setting_opening_move.update(s => !s)
+        if (!this.setting_opening_move()) this.cookieService.set(MinesweeperCookie.OpeningMove, "false", 7)
+        else this.cookieService.delete(MinesweeperCookie.OpeningMove)
+        break
+
+      case MinesweeperSetting.QuestionMarks:
+        this.setting_question_marks.update(s => !s)
+        if (!this.setting_question_marks()) this.cookieService.set(MinesweeperCookie.QuestionMarks, "false", 7)
+        else this.cookieService.delete(MinesweeperCookie.QuestionMarks)
+        break
+
+      case MinesweeperSetting.AreaOpen:
+        this.setting_area_open.update(s => !s)
+        if (!this.setting_area_open()) this.cookieService.set(MinesweeperCookie.AreaOpen, "false", 7)
+        else this.cookieService.delete(MinesweeperCookie.AreaOpen)
+        break
+
+      case MinesweeperSetting.OpenRemaining:
+        this.setting_open_remaining.update(s => !s)
+        if (this.setting_open_remaining()) this.cookieService.set(MinesweeperCookie.OpenRemaining, "true", 7)
+        else this.cookieService.delete(MinesweeperCookie.OpenRemaining)
+        break
+    }
+  }
+
   get_initial_menu_state(): Record<MinesweeperMenu, MinesweeperMenuContent> {
     return {
       [MinesweeperMenu.Game]: {
@@ -551,25 +612,25 @@ export class MinesweeperComponent {
             {
               text: "Opening Move",
               isSelected: computed(() => this.setting_opening_move()),
-              action: () => {this.setting_opening_move.update((b) => !b)},
+              action: () => {this.update_setting(MinesweeperSetting.OpeningMove)},
               hoverText: "The first move will always open a useful series of squares",
             },
             {
               text: "Question Marks",
               isSelected: computed(() => this.setting_question_marks()),
-              action: () => {this.setting_question_marks.update((b) => !b)},
+              action: () => {this.update_setting(MinesweeperSetting.QuestionMarks)},
               hoverText: "Second right-click changes bomb marking to a question mark",
             },
             {
               text: "Area Open",
               isSelected: computed(() => this.setting_area_open()),
-              action: () => {this.setting_area_open.update((b) => !b)},
+              action: () => {this.update_setting(MinesweeperSetting.AreaOpen)},
               hoverText: "Clicking on numbered/satisfied square will open all its neighbors",
             },
             {
               text: "Open Remaining",
               isSelected: computed(() => this.setting_open_remaining()),
-              action: () => {this.setting_open_remaining.update((b) => !b)},
+              action: () => {this.update_setting(MinesweeperSetting.OpenRemaining)},
               hoverText: "When 0 bombs are left unmarked, click the bomb counter 000 to open all remaining",
             }
           ]
