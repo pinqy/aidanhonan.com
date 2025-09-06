@@ -144,19 +144,30 @@ $minesweeper-header-height: 20px;
   width: 120px;
 
   form {
-    padding: 5px 5px 3px 5px;
+    padding: 2px 5px 3px 5px;
   }
 }
 
 .minesweeper-custom-form-row {
   display: flex;
   flex-direction: row;
-  padding-bottom: 3px;
+  padding-top: 3px;
+  align-items: center;
 
   input {
-    width: 50px;
+    width: 45px;
     margin-left: auto;
   }
+
+  input:focus {
+    outline: none;
+  }
+}
+
+.minesweeper-custom-form-error {
+  width: 100%;
+  color: red;
+  font-size: 10px;
 }
 
 .minesweeper-score-banner {
@@ -231,7 +242,7 @@ $minesweeper-header-height: 20px;
 .minesweeper-game-body {
   height: 100%;
 
-  align-content: center;
+  margin: auto;
   text-align: center;
   font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
 
