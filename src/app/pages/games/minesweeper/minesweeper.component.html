@@ -72,15 +72,36 @@
                 <label for="mines-custom-width">Width:</label>
                 <input type="number" id="mines-custom-width" formControlName="customWidth"/>
               </div>
+              @if (customWidth.invalid && customWidth.touched) {
+                <div class="minesweeper-custom-form-error">
+                  @if (customWidth.hasError('required')) {Width required}
+                  @else if (customWidth.hasError('min')) {Min width is 5}
+                  @else if (customWidth.hasError('max')) {Max width is 30}
+                </div>
+              }
               <div class="minesweeper-custom-form-row">
                 <label for="mines-custom-height">Height:</label>
                 <input type="number" id="mines-custom-height" formControlName="customHeight"/>
               </div>
+              @if (customHeight.invalid && customHeight.touched) {
+                <div class="minesweeper-custom-form-error">
+                  @if (customHeight.hasError('required')) {Height required}
+                  @else if (customHeight.hasError('min')) {Min height is 5}
+                  @else if (customHeight.hasError('max')) {Max height is 24}
+                </div>
+              }
               <div class="minesweeper-custom-form-row">
                 <label for="mines-custom-bombs">Bombs:</label>
                 <input type="number" id="mines-custom-bombs" formControlName="customBombs"/>
               </div>
-              <input type="submit" id="minesweeper-custom-form-submit" />
+              @if ((customBombs.invalid || customDiffForm.hasError('maxBombs')) && customBombs.touched) {
+                <div class="minesweeper-custom-form-error">
+                  @if (customBombs.hasError('required')) {Bombs required}
+                  @else if (customBombs.hasError('min')) {Min bombs is 1}
+                  @else if (customDiffForm.hasError('maxBombs')) {Max bombs is {{getMaxCustomBombs(customDiffForm)}}}
+                </div>
+              }
+              <input type="submit" id="minesweeper-custom-form-submit" style="margin-top: 3px" />
             </form>
           </div>
         }

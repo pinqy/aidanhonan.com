@@ -24,7 +24,6 @@ export class MinesweeperComponent {
   private readonly cookieService = inject(CookieService)
 
   /**
-   * TODO: Add customDiffForm formatting when invalid
    * TODO: Add instruction/about page
    * maybe: add backend for high scores
    */
@@ -165,8 +164,7 @@ export class MinesweeperComponent {
     this.remaining_num_tiles.set(this.tiles_x * this.tiles_y - this.num_bombs)
     
     // close menu if open
-    this.selected_menu.set(MinesweeperMenu.None)
-    this.custom_form_open.set(false)
+    this.close_menu()
   }
 
   // initialize game after first click
@@ -382,8 +380,7 @@ export class MinesweeperComponent {
     if (this.game_over()) return // disable mouse actions after loss
 
     // close menu if open
-    this.selected_menu.set(MinesweeperMenu.None)
-    this.custom_form_open.set(false)
+    this.close_menu()
 
     if (event.button == 0) { // left click
       tile.isPressed.set(true)
@@ -558,8 +555,7 @@ export class MinesweeperComponent {
    */
   handleMenuButtonClick(menu_str: string): void {
     if (this.menu_open()) {
-      this.selected_menu.set(MinesweeperMenu.None)
-      this.custom_form_open.set(false)
+      this.close_menu()
       return
     }
 
@@ -699,11 +695,17 @@ export class MinesweeperComponent {
   }
 
   // Custom difficulty form
-  maxBombsValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
-    const x = control.get('customWidth');
+  getMaxCustomBombs(control: AbstractControl): number | null {
+    const x = control.get('customWidth')
     const y = control.get('customHeight');
+
+    return x && y && x.valid && y.valid && x.value && y.value ? ((x.value-1) * (y.value-1) + 1) : null;
+  }
+
+  maxBombsValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+    const maxBombs = this.getMaxCustomBombs(control)
     const bombs = control.get('customBombs');
-    return x && y && bombs && ((x.value-1) * (y.value-1) + 1) <= bombs.value ? {maxBombs: true} : null;
+    return maxBombs && bombs && bombs.value && maxBombs < bombs.value ? {maxBombs: true} : null;
   };
 
   customDiffForm = new FormGroup({
@@ -715,8 +717,32 @@ export class MinesweeperComponent {
   submit_custom_diff_form(): void {
     if (this.customDiffForm.valid) {
       this.set_difficulty(MinesweeperDifficulty.Custom)
-    } else {
-      // TODO: update visuals when form invalid
+    }
+  }
+
+  get customWidth() {
+    return this.customDiffForm.controls.customWidth
+  }
+
+  get customHeight() {
+    return this.customDiffForm.controls.customHeight
+  }
+
+  get customBombs() {
+    return this.customDiffForm.controls.customBombs
+  }
+
+  close_menu() {
+    this.selected_menu.set(MinesweeperMenu.None)
+    this.custom_form_open.set(false)
+
+    // reset custom form when menu closed
+    if (this.customDiffForm.touched || this.customDiffForm.dirty) {
+      this.customDiffForm.controls.customWidth.setValue(this.tiles_x)
+      this.customDiffForm.controls.customHeight.setValue(this.tiles_y)
+      this.customDiffForm.controls.customBombs.setValue(this.num_bombs)
+      this.customDiffForm.markAsPristine()
+      this.customDiffForm.markAsUntouched()
     }
   }
 }
