@@ -138,6 +138,27 @@ $minesweeper-header-height: 20px;
   color: blue;
 }
 
+.minesweeper-custom-form {
+  top: 63px;
+  left: 95px;
+  width: 120px;
+
+  form {
+    padding: 5px 5px 3px 5px;
+  }
+}
+
+.minesweeper-custom-form-row {
+  display: flex;
+  flex-direction: row;
+  padding-bottom: 3px;
+
+  input {
+    width: 50px;
+    margin-left: auto;
+  }
+}
+
 .minesweeper-score-banner {
   margin: 5px 0px;
 

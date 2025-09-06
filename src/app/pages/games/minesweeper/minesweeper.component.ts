@@ -2,11 +2,12 @@ import { Component, computed, DestroyRef, inject, Signal, signal, WritableSignal
 import { Router } from '@angular/router';
 import { MinesweeperCookie, MinesweeperDifficulty, MinesweeperMenu, MinesweeperMenuContent, MinesweeperSetting, MinesweeperSquare } from './minesweeper-constants';
 import { CookieService } from 'ngx-cookie-service';
+import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-minesweeper',
   standalone: true,
-  imports: [],
+  imports: [ReactiveFormsModule],
   providers: [CookieService],
   templateUrl: './minesweeper.component.html',
   styleUrl: './minesweeper.component.scss'
@@ -23,7 +24,7 @@ export class MinesweeperComponent {
   private readonly cookieService = inject(CookieService)
 
   /**
-   * TODO: Add "Custom" difficulty
+   * TODO: Add customDiffForm formatting when invalid
    * TODO: Add instruction/about page
    * maybe: add backend for high scores
    */
@@ -32,6 +33,7 @@ export class MinesweeperComponent {
   menu_buttons = [MinesweeperMenu.Game, MinesweeperMenu.Options, MinesweeperMenu.Help]
   selected_menu: WritableSignal<MinesweeperMenu> = signal(MinesweeperMenu.None)
   menu_open: Signal<boolean> = computed(() => this.selected_menu() != MinesweeperMenu.None)
+  custom_form_open: WritableSignal<boolean> = signal(false)
   menu_content!: Record<MinesweeperMenu, MinesweeperMenuContent>
 
   // Menu settings options
@@ -49,7 +51,7 @@ export class MinesweeperComponent {
 
   // Game state variables
   num_flags: WritableSignal<number> = signal(0)
-  remaining_bombs: Signal<number> = computed(() => {return this.num_bombs - this.num_flags()})
+  remaining_bombs: Signal<number> = computed(() => this.num_bombs - this.num_flags())
   remaining_num_tiles: WritableSignal<number> = signal(-1) // -1 is just to signal that the page is loading for the first time
   game_started: WritableSignal<boolean> = signal(false)
   game_over: WritableSignal<boolean> = signal(false)
@@ -61,16 +63,16 @@ export class MinesweeperComponent {
   reset_button_pressed: WritableSignal<boolean> = signal(false)
   mouse_down_on_reset: WritableSignal<boolean> = signal(false)
   mouse_down_in_game: WritableSignal<boolean> = signal(false)
-  open_remaining_button_enabled: Signal<boolean>= computed(() => {return this.setting_open_remaining() && this.remaining_bombs() == 0 && !this.game_over()})
+  open_remaining_button_enabled: Signal<boolean>= computed(() => this.setting_open_remaining() && this.remaining_bombs() == 0 && !this.game_over())
 
   // Counter signals
-  bomb_counter_100s: Signal<string> = computed(() => {return this.open_remaining_button_enabled() ? "0_alt" : this.get_100s(this.remaining_bombs())})
-  bomb_counter_10s: Signal<string> = computed(() => {return this.open_remaining_button_enabled() ? "0_alt" : this.get_10s(this.remaining_bombs())})
-  bomb_counter_1s: Signal<string> = computed(() => {return this.open_remaining_button_enabled() ? "0_alt" : this.get_1s(this.remaining_bombs())})
+  bomb_counter_100s: Signal<string> = computed(() => this.open_remaining_button_enabled() ? "0_alt" : this.get_100s(this.remaining_bombs()))
+  bomb_counter_10s: Signal<string> = computed(() => this.open_remaining_button_enabled() ? "0_alt" : this.get_10s(this.remaining_bombs()))
+  bomb_counter_1s: Signal<string> = computed(() => this.open_remaining_button_enabled() ? "0_alt" : this.get_1s(this.remaining_bombs()))
   timer_seconds: WritableSignal<number> = signal(0)
-  timer_100s: Signal<string> = computed(() => {return this.get_100s(this.timer_seconds())})
-  timer_10s: Signal<string> = computed(() => {return this.get_10s(this.timer_seconds())})
-  timer_1s: Signal<string> = computed(() => {return this.get_1s(this.timer_seconds())})
+  timer_100s: Signal<string> = computed(() => this.get_100s(this.timer_seconds()))
+  timer_10s: Signal<string> = computed(() => this.get_10s(this.timer_seconds()))
+  timer_1s: Signal<string> = computed(() => this.get_1s(this.timer_seconds()))
 
   constructor() {
     this.menu_content = this.get_initial_menu_state()
@@ -107,19 +109,27 @@ export class MinesweeperComponent {
     
     // difficulty
     const saved_diff = this.cookieService.get(MinesweeperCookie.Difficulty)
-    switch(saved_diff) {
-      case MinesweeperDifficulty.Beginner:
-      case MinesweeperDifficulty.Intermediate:
-      case MinesweeperDifficulty.Expert:
+    if (saved_diff == "") this.set_difficulty(MinesweeperDifficulty.Intermediate)
+    else if (MinesweeperDifficulty.Beginner == saved_diff || MinesweeperDifficulty.Intermediate == saved_diff || MinesweeperDifficulty.Expert == saved_diff) {
         this.set_difficulty(saved_diff)
-        break
-      // TODO: case MinesweeperDifficulty.Custom'
-      default: 
-        this.set_difficulty(MinesweeperDifficulty.Intermediate)
-        break
+    } else if (saved_diff == MinesweeperDifficulty.Custom) {
+        const numRegex = /^\d+$/
+        const saved_x = this.cookieService.get(MinesweeperCookie.CustomX)
+        const saved_y = this.cookieService.get(MinesweeperCookie.CustomY)
+        const saved_bombs = this.cookieService.get(MinesweeperCookie.CustomBombs)
+        if (numRegex.test(saved_x) && numRegex.test(saved_y) && numRegex.test(saved_bombs)) {
+          this.customDiffForm.controls.customWidth.setValue(Number(saved_x))
+          this.customDiffForm.controls.customHeight.setValue(Number(saved_y))
+          this.customDiffForm.controls.customBombs.setValue(Number(saved_bombs))
+          this.set_difficulty(saved_diff)
+        } else {
+          this.set_difficulty(MinesweeperDifficulty.Intermediate)
+        }
+    }
+    else {
+      this.set_difficulty(MinesweeperDifficulty.Intermediate)
     }
   }
-
 
   /**
    * Functions for managing game state
@@ -156,6 +166,7 @@ export class MinesweeperComponent {
     
     // close menu if open
     this.selected_menu.set(MinesweeperMenu.None)
+    this.custom_form_open.set(false)
   }
 
   // initialize game after first click
@@ -196,8 +207,8 @@ export class MinesweeperComponent {
   }
 
   set_difficulty(difficulty: MinesweeperDifficulty): void {
-    // no-op if difficulty is same, don't want to start new game (unless it's the initial page load)
-    if (difficulty == this.selected_difficulty() && this.remaining_num_tiles() >= 0) return
+    // no-op if difficulty is same, don't want to start new game (unless it's the initial page load or custom)
+    if (difficulty == this.selected_difficulty() && this.remaining_num_tiles() >= 0 && this.selected_difficulty() != MinesweeperDifficulty.Custom) return
 
     switch (difficulty) {
       case MinesweeperDifficulty.Beginner:
@@ -215,12 +226,30 @@ export class MinesweeperComponent {
         this.tiles_y = 16
         this.num_bombs = 99
         break
+      case MinesweeperDifficulty.Custom:
+        if (!this.customDiffForm.valid) { // safety check
+          this.set_difficulty(MinesweeperDifficulty.Intermediate)
+          return
+        }
+        this.tiles_x = this.customDiffForm.value.customWidth!
+        this.tiles_y = this.customDiffForm.value.customHeight!
+        this.num_bombs = this.customDiffForm.value.customBombs!
+        break
     }
 
     this.selected_difficulty.set(difficulty)
     this.new_game()
 
+    this.customDiffForm.controls.customWidth.setValue(this.tiles_x)
+    this.customDiffForm.controls.customHeight.setValue(this.tiles_y)
+    this.customDiffForm.controls.customBombs.setValue(this.num_bombs)
+
     this.cookieService.set(MinesweeperCookie.Difficulty, difficulty, 7)
+    // Save x / y / bombs if custom, delete otherwise
+    const expiry = this.selected_difficulty() == MinesweeperDifficulty.Custom ? 7 : -1
+    this.cookieService.set(MinesweeperCookie.CustomX, `${this.tiles_x}`, expiry)
+    this.cookieService.set(MinesweeperCookie.CustomY, `${this.tiles_y}`, expiry)
+    this.cookieService.set(MinesweeperCookie.CustomBombs, `${this.num_bombs}`, expiry)
   }
 
   handle_loss(tile: MinesweeperSquare | undefined): void {
@@ -352,7 +381,9 @@ export class MinesweeperComponent {
   press_tile(event: MouseEvent, tile: MinesweeperSquare): void {
     if (this.game_over()) return // disable mouse actions after loss
 
-    this.selected_menu.set(MinesweeperMenu.None) // close menu if open
+    // close menu if open
+    this.selected_menu.set(MinesweeperMenu.None)
+    this.custom_form_open.set(false)
 
     if (event.button == 0) { // left click
       tile.isPressed.set(true)
@@ -528,6 +559,7 @@ export class MinesweeperComponent {
   handleMenuButtonClick(menu_str: string): void {
     if (this.menu_open()) {
       this.selected_menu.set(MinesweeperMenu.None)
+      this.custom_form_open.set(false)
       return
     }
 
@@ -537,6 +569,7 @@ export class MinesweeperComponent {
   handleMenuButtonEnter(menu_str: string): void {
     if (this.menu_open() && this.selected_menu() != (menu_str as MinesweeperMenu)) {
       this.selected_menu.set(menu_str as MinesweeperMenu)
+      if (this.selected_menu() != MinesweeperMenu.Game) this.custom_form_open.set(false)
     }
   }
 
@@ -597,7 +630,12 @@ export class MinesweeperComponent {
               text: "Expert",
               isSelected: computed(() => this.selected_difficulty() == MinesweeperDifficulty.Expert),
               action: () => {this.set_difficulty(MinesweeperDifficulty.Expert)}
-            }
+            },
+            {
+              text: "Custom",
+              isSelected: computed(() => this.selected_difficulty() == MinesweeperDifficulty.Custom),
+              action: () => {this.custom_form_open.update(b => !b)}
+            },
           ],
           [{
             text: "Exit",
@@ -657,6 +695,28 @@ export class MinesweeperComponent {
         hasSelectableItems: false,
         sections: [],
       },
+    }
+  }
+
+  // Custom difficulty form
+  maxBombsValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+    const x = control.get('customWidth');
+    const y = control.get('customHeight');
+    const bombs = control.get('customBombs');
+    return x && y && bombs && ((x.value-1) * (y.value-1) + 1) <= bombs.value ? {maxBombs: true} : null;
+  };
+
+  customDiffForm = new FormGroup({
+    customWidth: new FormControl<number>(this.tiles_x, [Validators.required, Validators.min(5), Validators.max(30)]),
+    customHeight: new FormControl<number>(this.tiles_y, [Validators.required, Validators.min(5), Validators.max(24)]),
+    customBombs: new FormControl<number>(this.num_bombs, [Validators.required, Validators.min(1)]),
+  }, this.maxBombsValidator)
+
+  submit_custom_diff_form(): void {
+    if (this.customDiffForm.valid) {
+      this.set_difficulty(MinesweeperDifficulty.Custom)
+    } else {
+      // TODO: update visuals when form invalid
     }
   }
 }

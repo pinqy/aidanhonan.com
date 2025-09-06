@@ -4,6 +4,7 @@ export enum MinesweeperDifficulty {
   Beginner = 'Beginner',
   Intermediate = 'Intermediate',
   Expert = 'Expert',
+  Custom = 'Custom',
 }
 
 export interface MinesweeperSquare {
@@ -44,6 +45,9 @@ export enum MinesweeperSetting {
 
 export enum MinesweeperCookie {
   Difficulty = "mines_difficulty",
+  CustomX = "mines_custom_width",
+  CustomY = "mines_custom_height",
+  CustomBombs = "mines_custom_bombs",
   OpeningMove = "mines_opening_move",
   QuestionMarks = "mines_question_marks",
   AreaOpen = "mines_area_open",

@@ -65,6 +65,25 @@
             }
           </div>
         </div>
+        @if (custom_form_open()) {
+          <div class="minesweeper-menu minesweeper-custom-form">
+            <form class="minesweeper-menu-content" [formGroup]="customDiffForm" (ngSubmit)="submit_custom_diff_form()">
+              <div class="minesweeper-custom-form-row">
+                <label for="mines-custom-width">Width:</label>
+                <input type="number" id="mines-custom-width" formControlName="customWidth"/>
+              </div>
+              <div class="minesweeper-custom-form-row">
+                <label for="mines-custom-height">Height:</label>
+                <input type="number" id="mines-custom-height" formControlName="customHeight"/>
+              </div>
+              <div class="minesweeper-custom-form-row">
+                <label for="mines-custom-bombs">Bombs:</label>
+                <input type="number" id="mines-custom-bombs" formControlName="customBombs"/>
+              </div>
+              <input type="submit" id="minesweeper-custom-form-submit" />
+            </form>
+          </div>
+        }
       }
     </div>
   </div>
