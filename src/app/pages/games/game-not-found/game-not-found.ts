@@ -5,8 +5,8 @@ import { Router } from '@angular/router';
   selector: 'app-game-not-found',
   standalone: true,
   imports: [],
-  templateUrl: './game-not-found.component.html',
-  styleUrl: './game-not-found.component.scss'
+  templateUrl: './game-not-found.html',
+  styleUrl: './game-not-found.scss'
 })
 export class GameNotFoundComponent {
   private readonly router = inject(Router)

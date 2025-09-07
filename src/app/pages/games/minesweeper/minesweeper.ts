@@ -9,8 +9,8 @@ import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, Validatio
   standalone: true,
   imports: [ReactiveFormsModule],
   providers: [CookieService],
-  templateUrl: './minesweeper.component.html',
-  styleUrl: './minesweeper.component.scss'
+  templateUrl: './minesweeper.html',
+  styleUrl: './minesweeper.scss'
 })
 export class MinesweeperComponent {
   // page navigation

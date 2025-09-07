@@ -7,8 +7,8 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   selector: 'app-games',
   standalone: true,
   imports: [RouterOutlet, RouterLink, CommonModule],
-  templateUrl: './games.component.html',
-  styleUrl: './games.component.scss'
+  templateUrl: './games.html',
+  styleUrl: './games.scss'
 })
 export class GamesComponent {
   private readonly router = inject(Router)

@@ -11,11 +11,11 @@ export const GAMES: Game[] = [
         displayName: "Minesweeper", 
         path: "minesweeper",
         iconPath: "assets/games/game-icon-minesweeper.png",
-        lazyLoad: () => import('./minesweeper/minesweeper.component').then(m => m.MinesweeperComponent)
+        lazyLoad: () => import('./minesweeper/minesweeper').then(m => m.MinesweeperComponent)
     },
     {
         displayName: "Test Game",
         path: 'test',
-        lazyLoad: () => import('./game-not-found/game-not-found.component').then(m => m.GameNotFoundComponent)
+        lazyLoad: () => import('./game-not-found/game-not-found').then(m => m.GameNotFoundComponent)
     },
 ]

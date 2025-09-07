@@ -10,6 +10,7 @@
   width: 100%;
 
   padding: 20px 50px;
+  align-items: center;
 }
 
 .games-screen-border {
@@ -31,10 +32,8 @@
   border-left: 15px solid black;
   border-right: 15px solid black;
 
-  background-image: url('../../../../public/assets/games/games-background-default.png');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
+  background-color: #002b42;
+  background-image: url("../../../../public/assets/patterns/triangles.png");
 }
 
 // | ---------------------------------- |
@@ -50,10 +49,8 @@ $menu-item-text-size: 20px;
   width: 100%;
   top: 0;
   left: 0;
-}
 
-.games-menu-component {
-  z-index: 1;
+  align-content: center;
 }
 
 .games-menu-grid {
@@ -116,12 +113,4 @@ $menu-item-text-size: 20px;
   text-shadow: 1px 1px black;
   font-size: 12px;
   font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-}
-
-.game-detail-focus {
-  z-index: 99;
-}
-
-.game-detail-unfocus {
-  z-index: -1;
 }
