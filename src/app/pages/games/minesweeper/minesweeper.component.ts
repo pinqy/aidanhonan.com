@@ -24,7 +24,6 @@ export class MinesweeperComponent {
   private readonly cookieService = inject(CookieService)
 
   /**
-   * TODO: Add instruction/about page
    * maybe: add backend for high scores
    */
 
@@ -676,13 +675,13 @@ export class MinesweeperComponent {
           [
             {
               text: "Instructions",
-              action: () => {return}, // TODO: implement
+              action: () => {window.open('https://minesweepergame.com/strategy/how-to-play-minesweeper.php')},
             },
           ],
           [
             {
               text: "About",
-              action: () => {return}, // TODO: implement
+              action: () => {window.open('http://en.wikipedia.org/wiki/Minesweeper_(video_game)')},
             },
           ]
         ]
@@ -699,7 +698,7 @@ export class MinesweeperComponent {
     const x = control.get('customWidth')
     const y = control.get('customHeight');
 
-    return x && y && x.valid && y.valid && x.value && y.value ? ((x.value-1) * (y.value-1) + 1) : null;
+    return x && y && x.valid && y.valid && x.value && y.value ? Math.min(((x.value-1) * (y.value-1) + 1), x.value*y.value-9) : null;
   }
 
   maxBombsValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
