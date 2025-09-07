@@ -1,11 +1,11 @@
 import { Routes, Route } from '@angular/router';
-import { HomePageComponent } from './pages/home-page/home-page.component';
-import { PageNotFoundComponent } from './pages/page-not-found/page-not-found.component';
-import { BackendTestComponent } from './pages/backend-test/backend-test.component';
-import { GamesComponent } from './pages/games/games.component';
+import { HomePageComponent } from './pages/home-page/home-page';
+import { PageNotFoundComponent } from './pages/page-not-found/page-not-found';
+import { BackendTestComponent } from './pages/backend-test/backend-test';
+import { GamesComponent } from './pages/games/games';
 import { GAMES } from './pages/games/games-constants';
 import { TITLE_SUFFIX } from './constants';
-import { GameNotFoundComponent } from './pages/games/game-not-found/game-not-found.component';
+import { GameNotFoundComponent } from './pages/games/game-not-found/game-not-found';
 import { EmptyComponent } from './common/empty-component/empty';
 
 function titleWithSuffix(titleBase: string) : string {

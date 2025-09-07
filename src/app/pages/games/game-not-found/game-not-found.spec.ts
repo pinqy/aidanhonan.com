@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GamesComponent } from './games.component';
-import { appConfig } from '../../app.config';
+import { GameNotFoundComponent } from './game-not-found';
+import { appConfig } from '../../../app.config';
 
-describe('GamesComponent', () => {
-  let component: GamesComponent;
-  let fixture: ComponentFixture<GamesComponent>;
+describe('GameNotFoundComponent', () => {
+  let component: GameNotFoundComponent;
+  let fixture: ComponentFixture<GameNotFoundComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [GamesComponent],
+      imports: [GameNotFoundComponent],
       providers: appConfig.providers,
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(GamesComponent);
+    fixture = TestBed.createComponent(GameNotFoundComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
