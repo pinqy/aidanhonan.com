@@ -54,7 +54,7 @@ export class MinesweeperComponent {
   game_started: WritableSignal<boolean> = signal(false)
   game_over: WritableSignal<boolean> = signal(false)
   game_won: Signal<boolean> = computed(() => this.game_over() && this.remaining_num_tiles() == 0 && this.losing_bomb_tiles.length == 0)
-  game_lost: Signal<boolean> = computed(() => this.game_over() && this.remaining_num_tiles() > 0 && this.losing_bomb_tiles.length > 0)
+  game_lost: Signal<boolean> = computed(() => this.game_over() && this.losing_bomb_tiles.length > 0)
   losing_bomb_tiles: MinesweeperSquare[] = []
 
   // Button trackers

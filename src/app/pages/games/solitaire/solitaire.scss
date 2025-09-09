@@ -1,0 +1,75 @@
+@use '../../../../styles';
+
+$solitaire-header-height: 20px;
+
+.solitaire-game {
+  margin: auto;
+
+  box-sizing: border-box;
+
+  display: inline-flex;
+  flex-direction: column;
+  position: relative;
+
+  box-shadow: 2px 3px 5px #000000;
+
+  padding: 5px 10px 10px 10px;
+  background-color: #624a2e;
+  
+  user-select: none;
+}
+
+.solitaire-header {
+  height: $solitaire-header-height;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.solitaire-close-button {
+  @include styles.button-no-decoration();
+
+  align-content: center;
+  text-align: center;
+  text-decoration: none;
+  color: inherit;
+
+  height: 100%;
+  margin-left: auto;
+  width: $solitaire-header-height;
+
+  border: 1px solid transparent;
+}
+
+.solitaire-close-button:hover {
+  border-left: 1px solid gray;
+  border-top: 1px solid gray;
+  border-right: 1px solid white;
+  border-bottom: 1px solid white;
+}
+
+.solitaire-score-banner {
+  height: 30px;
+}
+
+.solitaire-game-body {
+  display: flex;
+  flex-direction: column;
+  background-color: green;
+  padding: 10px;
+}
+
+.solitaire-game-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.solitaire-card-slot {
+  height: 60px;
+  width: 40px;
+  border-radius: 5px;
+  border: 2px solid white;
+  background-color: gray;
+  margin: 5px;
+}

@@ -14,8 +14,8 @@ export const GAMES: Game[] = [
         lazyLoad: () => import('./minesweeper/minesweeper').then(m => m.MinesweeperComponent)
     },
     {
-        displayName: "Test Game",
-        path: 'test',
-        lazyLoad: () => import('./game-not-found/game-not-found').then(m => m.GameNotFoundComponent)
+        displayName: "Solitaire",
+        path: 'solitaire',
+        lazyLoad: () => import('./solitaire/solitaire').then(m => m.Solitaire)
     },
 ]
