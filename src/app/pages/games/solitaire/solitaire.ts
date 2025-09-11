@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { Deck } from './solitaire-helpers';
 
 @Component({
   selector: 'app-solitaire',
@@ -16,5 +17,9 @@ export class Solitaire {
   }
 
   // Game state
-  
+  deck = new Deck(false)
+
+  new_game() {
+    this.deck.shuffle()
+  }
 }
