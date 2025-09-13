@@ -10,19 +10,36 @@
       <div class="solitaire-card-slot"></div>
       <div class="solitaire-card-slot"></div>
       <div style="margin: auto;"></div>
-      <div class="solitaire-card-slot"></div>
-      <div class="solitaire-card-slot"></div>
-      <div class="solitaire-card-slot"></div>
-      <div class="solitaire-card-slot"></div>
+      @for (ace_pile of game.acePiles; track $index; let pileIndex = $index) {
+        <div class="solitaire-card-slot">
+          @let pileLen = ace_pile().length;
+          @if (pileLen > 0) {
+            @let card = ace_pile()[pileLen-1];
+            <button class="solitaire-card" [class]="get_card_classes(card)" (click)="handle_ace_pile_click(card, pileIndex)">
+              @if (card.isRevealed()) {
+                {{card.number}}
+                <br>
+                {{card.suit}}
+              }
+            </button>
+          }
+        </div>
+      }
     </div>
-    <div class="solitaire-game-row">
-      <div class="solitaire-card-slot"></div>
-      <div class="solitaire-card-slot"></div>
-      <div class="solitaire-card-slot"></div>
-      <div class="solitaire-card-slot"></div>
-      <div class="solitaire-card-slot"></div>
-      <div class="solitaire-card-slot"></div>
-      <div class="solitaire-card-slot"></div>
+    <div class="solitaire-game-row" style="padding-bottom: 100px;">
+      @for (game_pile of game.gamePiles; track $index; let pileIndex = $index) {
+        <div class="solitaire-card-slot">
+          @for (card of game_pile(); track `${card.number} ${card.suit}`; let cardIndex = $index) {
+            <button class="solitaire-card" [class]="get_card_classes(card)" (click)="handle_game_pile_click(card, pileIndex, cardIndex)" [style.top]=`${cardIndex*10}px` [tabIndex]="card.isRevealed() ? 0 : -1">
+              @if (card.isRevealed()) {
+                {{card.number}}
+                <br>
+                {{card.suit}}
+              }
+            </button>
+          }
+        </div>
+      }
     </div>
   </div>
 </div>

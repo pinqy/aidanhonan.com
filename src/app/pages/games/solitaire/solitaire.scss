@@ -66,10 +66,41 @@ $solitaire-header-height: 20px;
 }
 
 .solitaire-card-slot {
-  height: 60px;
-  width: 40px;
-  border-radius: 5px;
-  border: 2px solid white;
+  height: 90px;
+  width: 60px;
+  border-radius: 3px;
+  outline: 1px solid white;
   background-color: gray;
   margin: 5px;
+
+  position: relative;
+}
+
+.solitaire-card {
+  @include styles.button-no-decoration();
+  height: 90px;
+  width: 60px;
+  border-radius: 3px;
+  // border: 1px solid white;
+  outline: 1px solid black;
+  background-color: white;
+
+  position: absolute;
+  left: 0px;
+
+  font-size: 12px;
+  font-family: Helvetica;
+  align-content: center;
+}
+
+.solitaire-card-hidden {
+  background-color: red;
+}
+
+.solitaire-card-red {
+  color: red;
+}
+
+.solitaire-card-black {
+  color: black;
 }
