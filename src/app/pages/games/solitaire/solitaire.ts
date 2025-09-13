@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { SolitaireGame } from './solitaire-helpers';
+import { Card, SolitaireGame, SolitairePile } from './solitaire-helpers';
 
 @Component({
   selector: 'app-solitaire',
@@ -18,8 +18,7 @@ export class Solitaire {
 
   /**
    * TODOs
-   * - Render game
-   * - Click cards
+   * - Implement/render dealing
    * - Drag cards
    * - Game autocomplete
    * - Save settings
@@ -30,11 +29,39 @@ export class Solitaire {
 
   constructor() {
     this.game = new SolitaireGame()
+    this.new_game()
   }
 
   new_game() {
     this.game.new_game()
   }
 
+  get_card_classes(card: Card): string {
+    if (!card) return "" // safety check for weird behavior of moving cards
 
+    const classes = []
+    if (!card.isRevealed()) {
+      classes.push("solitaire-card-hidden")
+    } else {
+      if (card.color() == "red") classes.push("solitaire-card-red")
+      else classes.push("solitaire-card-black")
+    }
+
+    return classes.join(" ")
+  }
+
+  handle_game_pile_click(card: Card, pileIndex: number, cardIndex: number): void {
+    if (!card.isRevealed()) return
+
+    const cardDepth = this.game.gamePiles[pileIndex]().length - cardIndex // depth = number of cards selected [1, len(pile)]
+    const move = this.game.find_move(card, SolitairePile.Game, pileIndex, cardDepth)
+    if (!move) return
+    this.game.execute_move(move)
+  }
+
+  handle_ace_pile_click(card: Card, pileIndex: number): void {
+    const move = this.game.find_move(card, SolitairePile.Ace, pileIndex)
+    if (!move) return
+    this.game.execute_move(move)
+  }
 }

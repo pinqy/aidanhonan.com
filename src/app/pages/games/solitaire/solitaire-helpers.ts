@@ -213,6 +213,8 @@ export class SolitaireGame {
       this.dealPile.update(pile => pile.filter((_, i) => i != move.sourcePileIndex))
     }
 
+    this.update_moved_pile(move.sourcePileType, move.sourcePileIndex)
+
     if (move.destinationPileType == SolitairePile.Game) {
       this.gamePiles[move.destinationPileIndex].update(pile => pile.concat(srcCards))
     } else if (move.destinationPileType == SolitairePile.Ace) {
@@ -226,7 +228,7 @@ export class SolitaireGame {
     let srcCard: Card;
     switch(move.sourcePileType) {
       case(SolitairePile.Game):
-        if (move.sourcePileDepth === undefined) return false
+        if (move.sourcePileDepth === undefined || (move.destinationPileType == SolitairePile.Ace && move.sourcePileDepth > 1)) return false
         if (move.sourcePileIndex >= this.gamePiles.length || move.sourcePileDepth > this.gamePiles[move.sourcePileIndex]().length) return false
         srcCard = this.gamePiles[move.sourcePileIndex]()[this.gamePiles[move.sourcePileIndex]().length-move.sourcePileDepth]
         break
@@ -253,5 +255,22 @@ export class SolitaireGame {
     }
 
     return false
+  }
+
+  private update_moved_pile(pileType: SolitairePile, pileIndex: number): void {
+    let pileLen = 0
+    switch(pileType) {
+      case(SolitairePile.Game):
+        pileLen= this.gamePiles[pileIndex]().length
+        if (pileLen > 0) this.gamePiles[pileIndex]()[pileLen-1].isRevealed.set(true)
+        break
+      case (SolitairePile.Ace):
+        pileLen = this.acePiles[pileIndex]().length
+        if (pileLen > 0) this.acePiles[pileIndex]()[pileLen-1].isRevealed.set(true)
+        break
+      case (SolitairePile.Deal):
+        // TODO
+        break
+    }
   }
 }
