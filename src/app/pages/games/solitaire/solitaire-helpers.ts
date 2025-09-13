@@ -1,4 +1,4 @@
-import { signal, WritableSignal } from "@angular/core";
+import { computed, Signal, signal, WritableSignal } from "@angular/core";
 
 export enum CardSuit {
   Clubs = "Clubs",
@@ -29,11 +29,11 @@ export class Card {
   readonly value: number;
   readonly isRevealed: WritableSignal<boolean>;
 
-  constructor(suit: CardSuit, number: CardNumber, value: number, start_revealed: boolean) {
+  constructor(suit: CardSuit, number: CardNumber, value: number) {
     this.suit = suit
     this.number = number
     this.value = value
-    this.isRevealed = signal(start_revealed)
+    this.isRevealed = signal(false)
   }
 
   color(): string {
@@ -42,6 +42,10 @@ export class Card {
 
   same_color(other_card: Card): boolean {
     return this.color() == other_card.color()
+  }
+
+  equals(other_card: Card): boolean {
+    return this.suit == other_card.suit && this.number == other_card.number && this.value == other_card.value
   }
 
   flip(): void {
@@ -65,7 +69,7 @@ export class Deck {
     for (const suit of Object.values(CardSuit)) {
       numbers.forEach((number, index) => {
         const value = (number == CardNumber.Ace && ace_high) ? 14 : index+1
-        deck.push(new Card(suit, number, value, false))
+        deck.push(new Card(suit, number, value))
       })
     }
     return deck
@@ -79,6 +83,10 @@ export class Deck {
     return card
   }
 
+  get_remaining_cards(): Card[] {
+    return this.cards.slice(this.deal_index)
+  }
+
   // Fisher-Yates shuffle algo
   shuffle(): void {
     for (let i = this.cards.length - 1; i >= 1; i--) {
@@ -86,5 +94,164 @@ export class Deck {
       [this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]];
     }
     this.deal_index = 0
+    for (const card of this.cards) card.isRevealed.set(false)
+  }
+}
+
+export enum SolitairePile {
+  Deal = "Deal",
+  Ace = "Ace",
+  Game = "Game",
+}
+
+export interface SolitaireMove {
+  sourcePileType: SolitairePile,
+  sourcePileIndex: number,
+  sourcePileDepth?: number,
+  destinationPileType: SolitairePile,
+  destinationPileIndex: number,
+}
+
+export class SolitaireGame {
+  private deck: Deck;
+  readonly dealPile: WritableSignal<Card[]>;
+  readonly acePiles: WritableSignal<Card[]>[];
+  readonly gamePiles: WritableSignal<Card[]>[];
+  private acePileTopCards: Signal<Card | undefined>[];
+  private gamePileTopCards: Signal<Card | undefined>[];
+
+  constructor() {
+    this.deck = new Deck(false)
+    this.dealPile = signal([])
+    this.acePiles = []
+    for (let i = 0; i < 4; i++) this.acePiles.push(signal([]))
+    this.gamePiles = []
+    for (let i = 0; i < 7; i++) this.gamePiles.push(signal([]))
+
+    this.acePileTopCards = this.acePiles.map((ap) => {
+      return computed(() => ap().length > 0 ? ap()[ap().length-1] : undefined)
+    })
+
+    this.gamePileTopCards = this.gamePiles.map((gp) => {
+      return computed(() => gp().length > 0 ? gp()[gp().length-1] : undefined)
+    })
+  }
+
+  new_game() {
+    this.deck.shuffle()
+    for (const pile of this.acePiles) pile.set([])
+    for (const pile of this.gamePiles) pile.set([])
+
+    // deal cards to game piles
+    for (let i = 0; i < 7; i++) {
+      for (let j = i; j < 7; j++) {
+        const card = this.deck.deal_card()
+        if (!card) throw new Error("deck misconfigured")
+        
+        this.gamePiles[j].update((cards) => {
+          cards.push(card)
+          return cards
+        })
+
+        if (j == i) card.flip()
+      }
+    }
+
+    // set deal pile to remaining cards
+    this.dealPile.set(this.deck.get_remaining_cards())
+  }
+
+  find_move(card: Card, sourcePileType: SolitairePile, sourcePileIndex: number, sourcePileDepth?: number): SolitaireMove | undefined {
+    if (sourcePileType != SolitairePile.Ace) {
+      for (const [index, tc] of this.acePileTopCards.entries()) {
+        // Valid move if ace pile is empty and card is an ace OR
+        // pile is same suit and card is one higher than top card
+        const topCard = tc()
+        if ((card.number == CardNumber.Ace && !topCard) || (topCard !== undefined && topCard.suit == card.suit && topCard.value == (card.value-1))) {
+          return {
+            sourcePileType,
+            sourcePileIndex,
+            sourcePileDepth,
+            destinationPileType: SolitairePile.Ace,
+            destinationPileIndex: index,
+          }
+        }
+      }
+    }
+
+    for (const [index, tc] of this.gamePileTopCards.entries()) {
+      // Valid move if game pile is empty and card is a king OR
+      // pile top card is opposite color and one higher than card
+      const topCard = tc()
+      if ((card.number == CardNumber.King && !topCard) || (topCard !== undefined && !topCard.same_color(card) && topCard.value == (card.value+1))) {
+        return {
+          sourcePileType,
+          sourcePileIndex,
+          sourcePileDepth,
+          destinationPileType: SolitairePile.Game,
+          destinationPileIndex: index,
+        }
+      }
+    }
+
+    return undefined
+  }
+
+  execute_move(move: SolitaireMove): boolean { // returns whether any cards actually moved
+    if (!this.is_valid_move(move)) return false
+
+    let srcCards: Card[] = []
+
+    if (move.sourcePileType == SolitairePile.Game) {
+      srcCards = this.gamePiles[move.sourcePileIndex]().slice(-move.sourcePileDepth!)
+      this.gamePiles[move.sourcePileIndex].update(pile => pile.slice(0, -move.sourcePileDepth!))
+    } else if (move.sourcePileType == SolitairePile.Ace) {
+      srcCards = [this.acePileTopCards[move.sourcePileIndex]()!]
+      this.acePiles[move.sourcePileIndex].update(pile => pile.slice(0, -1))
+    } else if (move.sourcePileType == SolitairePile.Deal) {
+      srcCards = [this.dealPile()[move.sourcePileIndex]]
+      this.dealPile.update(pile => pile.filter((_, i) => i != move.sourcePileIndex))
+    }
+
+    if (move.destinationPileType == SolitairePile.Game) {
+      this.gamePiles[move.destinationPileIndex].update(pile => pile.concat(srcCards))
+    } else if (move.destinationPileType == SolitairePile.Ace) {
+      this.acePiles[move.destinationPileIndex].update(pile => pile.concat(srcCards))
+    }
+
+    return true
+  }
+
+  private is_valid_move(move: SolitaireMove): boolean {
+    let srcCard: Card;
+    switch(move.sourcePileType) {
+      case(SolitairePile.Game):
+        if (move.sourcePileDepth === undefined) return false
+        if (move.sourcePileIndex >= this.gamePiles.length || move.sourcePileDepth > this.gamePiles[move.sourcePileIndex]().length) return false
+        srcCard = this.gamePiles[move.sourcePileIndex]()[this.gamePiles[move.sourcePileIndex]().length-move.sourcePileDepth]
+        break
+      case(SolitairePile.Deal):
+        if (move.sourcePileIndex >= this.dealPile().length) return false
+        srcCard = this.dealPile()[move.sourcePileIndex]
+        break
+      case(SolitairePile.Ace):
+        if (move.sourcePileIndex >= this.acePileTopCards.length || !this.acePileTopCards[move.sourcePileIndex]()) return false
+        srcCard = this.acePileTopCards[move.sourcePileIndex]()!
+        break
+      default:
+        return false
+    }
+
+    if (move.destinationPileType == SolitairePile.Game) {
+      if (move.destinationPileIndex >= this.gamePileTopCards.length) return false
+      const destCard = this.gamePileTopCards[move.destinationPileIndex]()
+      return (!destCard && srcCard.number == CardNumber.King) || (destCard && !destCard.same_color(srcCard) && srcCard.value == destCard.value-1) || false
+    } else if (move.destinationPileType == SolitairePile.Ace) {
+      if (move.destinationPileIndex >= this.acePileTopCards.length || move.sourcePileType == SolitairePile.Ace) return false
+      const destCard = this.acePileTopCards[move.destinationPileIndex]()
+      return (!destCard && srcCard.number == CardNumber.Ace) || (destCard && srcCard.suit == destCard.suit && srcCard.value == destCard.value+1) || false
+    }
+
+    return false
   }
 }
