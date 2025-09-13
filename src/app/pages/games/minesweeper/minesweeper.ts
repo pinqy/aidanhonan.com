@@ -24,6 +24,7 @@ export class MinesweeperComponent {
   private readonly cookieService = inject(CookieService)
 
   /**
+   * TODO: press surrounding tiles before open-surrounding
    * maybe: add backend for high scores
    */
 
