@@ -88,9 +88,11 @@ $solitaire-header-height: 20px;
   position: absolute;
   left: 0px;
 
-  font-size: 12px;
+  font-size: 10px;
   font-family: Helvetica;
-  align-content: center;
+  display: flex;
+  flex-direction: column;
+  align-content: baseline;
 }
 
 .solitaire-card-hidden {
