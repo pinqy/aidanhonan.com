@@ -120,6 +120,11 @@ export class SolitaireGame {
   private acePileTopCards: Signal<Card | undefined>[];
   private gamePileTopCards: Signal<Card | undefined>[];
 
+  dealIndex: WritableSignal<number>;
+  readonly flipPile: Signal<Card[]>;
+  readonly flipPileTopCard: Signal<Card | undefined>;
+  readonly flipPileTop3: Signal<Card[]>
+
   constructor() {
     this.deck = new Deck(false)
     this.dealPile = signal([])
@@ -135,9 +140,14 @@ export class SolitaireGame {
     this.gamePileTopCards = this.gamePiles.map((gp) => {
       return computed(() => gp().length > 0 ? gp()[gp().length-1] : undefined)
     })
+
+    this.dealIndex = signal(0)
+    this.flipPile = computed(() => this.dealPile().slice(0, this.dealIndex()))
+    this.flipPileTopCard = computed(() => this.flipPile().length > 0 ? this.flipPile()[this.flipPile().length-1] : undefined)
+    this.flipPileTop3 = computed(() => this.flipPile().slice(this.flipPile().length - Math.min(3, this.dealIndex())))
   }
 
-  new_game() {
+  new_game(): void {
     this.deck.shuffle()
     for (const pile of this.acePiles) pile.set([])
     for (const pile of this.gamePiles) pile.set([])
@@ -158,11 +168,26 @@ export class SolitaireGame {
     }
 
     // set deal pile to remaining cards
+    this.dealIndex.set(0)
     this.dealPile.set(this.deck.get_remaining_cards())
+    this.dealPile().forEach(card => card.isRevealed.set(true)) // any cards that are dealt should be revealed
   }
 
+  deal_1(): void {
+    this.dealIndex.update((di) => Math.min(di+1, this.dealPile().length))
+  }
+
+  deal_3(): void {
+    this.dealIndex.update((di) => Math.min(di+3, this.dealPile().length))
+  }
+
+  reset_deal(): void {
+    this.dealIndex.set(0)
+  }
+
+  // TODO use is_valid_move here for consistent rules with execute_move
   find_move(card: Card, sourcePileType: SolitairePile, sourcePileIndex: number, sourcePileDepth?: number): SolitaireMove | undefined {
-    if (sourcePileType != SolitairePile.Ace) {
+    if (sourcePileType != SolitairePile.Ace && (!sourcePileDepth || sourcePileDepth == 1)) {
       for (const [index, tc] of this.acePileTopCards.entries()) {
         // Valid move if ace pile is empty and card is an ace OR
         // pile is same suit and card is one higher than top card
@@ -211,6 +236,7 @@ export class SolitaireGame {
     } else if (move.sourcePileType == SolitairePile.Deal) {
       srcCards = [this.dealPile()[move.sourcePileIndex]]
       this.dealPile.update(pile => pile.filter((_, i) => i != move.sourcePileIndex))
+      this.dealIndex.update(di => di > 0 ? di - 1 : 0)
     }
 
     this.update_moved_pile(move.sourcePileType, move.sourcePileIndex)

@@ -50,6 +50,23 @@ export class Solitaire {
     return classes.join(" ")
   }
 
+  handle_deck_click(): void {
+    this.game.deal_3()
+  }
+
+  handle_deal_pile_click(card: Card): void {
+    // in flip 3 mode, only allow click of top card
+    if (!this.game.flipPileTopCard() || !card.equals(this.game.flipPileTopCard()!)) return
+
+    const move = this.game.find_move(card, SolitairePile.Deal, this.game.dealIndex()-1) // deal index tracks next card to flip
+    if (!move) return
+    this.game.execute_move(move)
+  }
+
+  reset_deck(): void {
+    this.game.reset_deal()
+  }
+
   handle_game_pile_click(card: Card, pileIndex: number, cardIndex: number): void {
     if (!card.isRevealed()) return
 

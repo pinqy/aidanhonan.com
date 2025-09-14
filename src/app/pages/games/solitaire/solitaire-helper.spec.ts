@@ -134,6 +134,11 @@ describe('SolitaireGame', () => {
 
     expect(game.gamePiles.length).toEqual(7)
     game.gamePiles.forEach((pile) => expect(pile().length).toEqual(0))
+
+    expect(game.dealIndex()).toEqual(0)
+    expect(game.flipPile().length).toEqual(0)
+    expect(game.flipPileTopCard()).toBeUndefined()
+    expect(game.flipPileTop3().length).toEqual(0)
   })
 
   it('new_game happy path', () => {
@@ -147,6 +152,46 @@ describe('SolitaireGame', () => {
         else expect(card.isRevealed()).toBeTrue() // top card
       })
     })
+  })
+
+  it('flip_1 works', () => {
+    game.new_game()
+    let indexTrack = 0
+    while (game.dealIndex() < game.dealPile().length) {
+      game.deal_1()
+      indexTrack++
+      expect(game.dealIndex()).toEqual(indexTrack)
+      expect(game.flipPile().length).toEqual(indexTrack)
+      expect(game.flipPile()[indexTrack-1]).toEqual(game.dealPile()[indexTrack-1])
+      expect(game.flipPileTopCard()).toBeDefined()
+      expect(game.flipPileTopCard()).toEqual(game.dealPile()[indexTrack-1])
+    }
+
+    game.reset_deal()
+    expect(game.flipPile().length).toEqual(0)
+    expect(game.flipPileTopCard()).toBeUndefined()
+    expect(game.flipPileTop3().length).toEqual(0)
+    expect(game.dealIndex()).toEqual(0)
+  })
+
+  it('flip_3 works', () => {
+    game.new_game()
+    let indexTrack = 0
+    while (game.dealIndex() < game.dealPile().length) {
+      game.deal_3()
+      indexTrack += Math.min(3, game.dealPile().length-indexTrack)
+      expect(game.dealIndex()).toEqual(indexTrack)
+      expect(game.flipPile().length).toEqual(indexTrack)
+      expect(game.flipPile()[indexTrack-1]).toEqual(game.dealPile()[indexTrack-1])
+      expect(game.flipPileTopCard()).toBeDefined()
+      expect(game.flipPileTopCard()).toEqual(game.dealPile()[indexTrack-1])
+    }
+
+    game.reset_deal()
+    expect(game.flipPile().length).toEqual(0)
+    expect(game.flipPileTopCard()).toBeUndefined()
+    expect(game.flipPileTop3().length).toEqual(0)
+    expect(game.dealIndex()).toEqual(0)
   })
 
   describe('find_move', () => {
@@ -259,6 +304,7 @@ describe('SolitaireGame', () => {
       // Move beginning (Ace) and end (King) cards
       const deck = new Deck(false)
       game.dealPile.set(deck.cards)
+      game.deal_1()
       const moving_card_beginning = deck.cards[0]
       const move_beginning = game.find_move(moving_card_beginning, SolitairePile.Deal, 0)
       expect(move_beginning).toBeDefined()
@@ -267,7 +313,9 @@ describe('SolitaireGame', () => {
       expect(game.dealPile().length).toEqual(51)
       expect(game.acePiles[0]().length).toEqual(1)
       expect(game.acePiles[0]()[0]).toEqual(moving_card_beginning)
+      expect(game.dealIndex()).toEqual(0)
 
+      game.deal_1()
       const moving_card_end = deck.cards[deck.cards.length-1]
       const move_end = game.find_move(moving_card_end, SolitairePile.Deal, 50)
       expect(move_end).toBeDefined()
@@ -276,12 +324,14 @@ describe('SolitaireGame', () => {
       expect(game.dealPile().length).toEqual(50)
       expect(game.gamePiles[0]().length).toEqual(1)
       expect(game.gamePiles[0]()[0]).toEqual(moving_card_end)
+      expect(game.dealIndex()).toEqual(0)
 
       // Move middle card
       const srcIndex = game.dealPile().findIndex(card => card.number == CardNumber.Nine && card.suit == CardSuit.Hearts)
       const prev_card = game.dealPile()[srcIndex-1]
       const moving_card = game.dealPile()[srcIndex]
       const next_card = game.dealPile()[srcIndex+1]
+      game.deal_3()
       game.gamePiles[6].set([new Card(CardSuit.Clubs, CardNumber.Ten, 10)])
       const move = game.find_move(moving_card, SolitairePile.Deal, srcIndex)
       expect(move).toBeDefined()
@@ -292,6 +342,7 @@ describe('SolitaireGame', () => {
       expect(game.dealPile()[srcIndex]).toEqual(next_card)
       expect(game.gamePiles[6]().length).toEqual(2)
       expect(game.gamePiles[6]()[1]).toEqual(moving_card)
+      expect(game.dealIndex()).toEqual(2)
     })
 
     it('moves multiple cards between game piles', () => {
