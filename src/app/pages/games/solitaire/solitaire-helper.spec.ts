@@ -196,6 +196,7 @@ describe('SolitaireGame', () => {
 
   describe('find_move', () => {
     it('finds ace to empty ace pile', () => {
+      game.gamePiles[0].update(pile => pile.concat(new Card(CardSuit.Clubs, CardNumber.Ace, 1)))
       const move = game.find_move(new Card(CardSuit.Clubs, CardNumber.Ace, 1), SolitairePile.Game, 0, 1)
       expect(move).toBeDefined()
       expect(move?.sourcePileType).toEqual(SolitairePile.Game)
@@ -206,16 +207,18 @@ describe('SolitaireGame', () => {
     })
 
     it('finds king to empty game pile', () => {
-      const move = game.find_move(new Card(CardSuit.Clubs, CardNumber.King, 13), SolitairePile.Game, 5, 5)
+      game.gamePiles[5].update(pile => pile.concat(new Card(CardSuit.Clubs, CardNumber.King, 13)))
+      const move = game.find_move(new Card(CardSuit.Clubs, CardNumber.King, 13), SolitairePile.Game, 5, 1)
       expect(move).toBeDefined()
       expect(move?.sourcePileType).toEqual(SolitairePile.Game)
       expect(move?.sourcePileIndex).toEqual(5)
-      expect(move?.sourcePileDepth).toEqual(5)
+      expect(move?.sourcePileDepth).toEqual(1)
       expect(move?.destinationPileType).toEqual(SolitairePile.Game)
       expect(move?.destinationPileIndex).toEqual(0)
     })
 
     it('returns undefined when no valid move', () => {
+      game.gamePiles[6].update(pile => pile.concat(new Card(CardSuit.Clubs, CardNumber.Eight, 8)))
       const move = game.find_move(new Card(CardSuit.Clubs, CardNumber.Eight, 8), SolitairePile.Game, 6, 1)
       expect(move).toBeUndefined()
     })
@@ -223,6 +226,7 @@ describe('SolitaireGame', () => {
     it('finds ace pile move first', () => {
       game.gamePiles[3].update(pile => pile.concat(new Card(CardSuit.Hearts, CardNumber.Seven, 7)))
       game.acePiles[1].update(pile => pile.concat(new Card(CardSuit.Spades, CardNumber.Five, 5)))
+      game.gamePiles[0].update(pile => pile.concat(new Card(CardSuit.Spades, CardNumber.Six, 6)))
       const move = game.find_move(new Card(CardSuit.Spades, CardNumber.Six, 6), SolitairePile.Game, 0, 1)
       expect(move).toBeDefined()
       expect(move?.sourcePileType).toEqual(SolitairePile.Game)
@@ -233,6 +237,7 @@ describe('SolitaireGame', () => {
     })
 
     it('finds game pile move', () => {
+      game.gamePiles[0].update(pile => pile.concat(new Card(CardSuit.Spades, CardNumber.Ten, 10)))
       game.gamePiles[3].set([new Card(CardSuit.Diamonds, CardNumber.Jack, 11)])
       const move = game.find_move(new Card(CardSuit.Spades, CardNumber.Ten, 10), SolitairePile.Game, 0, 1)
       expect(move).toBeDefined()
@@ -244,6 +249,7 @@ describe('SolitaireGame', () => {
     })
 
     it('finds move from deal pile to game pile', () => {
+      game.dealPile.set([new Card(CardSuit.Hearts, CardNumber.Four, 4)])
       game.gamePiles[2].set([new Card(CardSuit.Clubs, CardNumber.Five, 5)])
       const move = game.find_move(new Card(CardSuit.Hearts, CardNumber.Four, 4), SolitairePile.Deal, 0)
       expect(move).toBeDefined()
@@ -252,6 +258,7 @@ describe('SolitaireGame', () => {
     })
 
     it('finds move from deal pile to ace pile', () => {
+      game.dealPile.set([new Card(CardSuit.Hearts, CardNumber.Jack, 11)])
       game.acePiles[3].set([new Card(CardSuit.Hearts, CardNumber.Ten, 10)])
       const move = game.find_move(new Card(CardSuit.Hearts, CardNumber.Jack, 11), SolitairePile.Deal, 0)
       expect(move).toBeDefined()

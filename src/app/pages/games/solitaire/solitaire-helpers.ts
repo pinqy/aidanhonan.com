@@ -185,38 +185,31 @@ export class SolitaireGame {
     this.dealIndex.set(0)
   }
 
-  // TODO use is_valid_move here for consistent rules with execute_move
   find_move(card: Card, sourcePileType: SolitairePile, sourcePileIndex: number, sourcePileDepth?: number): SolitaireMove | undefined {
-    if (sourcePileType != SolitairePile.Ace && (!sourcePileDepth || sourcePileDepth == 1)) {
-      for (const [index, tc] of this.acePileTopCards.entries()) {
-        // Valid move if ace pile is empty and card is an ace OR
-        // pile is same suit and card is one higher than top card
-        const topCard = tc()
-        if ((card.number == CardNumber.Ace && !topCard) || (topCard !== undefined && topCard.suit == card.suit && topCard.value == (card.value-1))) {
-          return {
-            sourcePileType,
-            sourcePileIndex,
-            sourcePileDepth,
-            destinationPileType: SolitairePile.Ace,
-            destinationPileIndex: index,
-          }
-        }
+    for (let i = 0; i < this.acePileTopCards.length; i++) {
+      // Valid move if ace pile is empty and card is an ace OR
+      // pile is same suit and card is one higher than top card
+      const move: SolitaireMove = {
+        sourcePileType,
+        sourcePileIndex,
+        sourcePileDepth,
+        destinationPileType: SolitairePile.Ace,
+        destinationPileIndex: i,
       }
+      if (this.is_valid_move(move)) return move
     }
 
-    for (const [index, tc] of this.gamePileTopCards.entries()) {
+    for (let i = 0; i < this.gamePileTopCards.length; i++) {
       // Valid move if game pile is empty and card is a king OR
       // pile top card is opposite color and one higher than card
-      const topCard = tc()
-      if ((card.number == CardNumber.King && !topCard) || (topCard !== undefined && !topCard.same_color(card) && topCard.value == (card.value+1))) {
-        return {
-          sourcePileType,
-          sourcePileIndex,
-          sourcePileDepth,
-          destinationPileType: SolitairePile.Game,
-          destinationPileIndex: index,
-        }
+      const move: SolitaireMove = {
+        sourcePileType,
+        sourcePileIndex,
+        sourcePileDepth,
+        destinationPileType: SolitairePile.Game,
+        destinationPileIndex: i,
       }
+      if (this.is_valid_move(move)) return move
     }
 
     return undefined
