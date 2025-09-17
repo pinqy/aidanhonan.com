@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject, Signal, signal, WritableSignal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Card, SolitaireGame, SolitairePile } from './solitaire-helpers';
 
@@ -18,7 +18,7 @@ export class Solitaire {
 
   /**
    * TODOs
-   * - Implement/render dealing
+   * - Card Designs
    * - Drag cards
    * - Game autocomplete
    * - Save settings
@@ -26,14 +26,30 @@ export class Solitaire {
 
   // Game state
   game: SolitaireGame
+  flipPileDisplayCards: Signal<Card[]>
+
+  // Settings
+  setting_flip_1: WritableSignal<boolean> = signal(false)
+  setting_flip_3: Signal<boolean> = computed(() => !this.setting_flip_1())
 
   constructor() {
     this.game = new SolitaireGame()
     this.new_game()
+    this.flipPileDisplayCards = computed(() => this.setting_flip_3() ? this.game.flipPileTop3() : (this.game.flipPileTopCard() ? [this.game.flipPileTopCard()!] : []))
   }
 
-  new_game() {
+  new_game(): void {
     this.game.new_game()
+  }
+
+  select_flip_1(): void {
+    if (this.setting_flip_1()) return
+    this.setting_flip_1.set(true)
+  }
+
+  select_flip_3(): void {
+    if (this.setting_flip_3()) return
+    this.setting_flip_1.set(false)
   }
 
   get_card_classes(card: Card): string {
@@ -51,7 +67,11 @@ export class Solitaire {
   }
 
   handle_deck_click(): void {
-    this.game.deal_3()
+    if (this.setting_flip_1()) {
+      this.game.deal_1()
+    } else {
+      this.game.deal_3()
+    }
   }
 
   handle_deal_pile_click(card: Card): void {

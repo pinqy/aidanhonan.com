@@ -1,6 +1,7 @@
 @use '../../../../styles';
 
-$solitaire-header-height: 20px;
+$solitaire-header-height: 40px;
+$solitaire-header-color: #cdc6ae;
 
 .solitaire-game {
   margin: auto;
@@ -15,38 +16,79 @@ $solitaire-header-height: 20px;
 
   padding: 5px 10px 10px 10px;
   background-color: #624a2e;
+  background-image: url('../../../../../public/assets/patterns/dark-leather.png');
   
   user-select: none;
 }
 
 .solitaire-header {
   height: $solitaire-header-height;
+  color: $solitaire-header-color;
 
   display: flex;
   flex-direction: row;
   align-items: center;
 }
 
-.solitaire-close-button {
+#solitaire-new-game-button {
+  @include styles.button-no-decoration();
+
+  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  color: $solitaire-header-color;
+  border: 1px solid $solitaire-header-color;
+  border-radius: 3px;
+  padding: 5px;
+  margin-right: 15px;
+}
+
+#solitaire-new-game-button:hover {
+  background-color: rgba(205, 198, 174, 0.3);
+}
+
+.solitaire-flip-one-button {
+  @include styles.button-no-decoration();
+
+  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  color: $solitaire-header-color;
+  border: 1px solid $solitaire-header-color;
+  padding: 5px;
+  padding-left: 8px;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.solitaire-flip-three-button {
+  @include styles.button-no-decoration();
+
+  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  color: $solitaire-header-color;
+  border: 1px solid $solitaire-header-color;
+  padding: 5px;
+  padding-right: 8px;
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.solitaire-flip-button-selected {
+  font-weight:bold;
+  color: black;
+  background-color: $solitaire-header-color;
+}
+
+#solitaire-close-button {
   @include styles.button-no-decoration();
 
   align-content: center;
   text-align: center;
   text-decoration: none;
   color: inherit;
+  font-size: 24px;
 
   height: 100%;
   margin-left: auto;
   width: $solitaire-header-height;
 
   border: 1px solid transparent;
-}
-
-.solitaire-close-button:hover {
-  border-left: 1px solid gray;
-  border-top: 1px solid gray;
-  border-right: 1px solid white;
-  border-bottom: 1px solid white;
 }
 
 .solitaire-score-banner {
@@ -56,8 +98,12 @@ $solitaire-header-height: 20px;
 .solitaire-game-body {
   display: flex;
   flex-direction: column;
-  background-color: green;
+  background-color: #002905;
+  background-image: url('../../../../../public/assets/patterns/diagonal-noise.png');
   padding: 10px;
+
+  box-shadow: 1px 1px 10px inset black;
+  border-radius: 5px;
 }
 
 .solitaire-game-row {
@@ -70,7 +116,7 @@ $solitaire-header-height: 20px;
   width: 60px;
   border-radius: 3px;
   outline: 1px solid white;
-  background-color: gray;
+  background-color: rgba(128, 128, 128, 0.5);
   margin: 5px;
 
   position: relative;
@@ -95,8 +141,22 @@ $solitaire-header-height: 20px;
   align-content: baseline;
 }
 
+.solitaire-card-content {
+  height: 100%;
+  border-radius: 3px;
+}
+
 .solitaire-card-hidden {
-  background-color: red;
+  margin: 2px;
+  border: 3px solid #7a0800;
+  box-sizing: border-box;
+
+  background-image: url('../../../../../public/assets/patterns/black-thread-light.png');
+  background-color: #7a0800;
+  align-content: center;
+  font-size: 18px;
+  color: white;
+  font-family: "Atomic Age";
 }
 
 .solitaire-card-red {
