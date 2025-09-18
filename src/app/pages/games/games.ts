@@ -3,6 +3,7 @@ import { Event, NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular
 import { Game, GAMES } from './games-constants';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
 @Component({
   selector: 'app-games',
   standalone: true,
