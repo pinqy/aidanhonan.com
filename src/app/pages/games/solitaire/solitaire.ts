@@ -1,10 +1,12 @@
 import { Component, computed, inject, Signal, signal, WritableSignal } from '@angular/core';
 import { Router } from '@angular/router';
-import { Card, SolitaireGame, SolitairePile } from './solitaire-helpers';
+import { SolitaireGame, SolitairePile } from './solitaire-helpers';
+import { Card } from '../common/card-types';
+import { PlayingCard } from '../common/playing-card/playing-card';
 
 @Component({
   selector: 'app-solitaire',
-  imports: [],
+  imports: [PlayingCard],
   templateUrl: './solitaire.html',
   styleUrl: './solitaire.scss'
 })
@@ -52,20 +54,6 @@ export class Solitaire {
     this.setting_flip_1.set(false)
   }
 
-  get_card_classes(card: Card): string {
-    if (!card) return "" // safety check for weird behavior of moving cards
-
-    const classes = []
-    if (!card.isRevealed()) {
-      classes.push("solitaire-card-hidden")
-    } else {
-      if (card.color() == "red") classes.push("solitaire-card-red")
-      else classes.push("solitaire-card-black")
-    }
-
-    return classes.join(" ")
-  }
-
   handle_deck_click(): void {
     if (this.setting_flip_1()) {
       this.game.deal_1()
@@ -78,7 +66,7 @@ export class Solitaire {
     // in flip 3 mode, only allow click of top card
     if (!this.game.flipPileTopCard() || !card.equals(this.game.flipPileTopCard()!)) return
 
-    const move = this.game.find_move(card, SolitairePile.Deal, this.game.dealIndex()-1) // deal index tracks next card to flip
+    const move = this.game.find_move(SolitairePile.Deal, this.game.dealIndex()-1) // deal index tracks next card to flip
     if (!move) return
     this.game.execute_move(move)
   }
@@ -91,13 +79,13 @@ export class Solitaire {
     if (!card.isRevealed()) return
 
     const cardDepth = this.game.gamePiles[pileIndex]().length - cardIndex // depth = number of cards selected [1, len(pile)]
-    const move = this.game.find_move(card, SolitairePile.Game, pileIndex, cardDepth)
+    const move = this.game.find_move(SolitairePile.Game, pileIndex, cardDepth)
     if (!move) return
     this.game.execute_move(move)
   }
 
-  handle_ace_pile_click(card: Card, pileIndex: number): void {
-    const move = this.game.find_move(card, SolitairePile.Ace, pileIndex)
+  handle_ace_pile_click(pileIndex: number): void {
+    const move = this.game.find_move(SolitairePile.Ace, pileIndex)
     if (!move) return
     this.game.execute_move(move)
   }

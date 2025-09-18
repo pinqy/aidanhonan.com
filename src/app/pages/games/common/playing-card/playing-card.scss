@@ -1,0 +1,29 @@
+.card-content {
+  border-radius: 3px;
+  font-family: "Atomic Age", sans-serif;
+}
+
+.card-hidden {
+  height: calc(100% - 4px);
+  margin: 2px;
+  border: 3px solid #7a0800;
+  box-sizing: border-box;
+
+  background-image: url('../../../../../../public/assets/patterns/black-thread-light.png');
+  background-color: #7a0800;
+  align-content: center;
+  font-size: 18px;
+  color: white;
+}
+
+.card-revealed {
+  height: 100%;
+}
+
+.card-red {
+  color: red;
+}
+
+.card-black {
+  color: black;
+}

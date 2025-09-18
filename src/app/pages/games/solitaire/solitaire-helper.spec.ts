@@ -1,123 +1,5 @@
-import { Card, CardNumber, CardSuit, Deck, SolitaireGame, SolitairePile } from "./solitaire-helpers"
-
-describe('Card', () => {
-  let redCard: Card
-  let blackCard: Card
-
-  beforeEach(() => {
-    redCard = new Card(CardSuit.Diamonds, CardNumber.Ace, 14);
-    blackCard = new Card(CardSuit.Clubs, CardNumber.Eight, 8);
-  })
-
-  it('creates with expected values', () => {
-    expect(redCard.suit).toEqual(CardSuit.Diamonds)
-    expect(redCard.number).toEqual(CardNumber.Ace)
-    expect(redCard.value).toEqual(14)
-    expect(redCard.isRevealed()).toEqual(false)
-    expect(redCard.color()).toEqual("red")
-
-    expect(blackCard.suit).toEqual(CardSuit.Clubs)
-    expect(blackCard.number).toEqual(CardNumber.Eight)
-    expect(blackCard.value).toEqual(8)
-    expect(blackCard.isRevealed()).toEqual(false)
-    expect(blackCard.color()).toEqual("black")
-  })
-
-  it('same_color comparison works', () => {
-    const redCard2 = new Card(CardSuit.Hearts, CardNumber.Five, 5)
-    const blackCard2 = new Card(CardSuit.Spades, CardNumber.King, 13)
-
-    expect(redCard.same_color(redCard2)).toEqual(true)
-    expect(blackCard.same_color(blackCard2)).toEqual(true)
-    expect(redCard.same_color(blackCard2)).toEqual(false)
-    expect(blackCard.same_color(redCard2)).toEqual(false)
-  })
-
-  it('flip works', () => {
-    expect(redCard.isRevealed()).toEqual(false)
-    redCard.flip()
-    expect(redCard.isRevealed()).toEqual(true)
-    redCard.flip()
-    expect(redCard.isRevealed()).toEqual(false)
-  })
-
-  it('equals works', () => {
-    const card = new Card(CardSuit.Hearts, CardNumber.Five, 5)
-    const cardSame = new Card(CardSuit.Hearts, CardNumber.Five, 5)
-    const cardDiffSuit = new Card(CardSuit.Diamonds, CardNumber.Five, 5)
-    const cardDiffNum = new Card(CardSuit.Hearts, CardNumber.Six, 5)
-    const cardDiffVal = new Card(CardSuit.Hearts, CardNumber.Five, 6)
-
-    expect(card.equals(cardSame)).toBeTrue()
-    expect(card.equals(cardDiffSuit)).toBeFalse()
-    expect(card.equals(cardDiffNum)).toBeFalse()
-    expect(card.equals(cardDiffVal)).toBeFalse()
-  })
-})
-
-describe('Deck', () => {
-  let deck: Deck
-
-  beforeEach(() => {
-    deck = new Deck()
-  })
-
-  it('constructs with expected values', () => {
-    expect(deck.cards.length).toEqual(52)
-
-    let ct_spades = 0
-    let ct_clubs = 0
-    let ct_hearts = 0
-    let ct_diamonds = 0
-    let total_value = 0
-    deck.cards.forEach((card) => {
-      ct_spades += card.suit == CardSuit.Spades ? 1 : 0
-      ct_clubs += card.suit == CardSuit.Clubs ? 1 : 0
-      ct_hearts += card.suit == CardSuit.Hearts ? 1 : 0
-      ct_diamonds += card.suit == CardSuit.Diamonds ? 1 : 0
-      total_value += card.value
-    })
-
-    expect(ct_spades).toEqual(13)
-    expect(ct_clubs).toEqual(13)
-    expect(ct_hearts).toEqual(13)
-    expect(ct_diamonds).toEqual(13)
-    expect(total_value).toEqual(416) // expected total card value of Ace-high deck
-  })
-
-  it('ace_high sets card values correctly', () => {
-    const deckAceLow = new Deck(false)
-
-    const highAces = deck.cards.filter(c => c.number == CardNumber.Ace)
-    const lowAces = deckAceLow.cards.filter(c => c.number == CardNumber.Ace)
-
-    highAces.forEach((ace) => expect(ace.value).toEqual(14))
-    lowAces.forEach((ace) => expect(ace.value).toEqual(1))
-  })
-
-  it('shuffle works', () => {
-    // Shuffle deck 5 times and make sure <20 cards are in the same place each time
-    for (let i = 0; i < 5; i++) {
-      const deck_copy: Card[] = []
-      deck.cards.forEach(card => deck_copy.push(Object.assign({}, card))) // deep copy of card arrangement
-      deck.shuffle()
-
-      let same = 0
-      deck.cards.forEach((card, index) => {
-        if (card.number == deck_copy[index].number && card.suit == deck_copy[index].suit) same++
-      })
-
-      expect(same).toBeLessThan(20)
-    }
-  })
-
-  it('deals cards correctly', () => {
-    for (let i = 0; i < 52; i++) {
-      expect(deck.deal_card()).toBeInstanceOf(Card)
-    }
-    expect(deck.deal_card()).toBeUndefined()
-  })
-})
+import { SolitaireGame, SolitairePile } from "./solitaire-helpers"
+import { Card, CardNumber, CardSuit, Deck } from "../common/card-types"
 
 describe('SolitaireGame', () => {
   let game: SolitaireGame;
@@ -197,7 +79,7 @@ describe('SolitaireGame', () => {
   describe('find_move', () => {
     it('finds ace to empty ace pile', () => {
       game.gamePiles[0].update(pile => pile.concat(new Card(CardSuit.Clubs, CardNumber.Ace, 1)))
-      const move = game.find_move(new Card(CardSuit.Clubs, CardNumber.Ace, 1), SolitairePile.Game, 0, 1)
+      const move = game.find_move(SolitairePile.Game, 0, 1)
       expect(move).toBeDefined()
       expect(move?.sourcePileType).toEqual(SolitairePile.Game)
       expect(move?.sourcePileIndex).toEqual(0)
@@ -208,7 +90,7 @@ describe('SolitaireGame', () => {
 
     it('finds king to empty game pile', () => {
       game.gamePiles[5].update(pile => pile.concat(new Card(CardSuit.Clubs, CardNumber.King, 13)))
-      const move = game.find_move(new Card(CardSuit.Clubs, CardNumber.King, 13), SolitairePile.Game, 5, 1)
+      const move = game.find_move(SolitairePile.Game, 5, 1)
       expect(move).toBeDefined()
       expect(move?.sourcePileType).toEqual(SolitairePile.Game)
       expect(move?.sourcePileIndex).toEqual(5)
@@ -219,7 +101,7 @@ describe('SolitaireGame', () => {
 
     it('returns undefined when no valid move', () => {
       game.gamePiles[6].update(pile => pile.concat(new Card(CardSuit.Clubs, CardNumber.Eight, 8)))
-      const move = game.find_move(new Card(CardSuit.Clubs, CardNumber.Eight, 8), SolitairePile.Game, 6, 1)
+      const move = game.find_move(SolitairePile.Game, 6, 1)
       expect(move).toBeUndefined()
     })
 
@@ -227,7 +109,7 @@ describe('SolitaireGame', () => {
       game.gamePiles[3].update(pile => pile.concat(new Card(CardSuit.Hearts, CardNumber.Seven, 7)))
       game.acePiles[1].update(pile => pile.concat(new Card(CardSuit.Spades, CardNumber.Five, 5)))
       game.gamePiles[0].update(pile => pile.concat(new Card(CardSuit.Spades, CardNumber.Six, 6)))
-      const move = game.find_move(new Card(CardSuit.Spades, CardNumber.Six, 6), SolitairePile.Game, 0, 1)
+      const move = game.find_move(SolitairePile.Game, 0, 1)
       expect(move).toBeDefined()
       expect(move?.sourcePileType).toEqual(SolitairePile.Game)
       expect(move?.sourcePileIndex).toEqual(0)
@@ -239,7 +121,7 @@ describe('SolitaireGame', () => {
     it('finds game pile move', () => {
       game.gamePiles[0].update(pile => pile.concat(new Card(CardSuit.Spades, CardNumber.Ten, 10)))
       game.gamePiles[3].set([new Card(CardSuit.Diamonds, CardNumber.Jack, 11)])
-      const move = game.find_move(new Card(CardSuit.Spades, CardNumber.Ten, 10), SolitairePile.Game, 0, 1)
+      const move = game.find_move(SolitairePile.Game, 0, 1)
       expect(move).toBeDefined()
       expect(move?.sourcePileType).toEqual(SolitairePile.Game)
       expect(move?.sourcePileIndex).toEqual(0)
@@ -251,7 +133,7 @@ describe('SolitaireGame', () => {
     it('finds move from deal pile to game pile', () => {
       game.dealPile.set([new Card(CardSuit.Hearts, CardNumber.Four, 4)])
       game.gamePiles[2].set([new Card(CardSuit.Clubs, CardNumber.Five, 5)])
-      const move = game.find_move(new Card(CardSuit.Hearts, CardNumber.Four, 4), SolitairePile.Deal, 0)
+      const move = game.find_move(SolitairePile.Deal, 0)
       expect(move).toBeDefined()
       expect(move?.destinationPileType).toEqual(SolitairePile.Game)
       expect(move?.destinationPileIndex).toEqual(2)
@@ -260,7 +142,7 @@ describe('SolitaireGame', () => {
     it('finds move from deal pile to ace pile', () => {
       game.dealPile.set([new Card(CardSuit.Hearts, CardNumber.Jack, 11)])
       game.acePiles[3].set([new Card(CardSuit.Hearts, CardNumber.Ten, 10)])
-      const move = game.find_move(new Card(CardSuit.Hearts, CardNumber.Jack, 11), SolitairePile.Deal, 0)
+      const move = game.find_move(SolitairePile.Deal, 0)
       expect(move).toBeDefined()
       expect(move?.destinationPileType).toEqual(SolitairePile.Ace)
       expect(move?.destinationPileIndex).toEqual(3)
@@ -273,7 +155,7 @@ describe('SolitaireGame', () => {
     it('moves ace to empty ace pile', () => {
       const moving_card = new Card(CardSuit.Clubs, CardNumber.Ace, 1)
       game.gamePiles[6].set([moving_card])
-      const move = game.find_move(moving_card, SolitairePile.Game, 6, 1)
+      const move = game.find_move(SolitairePile.Game, 6, 1)
       expect(move).toBeDefined()
       
       expect(game.execute_move(move!)).toBeTrue()
@@ -285,7 +167,7 @@ describe('SolitaireGame', () => {
     it('moves king to empty game pile', () => {
       const moving_card = new Card(CardSuit.Hearts, CardNumber.King, 13)
       game.dealPile.set([moving_card])
-      const move = game.find_move(moving_card, SolitairePile.Deal, 0)
+      const move = game.find_move(SolitairePile.Deal, 0)
       expect(move).toBeDefined()
       
       expect(game.execute_move(move!)).toBeTrue()
@@ -298,7 +180,7 @@ describe('SolitaireGame', () => {
       const moving_card = new Card(CardSuit.Spades, CardNumber.Three, 3)
       game.acePiles[3].set([new Card(CardSuit.Spades, CardNumber.Ace, 1), new Card(CardSuit.Spades, CardNumber.Two, 2), moving_card])
       game.gamePiles[1].set([new Card(CardSuit.Diamonds, CardNumber.Four, 4)])
-      const move = game.find_move(moving_card, SolitairePile.Ace, 3)
+      const move = game.find_move(SolitairePile.Ace, 3)
       expect(move).toBeDefined()
 
       expect(game.execute_move(move!)).toBeTrue()
@@ -313,7 +195,7 @@ describe('SolitaireGame', () => {
       game.dealPile.set(deck.cards)
       game.deal_1()
       const moving_card_beginning = deck.cards[0]
-      const move_beginning = game.find_move(moving_card_beginning, SolitairePile.Deal, 0)
+      const move_beginning = game.find_move(SolitairePile.Deal, 0)
       expect(move_beginning).toBeDefined()
 
       game.execute_move(move_beginning!)
@@ -324,7 +206,7 @@ describe('SolitaireGame', () => {
 
       game.deal_1()
       const moving_card_end = deck.cards[deck.cards.length-1]
-      const move_end = game.find_move(moving_card_end, SolitairePile.Deal, 50)
+      const move_end = game.find_move(SolitairePile.Deal, 50)
       expect(move_end).toBeDefined()
 
       game.execute_move(move_end!)
@@ -340,7 +222,7 @@ describe('SolitaireGame', () => {
       const next_card = game.dealPile()[srcIndex+1]
       game.deal_3()
       game.gamePiles[6].set([new Card(CardSuit.Clubs, CardNumber.Ten, 10)])
-      const move = game.find_move(moving_card, SolitairePile.Deal, srcIndex)
+      const move = game.find_move(SolitairePile.Deal, srcIndex)
       expect(move).toBeDefined()
 
       expect(game.execute_move(move!)).toBeTrue()
@@ -359,7 +241,7 @@ describe('SolitaireGame', () => {
       game.gamePiles[3].set([destCard])
       game.gamePiles[4].set([new Card(CardSuit.Hearts, CardNumber.Queen, 12), srcCard1, srcCard2])
 
-      const move = game.find_move(srcCard1, SolitairePile.Game, 4, 2)
+      const move = game.find_move(SolitairePile.Game, 4, 2)
       expect(move).toBeDefined()
 
       expect(game.execute_move(move!)).toBeTrue()

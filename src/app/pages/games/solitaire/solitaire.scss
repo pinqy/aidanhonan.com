@@ -127,7 +127,7 @@ $solitaire-header-color: #cdc6ae;
   height: 90px;
   width: 60px;
   border-radius: 3px;
-  // border: 1px solid white;
+
   outline: 1px solid black;
   background-color: white;
 
@@ -141,28 +141,6 @@ $solitaire-header-color: #cdc6ae;
   align-content: baseline;
 }
 
-.solitaire-card-content {
+app-playing-card {
   height: 100%;
-  border-radius: 3px;
-}
-
-.solitaire-card-hidden {
-  margin: 2px;
-  border: 3px solid #7a0800;
-  box-sizing: border-box;
-
-  background-image: url('../../../../../public/assets/patterns/black-thread-light.png');
-  background-color: #7a0800;
-  align-content: center;
-  font-size: 18px;
-  color: white;
-  font-family: "Atomic Age";
-}
-
-.solitaire-card-red {
-  color: red;
-}
-
-.solitaire-card-black {
-  color: black;
 }
