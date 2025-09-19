@@ -29,7 +29,7 @@ export class Solitaire {
   // Game state
   game: SolitaireGame
   flipPileDisplayCards: Signal<Card[]>
-
+  
   // Settings
   setting_flip_1: WritableSignal<boolean> = signal(false)
   setting_flip_3: Signal<boolean> = computed(() => !this.setting_flip_1())
@@ -88,5 +88,9 @@ export class Solitaire {
     const move = this.game.find_move(SolitairePile.Ace, pileIndex)
     if (!move) return
     this.game.execute_move(move)
+  }
+
+  get_game_pile_card_offset(game_pile: Card[]): number {
+    return Math.min(15, 160 / (game_pile.length > 1 ? game_pile.length : 1));
   }
 }

@@ -1,6 +1,7 @@
 .card-content {
   border-radius: 3px;
   font-family: "Atomic Age", sans-serif;
+  font-size: 18px;
 }
 
 .card-hidden {
@@ -18,6 +19,8 @@
 
 .card-revealed {
   height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .card-red {
@@ -26,4 +29,26 @@
 
 .card-black {
   color: black;
+}
+
+.card-top {
+  text-align: left;
+  padding-left: 2px;
+  display: inline-flex;
+}
+
+.card-center {
+  margin: auto;
+  font-size: 32px;
+}
+
+.card-bottom {
+  transform: scale(-1, -1);
+  text-align: left;
+  padding-left: 2px;
+  display: inline-flex;
+}
+
+.card-suit {
+  font-size: 14px;
 }

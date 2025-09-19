@@ -19,7 +19,7 @@
       </div>
       <div class="solitaire-card-slot">
         @for (card of flipPileDisplayCards(); track `${card.number} ${card.suit}`; let cardIndex = $index) {
-          <button class="solitaire-card" (click)="handle_deal_pile_click(card)" [style.left]=`${cardIndex*10}px` style="top: 0px;" [tabIndex]="cardIndex === game.flipPileTop3().length-1 ? 0 : -1">
+          <button class="solitaire-card" (click)="handle_deal_pile_click(card)" [style.left]=`${cardIndex*20}px` style="top: 0px;" [tabIndex]="cardIndex === game.flipPileTop3().length-1 ? 0 : -1">
             <app-playing-card [card]="card"></app-playing-card>
           </button>
         }
@@ -37,11 +37,12 @@
         </div>
       }
     </div>
-    <div class="solitaire-game-row" style="padding-bottom: 100px;">
+    <div class="solitaire-game-row" style="padding-bottom: 150px;">
       @for (game_pile of game.gamePiles; track $index; let pileIndex = $index) {
         <div class="solitaire-card-slot">
+          @let pile_card_offset = get_game_pile_card_offset(game_pile());
           @for (card of game_pile(); track `${card.number} ${card.suit}`; let cardIndex = $index) {
-            <button class="solitaire-card" (click)="handle_game_pile_click(card, pileIndex, cardIndex)" [style.top]=`${cardIndex*10}px` [tabIndex]="card.isRevealed() ? 0 : -1">
+            <button class="solitaire-card" (click)="handle_game_pile_click(card, pileIndex, cardIndex)" [style.top]=`${cardIndex*pile_card_offset}px` [tabIndex]="card.isRevealed() ? 0 : -1">
               <app-playing-card [card]="card"></app-playing-card>
             </button>
           }
