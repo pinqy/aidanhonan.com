@@ -19,18 +19,32 @@
       </div>
       <div class="solitaire-card-slot">
         @for (card of flipPileDisplayCards(); track `${card.number} ${card.suit}`; let cardIndex = $index) {
-          <button class="solitaire-card" (click)="handle_deal_pile_click(card)" [style.left]=`${cardIndex*20}px` style="top: 0px;" [tabIndex]="cardIndex === game.flipPileTop3().length-1 ? 0 : -1">
+          @let is_dragging_deal_card = $last && is_dragging() && dragging_card()?.equals(card);
+          @let deal_left = cardIndex*20 + (is_dragging_deal_card ? dragging_card_offset_x() : 0);
+          @let deal_top = is_dragging_deal_card ? dragging_card_offset_y() : 0;
+
+          <button class="solitaire-card" (click)="handle_deal_pile_click(card)" [style.left]=`${deal_left}px` [style.top]=`${deal_top}px`
+              [class.dragging-card]="is_dragging_deal_card && has_moved_since_click()"
+              (mousedown)="$last ? handle_deal_pile_mousedown($event) : undefined" [tabIndex]="$last ? 0 : -1">
             <app-playing-card [card]="card"></app-playing-card>
           </button>
         }
       </div>
       <div style="margin: auto;"></div>
       @for (ace_pile of game.acePiles; track $index; let pileIndex = $index) {
-        <div class="solitaire-card-slot">
-          @let pileLen = ace_pile().length;
+        @let pileLen = ace_pile().length;
+        <div class="solitaire-card-slot" (mouseup)="pileLen === 0 ? handle_ace_pile_mouseup(pileIndex): undefined" (mouseenter)="pileLen === 0 ? enter_card() : undefined"
+            (mouseleave)="pileLen === 0 ? leave_card() : undefined">
           @if (pileLen > 0) {
             @let card = ace_pile()[pileLen-1];
-            <button class="solitaire-card" (click)="handle_ace_pile_click(pileIndex)">
+            @let is_dragging_ace_card = is_dragging() && dragging_card()?.equals(card);
+            @let ace_left = is_dragging_ace_card ? dragging_card_offset_x() : 0;
+            @let ace_top = is_dragging_ace_card ? dragging_card_offset_y() : 0;
+
+            <button class="solitaire-card" (click)="handle_ace_pile_click(pileIndex)" [style.left]=`${ace_left}px` [style.top]=`${ace_top}px`
+                (mouseup)="handle_ace_pile_mouseup(pileIndex)" (mousedown)="handle_ace_pile_mousedown($event, pileIndex)"
+                (mouseenter)="enter_card()" (mouseleave)="leave_card()" [class.dragging-card]="is_dragging_ace_card && has_moved_since_click()">
+
               <app-playing-card [card]="card"></app-playing-card>
             </button>
           }
@@ -39,10 +53,21 @@
     </div>
     <div class="solitaire-game-row" style="padding-bottom: 150px;">
       @for (game_pile of game.gamePiles; track $index; let pileIndex = $index) {
-        <div class="solitaire-card-slot">
+        @let pileLen = game_pile().length;
+        <div class="solitaire-card-slot" (mouseup)="pileLen === 0 ? handle_game_pile_mouseup(pileIndex): undefined" (mouseenter)="pileLen === 0 ? enter_card() : undefined"
+            (mouseleave)="pileLen === 0 ? leave_card() : undefined">
           @let pile_card_offset = get_game_pile_card_offset(game_pile());
+
           @for (card of game_pile(); track `${card.number} ${card.suit}`; let cardIndex = $index) {
-            <button class="solitaire-card" (click)="handle_game_pile_click(card, pileIndex, cardIndex)" [style.top]=`${cardIndex*pile_card_offset}px` [tabIndex]="card.isRevealed() ? 0 : -1">
+            @let is_dragging_game_card = is_dragging() && dragging_depth() > 0 && dragging_index() === pileIndex && dragging_depth() >= (pileLen-cardIndex);
+            @let card_left = is_dragging_game_card ? dragging_card_offset_x() : 0;
+            @let card_top = cardIndex*pile_card_offset + (is_dragging_game_card ? dragging_card_offset_y() : 0);
+
+            <button class="solitaire-card" (click)="handle_game_pile_click(card, pileIndex, cardIndex)" [style.left]=`${card_left}px` [style.top]=`${card_top}px`
+                (mouseup)="$last ? handle_game_pile_mouseup(pileIndex) : undefined;" (mouseenter)="$last ? enter_card() : undefined" (mouseleave)="$last ? leave_card() : undefined"
+                (mousedown)="card.isRevealed() ? handle_game_pile_mousedown($event, pileIndex, cardIndex) : undefined" [class.dragging-card]="is_dragging_game_card && has_moved_since_click()"
+                [tabIndex]="card.isRevealed() ? 0 : -1">
+
               <app-playing-card [card]="card"></app-playing-card>
             </button>
           }

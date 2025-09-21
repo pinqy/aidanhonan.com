@@ -88,6 +88,20 @@ export class SolitaireGame {
     this.dealIndex.set(0)
   }
 
+  find_card(pile: SolitairePile, pileIndex: number, pileDepth?: number): Card | undefined {
+    switch(pile) {
+      case(SolitairePile.Game):
+        if (pileDepth === undefined || pileIndex >= this.gamePiles.length || pileDepth > this.gamePiles[pileIndex]().length) return undefined
+        return this.gamePiles[pileIndex]()[this.gamePiles[pileIndex]().length-pileDepth]
+      case(SolitairePile.Deal):
+        if (pileIndex >= this.dealPile().length) return undefined
+        return this.dealPile()[pileIndex]
+      case(SolitairePile.Ace):
+        if (pileIndex >= this.acePileTopCards.length || !this.acePileTopCards[pileIndex]()) return undefined
+        return this.acePileTopCards[pileIndex]()!
+    }
+  }
+
   find_move(sourcePileType: SolitairePile, sourcePileIndex: number, sourcePileDepth?: number): SolitaireMove | undefined {
     for (let i = 0; i < this.acePileTopCards.length; i++) {
       // Valid move if ace pile is empty and card is an ace OR
@@ -147,24 +161,10 @@ export class SolitaireGame {
   }
 
   private is_valid_move(move: SolitaireMove): boolean {
-    let srcCard: Card;
-    switch(move.sourcePileType) {
-      case(SolitairePile.Game):
-        if (move.sourcePileDepth === undefined || (move.destinationPileType == SolitairePile.Ace && move.sourcePileDepth > 1)) return false
-        if (move.sourcePileIndex >= this.gamePiles.length || move.sourcePileDepth > this.gamePiles[move.sourcePileIndex]().length) return false
-        srcCard = this.gamePiles[move.sourcePileIndex]()[this.gamePiles[move.sourcePileIndex]().length-move.sourcePileDepth]
-        break
-      case(SolitairePile.Deal):
-        if (move.sourcePileIndex >= this.dealPile().length) return false
-        srcCard = this.dealPile()[move.sourcePileIndex]
-        break
-      case(SolitairePile.Ace):
-        if (move.sourcePileIndex >= this.acePileTopCards.length || !this.acePileTopCards[move.sourcePileIndex]()) return false
-        srcCard = this.acePileTopCards[move.sourcePileIndex]()!
-        break
-      default:
-        return false
-    }
+    const srcCard = this.find_card(move.sourcePileType, move.sourcePileIndex, move.sourcePileDepth);
+
+    if (!srcCard) return false
+    if (move.sourcePileType == SolitairePile.Game && move.destinationPileType == SolitairePile.Ace && move.sourcePileDepth! > 1) return false
 
     if (move.destinationPileType == SolitairePile.Game) {
       if (move.destinationPileIndex >= this.gamePileTopCards.length) return false

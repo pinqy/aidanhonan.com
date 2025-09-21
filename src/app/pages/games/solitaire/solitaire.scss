@@ -144,3 +144,8 @@ $solitaire-header-color: #cdc6ae;
 app-playing-card {
   height: 100%;
 }
+
+.dragging-card {
+  z-index: 99;
+  pointer-events: none;
+}
