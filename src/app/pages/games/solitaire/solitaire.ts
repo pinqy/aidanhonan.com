@@ -1,6 +1,6 @@
-import { Component, computed, inject, Signal, signal, WritableSignal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, Signal, signal, WritableSignal } from '@angular/core';
 import { Router } from '@angular/router';
-import { SolitaireGame, SolitairePile } from './solitaire-helpers';
+import { SolitaireGame, SolitaireMove, SolitairePile } from './solitaire-helpers';
 import { Card } from '../common/card-types';
 import { PlayingCard } from '../common/playing-card/playing-card';
 
@@ -20,15 +20,25 @@ export class Solitaire {
 
   /**
    * TODOs
-   * - Card Designs
-   * - Drag cards
+   * - Score
+   * - Popup for new game when changing diff
+   * - Win screen
    * - Game autocomplete
    * - Save settings
+   * - Check for winnability + related settings/options
    */
 
   // Game state
   game: SolitaireGame
   flipPileDisplayCards: Signal<Card[]>
+  game_started: WritableSignal<boolean> = signal(false)
+  game_over: Signal<boolean> = computed(() => {for (const p of this.game.acePiles) {if (p().length < 13) return false}; return true})
+  score_moves: WritableSignal<number> = signal(0)
+  score_timer: WritableSignal<number> = signal(0)
+  score_mins: Signal<number> = computed(() => Math.floor(this.score_timer() / 60))
+  score_secs: Signal<number> = computed(() => this.score_timer() % 60)
+  score_secs_str: Signal<string> = computed(() => this.score_secs() < 10 ? `0${this.score_secs()}` : `${this.score_secs()}`)
+  score_timer_paused: WritableSignal<boolean> = signal(false)
   
   // Settings
   setting_flip_1: WritableSignal<boolean> = signal(false)
@@ -39,7 +49,6 @@ export class Solitaire {
   dragging_index: WritableSignal<number> = signal(-1)
   dragging_depth: WritableSignal<number> = signal(-1)
   dragging_card: Signal<Card | undefined> = computed(() => this.find_movable_card(this.dragging_pile(), this.dragging_index(), this.dragging_depth()))
-  has_moved_since_click: WritableSignal<boolean> = signal(false)
   is_dragging: Signal<boolean> = computed(() => this.dragging_card() !== undefined)
   dragging_mouse_x0 = 0
   dragging_mouse_y0 = 0
@@ -47,6 +56,7 @@ export class Solitaire {
   dragging_mouse_y: WritableSignal<number> = signal(0)
   dragging_card_offset_x: Signal<number> = computed(() => this.dragging_mouse_x() - this.dragging_mouse_x0)
   dragging_card_offset_y: Signal<number> = computed(() => this.dragging_mouse_y() - this.dragging_mouse_y0)
+  has_moved_since_click: Signal<boolean> = computed(() => Math.abs(this.dragging_card_offset_x()) + Math.abs(this.dragging_card_offset_y()) > 5)
   is_over_card: WritableSignal<boolean> = signal(false)
 
   constructor() {
@@ -59,10 +69,26 @@ export class Solitaire {
     this.is_dragging = computed(() => this.dragging_card() !== undefined)
     document.addEventListener("mousemove", (event) => this.handle_card_drag(event))
     document.addEventListener("mouseup", () => this.handle_window_mouseup())
+
+    // initialize timer that will "tick" every second and update the game clock
+    const timer_obj = setInterval(() => {
+      if (this.game_started() && !this.game_over() && !this.score_timer_paused()) {
+        this.score_timer.update((v) => v+1)
+      }
+    }, 1000)
+
+    const destroy_ref = inject(DestroyRef)
+    destroy_ref.onDestroy(() => {clearInterval(timer_obj)})
   }
 
+  /**
+   * Settings banner helpers
+   */
   new_game(): void {
     this.game.new_game()
+    this.game_started.set(false)
+    this.score_moves.set(0)
+    this.score_timer.set(0)
   }
 
   select_flip_1(): void {
@@ -75,12 +101,34 @@ export class Solitaire {
     this.setting_flip_1.set(false)
   }
 
+
+  /**
+   * Score banner helpers
+   */
+  toggle_timer_paused(): void {
+    this.score_timer_paused.update(v => !v)
+  }
+
+
+  /**
+   * Game window helpers
+   */
+  try_execute_move(move?: SolitaireMove): void {
+    if (!move || this.game.execute_move(move)) {
+      this.game_started.set(true)
+      this.score_timer_paused.set(false)
+      this.score_moves.update(m => m+1)
+    }
+  }
+
   handle_deck_click(): void {
     if (this.setting_flip_1()) {
       this.game.deal_1()
     } else {
       this.game.deal_3()
     }
+
+    this.try_execute_move()
   }
 
   handle_deal_pile_click(card: Card): void {
@@ -89,11 +137,12 @@ export class Solitaire {
 
     const move = this.game.find_move(SolitairePile.Deal, this.game.dealIndex()-1) // deal index tracks next card to flip
     if (!move) return
-    this.game.execute_move(move)
+    this.try_execute_move(move)
   }
 
   reset_deck(): void {
     this.game.reset_deal()
+    this.try_execute_move()
   }
 
   handle_game_pile_click(card: Card, pileIndex: number, cardIndex: number): void {
@@ -102,7 +151,7 @@ export class Solitaire {
     const cardDepth = this.game.gamePiles[pileIndex]().length - cardIndex // depth = number of cards selected [1, len(pile)]
     const move = this.game.find_move(SolitairePile.Game, pileIndex, cardDepth)
     if (!move) return
-    this.game.execute_move(move)
+    this.try_execute_move(move)
   }
 
   handle_ace_pile_click(pileIndex: number): void {
@@ -110,11 +159,11 @@ export class Solitaire {
 
     const move = this.game.find_move(SolitairePile.Ace, pileIndex)
     if (!move) return
-    this.game.execute_move(move)
+    this.try_execute_move(move)
   }
 
   get_game_pile_card_offset(game_pile: Card[]): number {
-    return Math.min(15, 160 / (game_pile.length > 1 ? game_pile.length : 1));
+    return Math.min(20, 160 / (game_pile.length > 1 ? game_pile.length : 1));
   }
 
   /**
@@ -177,7 +226,6 @@ export class Solitaire {
 
   handle_card_drag(event: MouseEvent): void {
     if (this.is_dragging()) {
-      this.has_moved_since_click.set(true)
       this.dragging_mouse_x.set(event.clientX)
       this.dragging_mouse_y.set(event.clientY)
     }
@@ -185,7 +233,7 @@ export class Solitaire {
 
   handle_game_pile_mouseup(pileIndex: number): void {
     if (this.is_dragging()) {
-      this.game.execute_move({
+      this.try_execute_move({
         sourcePileType: this.dragging_pile()!,
         sourcePileIndex: this.dragging_index(),
         sourcePileDepth: this.dragging_depth(),
@@ -198,7 +246,7 @@ export class Solitaire {
 
   handle_ace_pile_mouseup(pileIndex: number): void {
     if (this.is_dragging()) {
-      this.game.execute_move({
+      this.try_execute_move({
         sourcePileType: this.dragging_pile()!,
         sourcePileIndex: this.dragging_index(),
         sourcePileDepth: this.dragging_depth(),
@@ -224,7 +272,5 @@ export class Solitaire {
     this.dragging_pile.set(undefined)
     this.dragging_index.set(-1)
     this.dragging_depth.set(-1)
-
-    this.has_moved_since_click.set(false)
   }
 }

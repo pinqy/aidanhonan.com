@@ -5,8 +5,14 @@
     <button (click)="select_flip_3()" class="solitaire-flip-three-button" [class.solitaire-flip-button-selected]="setting_flip_3()">Flip 3</button>
     <button (click)="returnToGamesMenu()" id="solitaire-close-button">&#10006;</button>
   </div>
+  <hr>
   <div class="solitaire-score-banner">
-
+    <button class="solitaire-timer-pause" (click)="toggle_timer_paused()" [innerHTML]="score_timer_paused() ? '&#9658;' : '&#10074;&#10074;'"></button>
+    <div class="solitaire-score-timer">{{score_mins()}}:{{score_secs_str()}}</div>
+    <div class="solitaire-score-moves">
+      <span>{{score_moves()}}</span>
+      <p>moves</p>
+    </div>
   </div>
   <div class="solitaire-game-body">
     <div class="solitaire-game-row">
@@ -14,7 +20,7 @@
         @if (game.dealIndex() < game.dealPile().length) {
           <button class="solitaire-card" (click)="handle_deck_click()" style="top: 0px"><app-playing-card></app-playing-card></button>
         } @else {
-          <button class="solitaire-card" (click)="reset_deck()" style="top: 0px;background-color: gray;color:white;">Deal again</button>
+          <button class="solitaire-card" (click)="reset_deck()" style="top: 0px;background-color: gray;color:white;" [innerText]="game.dealPile().length > 0 ? 'Deal Again' : ''"></button>
         }
       </div>
       <div class="solitaire-card-slot">
@@ -23,9 +29,14 @@
           @let deal_left = cardIndex*20 + (is_dragging_deal_card ? dragging_card_offset_x() : 0);
           @let deal_top = is_dragging_deal_card ? dragging_card_offset_y() : 0;
 
+          @if (is_dragging_deal_card && setting_flip_1() && game.flipPileTop3().length > 1) {
+            <div class="solitaire-card"><app-playing-card [card]="game.flipPileTop3()[game.flipPileTop3().length-2]"></app-playing-card></div>
+          }
+
           <button class="solitaire-card" (click)="handle_deal_pile_click(card)" [style.left]=`${deal_left}px` [style.top]=`${deal_top}px`
               [class.dragging-card]="is_dragging_deal_card && has_moved_since_click()"
               (mousedown)="$last ? handle_deal_pile_mousedown($event) : undefined" [tabIndex]="$last ? 0 : -1">
+
             <app-playing-card [card]="card"></app-playing-card>
           </button>
         }
@@ -35,11 +46,16 @@
         @let pileLen = ace_pile().length;
         <div class="solitaire-card-slot" (mouseup)="pileLen === 0 ? handle_ace_pile_mouseup(pileIndex): undefined" (mouseenter)="pileLen === 0 ? enter_card() : undefined"
             (mouseleave)="pileLen === 0 ? leave_card() : undefined">
+
           @if (pileLen > 0) {
             @let card = ace_pile()[pileLen-1];
             @let is_dragging_ace_card = is_dragging() && dragging_card()?.equals(card);
             @let ace_left = is_dragging_ace_card ? dragging_card_offset_x() : 0;
             @let ace_top = is_dragging_ace_card ? dragging_card_offset_y() : 0;
+
+            @if (is_dragging_ace_card && pileLen > 1) {
+              <div class="solitaire-card"><app-playing-card [card]="ace_pile()[pileLen-2]"></app-playing-card></div>
+            }
 
             <button class="solitaire-card" (click)="handle_ace_pile_click(pileIndex)" [style.left]=`${ace_left}px` [style.top]=`${ace_top}px`
                 (mouseup)="handle_ace_pile_mouseup(pileIndex)" (mousedown)="handle_ace_pile_mousedown($event, pileIndex)"
@@ -56,6 +72,7 @@
         @let pileLen = game_pile().length;
         <div class="solitaire-card-slot" (mouseup)="pileLen === 0 ? handle_game_pile_mouseup(pileIndex): undefined" (mouseenter)="pileLen === 0 ? enter_card() : undefined"
             (mouseleave)="pileLen === 0 ? leave_card() : undefined">
+
           @let pile_card_offset = get_game_pile_card_offset(game_pile());
 
           @for (card of game_pile(); track `${card.number} ${card.suit}`; let cardIndex = $index) {
