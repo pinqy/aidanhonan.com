@@ -15,6 +15,35 @@
     </div>
   </div>
   <div class="solitaire-game-body">
+    @if (!allow_moves() || score_timer_paused()) {
+      <div class="solitaire-game-popup-blur">
+        @if (show_flip_change_popup()) {
+          <div class="solitaire-popup">
+            <span>This will start a new game. Continue?</span>
+            <div class="solitaire-popup-buttons">
+              <button (click)="flip_change_new_game(false)" style="margin-right: auto; background-color: lightcoral;">Cancel</button>
+              <button (click)="flip_change_new_game(true)" style="background-color: lightblue;">Start New Game</button>
+            </div>
+          </div>
+        }
+        @else if (score_timer_paused()) {
+          <div class="solitaire-popup">
+            <span>Game is paused.</span>
+            <div class="solitaire-popup-buttons">
+              <button (click)="toggle_timer_paused()" style="margin: auto; background-color: lightblue;">Resume</button>
+            </div>
+          </div>
+        }
+        @else if (game_over()) {
+          <div class="solitaire-popup">
+            <span>Congratulations! You won with {{score_moves()}} moves in {{score_mins()}}:{{score_secs_str()}}.</span>
+            <div class="solitaire-popup-buttons">
+              <button (click)="new_game()" style="margin: auto; background-color: lightblue;">Start New Game</button>
+            </div>
+          </div>
+        }
+      </div>
+    }
     <div class="solitaire-game-row">
       <div class="solitaire-card-slot">
         @if (game.dealIndex() < game.dealPile().length) {

@@ -20,9 +20,6 @@ export class Solitaire {
 
   /**
    * TODOs
-   * - Score
-   * - Popup for new game when changing diff
-   * - Win screen
    * - Game autocomplete
    * - Save settings
    * - Check for winnability + related settings/options
@@ -43,6 +40,7 @@ export class Solitaire {
   // Settings
   setting_flip_1: WritableSignal<boolean> = signal(false)
   setting_flip_3: Signal<boolean> = computed(() => !this.setting_flip_1())
+  show_flip_change_popup: WritableSignal<boolean> = signal(false)
 
   // Card Dragging State
   dragging_pile: WritableSignal<SolitairePile | undefined> = signal(undefined)
@@ -59,6 +57,8 @@ export class Solitaire {
   has_moved_since_click: Signal<boolean> = computed(() => Math.abs(this.dragging_card_offset_x()) + Math.abs(this.dragging_card_offset_y()) > 5)
   is_over_card: WritableSignal<boolean> = signal(false)
 
+  allow_moves: Signal<boolean> = computed(() => !this.game_over() && !this.show_flip_change_popup())
+
   constructor() {
     this.game = new SolitaireGame()
     this.new_game()
@@ -72,7 +72,7 @@ export class Solitaire {
 
     // initialize timer that will "tick" every second and update the game clock
     const timer_obj = setInterval(() => {
-      if (this.game_started() && !this.game_over() && !this.score_timer_paused()) {
+      if (this.game_started() && this.allow_moves() && !this.score_timer_paused()) {
         this.score_timer.update((v) => v+1)
       }
     }, 1000)
@@ -93,12 +93,22 @@ export class Solitaire {
 
   select_flip_1(): void {
     if (this.setting_flip_1()) return
-    this.setting_flip_1.set(true)
+    else if (this.game_started()) this.show_flip_change_popup.set(true)
+    else this.setting_flip_1.set(true)
   }
 
   select_flip_3(): void {
     if (this.setting_flip_3()) return
-    this.setting_flip_1.set(false)
+    else if (this.game_started()) this.show_flip_change_popup.set(true)
+    else this.setting_flip_1.set(false)
+  }
+
+  flip_change_new_game(confirmed: boolean): void {
+    if (confirmed) {
+      this.setting_flip_1.update(s => !s)
+      this.new_game()
+    }
+    this.show_flip_change_popup.set(false)
   }
 
 
@@ -106,7 +116,9 @@ export class Solitaire {
    * Score banner helpers
    */
   toggle_timer_paused(): void {
-    this.score_timer_paused.update(v => !v)
+    if (this.allow_moves() && this.game_started()) {
+      this.score_timer_paused.update(v => !v)
+    }
   }
 
 
@@ -114,7 +126,7 @@ export class Solitaire {
    * Game window helpers
    */
   try_execute_move(move?: SolitaireMove): void {
-    if (!move || this.game.execute_move(move)) {
+    if (this.allow_moves() && (!move || this.game.execute_move(move))) {
       this.game_started.set(true)
       this.score_timer_paused.set(false)
       this.score_moves.update(m => m+1)
@@ -225,7 +237,7 @@ export class Solitaire {
   }
 
   handle_card_drag(event: MouseEvent): void {
-    if (this.is_dragging()) {
+    if (this.is_dragging() && this.allow_moves()) {
       this.dragging_mouse_x.set(event.clientX)
       this.dragging_mouse_y.set(event.clientY)
     }

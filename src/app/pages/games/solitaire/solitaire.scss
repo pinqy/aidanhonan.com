@@ -145,6 +145,8 @@ hr {
 
   box-shadow: 1px 1px 10px inset black;
   border-radius: 5px;
+  position: relative;
+  overflow: hidden;
 }
 
 .solitaire-game-row {
@@ -189,4 +191,49 @@ app-playing-card {
 .dragging-card {
   z-index: 99;
   pointer-events: none;
+}
+
+.solitaire-game-popup-blur {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0px;
+  left: 0px;
+  z-index: 50;
+  background-color: rgba(205, 198, 174, 0.9);
+  align-items: center;
+  justify-content: center;
+  display: inline-flex;
+  border: 2px solid black;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.solitaire-popup {
+  border: 2px solid black;
+  padding: 5px;
+  margin: auto;
+  z-index: 99;
+  background-color: lightgray;
+  border-radius: 5px;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.solitaire-popup-buttons {
+  display: flex;
+  flex-direction: row;
+  padding: 15px 25px 5px 25px;
+
+  button {
+    @include styles.button-no-decoration();
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    outline: 1px solid black;
+    border-radius: 3px;
+    padding: 3px;
+    box-sizing: content-box;
+  }
+
+  button:hover {
+    outline: 2px solid black;
+  }
 }
