@@ -20,6 +20,7 @@ export class Solitaire {
 
   /**
    * TODOs
+   * - Animate moves
    * - Game autocomplete
    * - Save settings
    * - Check for winnability + related settings/options
@@ -93,13 +94,13 @@ export class Solitaire {
 
   select_flip_1(): void {
     if (this.setting_flip_1()) return
-    else if (this.game_started()) this.show_flip_change_popup.set(true)
+    else if (this.game_started() && !this.game_over()) this.show_flip_change_popup.set(true)
     else this.setting_flip_1.set(true)
   }
 
   select_flip_3(): void {
     if (this.setting_flip_3()) return
-    else if (this.game_started()) this.show_flip_change_popup.set(true)
+    else if (this.game_started() && !this.game_over()) this.show_flip_change_popup.set(true)
     else this.setting_flip_1.set(false)
   }
 
