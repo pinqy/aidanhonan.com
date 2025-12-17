@@ -1,9 +1,10 @@
-<div *ngIf="(testString$ | async) as testString; else loading" >
+@if ((testString$ | async); as testString) {
+  <div >
     <p>Success! Response from backend:</p>
     <br />
     <h3>{{ testString }}</h3>
-</div>
+  </div>
+} @else {
+  Loading...
+}
 
-<ng-template #loading>
-    Loading...
-</ng-template>

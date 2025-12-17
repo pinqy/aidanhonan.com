@@ -385,6 +385,12 @@ export class MinesweeperComponent {
     if (event.button == 0) { // left click
       tile.isPressed.set(true)
       this.mouse_down_in_game.set(true)
+      if (tile.isOpen() && this.setting_area_open()) {
+        this.operate_on_surrounding_tiles(tile, (surr_tile: MinesweeperSquare) => {
+          surr_tile.isPressed.set(true)
+          return 0
+        })
+      }
     } else if (event.button == 2) { // right click
       if (tile.isOpen()) return // no-op when open
       
@@ -404,11 +410,23 @@ export class MinesweeperComponent {
 
   unpress_tile(tile: MinesweeperSquare): void {
     tile.isPressed.set(false)
+    if (tile.isOpen() && this.setting_area_open()) {
+      this.operate_on_surrounding_tiles(tile, (surr_tile: MinesweeperSquare) => {
+        surr_tile.isPressed.set(false)
+        return 0
+      })
+    }
   }
 
   enter_tile(tile: MinesweeperSquare): void {
     if (this.mouse_down_in_game()) {
       tile.isPressed.set(true)
+      if (tile.isOpen() && this.setting_area_open()) {
+        this.operate_on_surrounding_tiles(tile, (surr_tile: MinesweeperSquare) => {
+          surr_tile.isPressed.set(true)
+          return 0
+        })
+      }
     }
   }
 
@@ -418,6 +436,12 @@ export class MinesweeperComponent {
 
     this.mouse_down_in_game.set(false)
     tile.isPressed.set(false)
+    if (tile.isOpen() && this.setting_area_open()) {
+      this.operate_on_surrounding_tiles(tile, (surr_tile: MinesweeperSquare) => {
+        surr_tile.isPressed.set(false)
+        return 0
+      })
+    }
 
     // handle click on a closed square
     if (!tile.isOpen()) {

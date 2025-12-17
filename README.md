@@ -12,7 +12,7 @@ When you're ready to deploy changes
 2. Checkout a feature branch for your change: `git checkout -b <branch-name>`
 3. Run `npm run build` to make sure unit tests pass
 4. Commit changes
-5. `gh pr create --draft --title "<title>"`
+5. `gh pr create`
 6. Populate the pull-request with details in GitHub
 7. Merge the pull-request
 8. The change will first deploy on https://test.aidanhonan.com
@@ -24,7 +24,7 @@ When you're ready to deploy changes
 https://angular.dev/overview
 ## Code scaffolding
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Run `ng generate component <component-name>` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
 ## Build
 
