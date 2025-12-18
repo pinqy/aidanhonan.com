@@ -1,11 +1,41 @@
 @use '../../../styles';
 
-h1 {
-    font-size: 128px;
-    font-weight: 200;
+.home-page-component {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  height: 100%;
+  width: 100%;
+
+  align-items: center;
 }
 
-h2 {
-    font-size: 64px;
-    font-weight: 200;
+.home-page-content {
+  height: 70%;
+  width: 100%;
+  margin: auto;
+}
+
+.home-page-display {
+  height: 75%;
+  width: 100%;
+  background-color: black;
+  border-top: 5px solid styles.$header-color;
+  border-bottom: 5px solid styles.$header-color;
+}
+
+.home-page-display-neon {
+  @include styles.neon_text(styles.$primary-color);
+  font-family: "Rocket Clouds";
+  align-content: center;
+  font-size: 64px;
+  background-image: url("../../../../public/assets/patterns/brick-wall-dark.png");
+  font-weight:200;
+}
+
+.home-page-display-buttons {
+  height: 25%;
+  width: 100%;
 }

@@ -107,10 +107,6 @@ hr {
   align-items: center;
 }
 
-.solitaire-score-timer {
-  
-}
-
 .solitaire-timer-pause {
   @include styles.button-no-decoration();
   border: 1px solid $solitaire-header-color;

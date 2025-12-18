@@ -49,7 +49,7 @@
         @if (game.dealIndex() < game.dealPile().length) {
           <button class="solitaire-card" (click)="handle_deck_click()" style="top: 0px"><app-playing-card></app-playing-card></button>
         } @else {
-          <button class="solitaire-card" (click)="reset_deck()" style="top: 0px;background-color: gray;color:white;" [innerText]="game.dealPile().length > 0 ? 'Deal Again' : ''"></button>
+          <button class="solitaire-card" (click)="reset_deck()" style="top: 0px;background-color: gray; color:white; justify-content: center;" [innerText]="game.dealPile().length > 0 ? 'Deal Again' : ''"></button>
         }
       </div>
       <div class="solitaire-card-slot">
