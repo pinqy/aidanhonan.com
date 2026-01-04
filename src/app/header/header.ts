@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { SizeService } from '../../services/size-service';
 
 @Component({
   selector: 'app-header',
@@ -9,6 +10,10 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   styleUrl: './header.scss'
 })
 export class HeaderComponent {
-  headerText = "AidanHonan.com";
+  sizeService = inject(SizeService)
+
   repoLink = "https://github.com/pinqy/aidanhonan.com";
+  
+  headerText = computed(() => this.sizeService.isXSmall() ? "AH" : "AidanHonan.com"); // replace this change with a dropdown for menu items
+  homeLinkSize = computed(() => (this.sizeService.isXSmall() || this.sizeService.isSmall()) ? "1.6rem" : "2rem");
 }

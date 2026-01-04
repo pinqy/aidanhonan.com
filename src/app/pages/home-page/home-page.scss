@@ -19,7 +19,7 @@
 }
 
 .home-page-display {
-  height: 75%;
+  height: 65%;
   width: 100%;
   background-color: black;
   border-top: 5px solid styles.$header-color;
@@ -30,9 +30,11 @@
   @include styles.neon_text(styles.$primary-color);
   font-family: "Rocket Clouds";
   align-content: center;
-  font-size: 64px;
   background-image: url("../../../../public/assets/patterns/brick-wall-dark.png");
   font-weight:200;
+  h1 {
+    padding: 0px 10px;
+  }
 }
 
 .home-page-display-buttons {

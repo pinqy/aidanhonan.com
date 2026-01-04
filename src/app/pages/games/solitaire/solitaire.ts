@@ -90,6 +90,7 @@ export class Solitaire {
     this.game_started.set(false)
     this.score_moves.set(0)
     this.score_timer.set(0)
+    this.show_flip_change_popup.set(false)
   }
 
   select_flip_1(): void {
