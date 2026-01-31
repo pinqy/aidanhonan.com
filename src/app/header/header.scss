@@ -9,6 +9,8 @@ header {
   width: 100%;
   height: 100%;
 
+  border-bottom: 2px solid styles.$header-color;
+
   a {
     text-decoration: none;
     color: inherit;
