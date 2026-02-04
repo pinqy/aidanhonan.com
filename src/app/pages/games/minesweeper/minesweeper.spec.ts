@@ -12,7 +12,7 @@ describe('MinesweeperComponent', () => {
       imports: [MinesweeperComponent],
       providers: appConfig.providers,
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(MinesweeperComponent);
     component = fixture.componentInstance;

@@ -5,6 +5,6 @@ import { Component } from '@angular/core';
   imports: [],
   standalone: true,
   template: ``,
-  styles: ``
+  styles: ``,
 })
 export class EmptyComponent {}

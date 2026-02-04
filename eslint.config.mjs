@@ -1,11 +1,16 @@
-// @ts-check
-const eslint = require("@eslint/js");
-const tseslint = require("typescript-eslint");
-const angular = require("angular-eslint");
+// eslint.config.mjs
+import eslint from "@eslint/js";
+import { defineConfig } from "eslint/config";
+import  tseslint from "typescript-eslint";
+import angular from "angular-eslint";
+import stylistic from '@stylistic/eslint-plugin'
 
-module.exports = tseslint.config(
+export default defineConfig(
   {
     files: ["**/*.ts"],
+    plugins: {
+      "@stylistic": stylistic,
+    },
     extends: [
       eslint.configs.recommended,
       ...tseslint.configs.recommended,
@@ -30,6 +35,10 @@ module.exports = tseslint.config(
           style: "kebab-case",
         },
       ],
+      "eqeqeq": "error",
+      "@stylistic/semi": ["error", "always"],
+      "@stylistic/comma-dangle": ["error", "always-multiline"],
+      "@stylistic/indent": ["error", 2],
     },
   },
   {

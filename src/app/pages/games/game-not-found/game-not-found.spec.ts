@@ -12,7 +12,7 @@ describe('GameNotFoundComponent', () => {
       imports: [GameNotFoundComponent],
       providers: appConfig.providers,
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(GameNotFoundComponent);
     component = fixture.componentInstance;
