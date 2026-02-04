@@ -12,7 +12,7 @@ describe('HeaderComponent', () => {
       imports: [HeaderComponent],
       providers: appConfig.providers,
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(HeaderComponent);
     component = fixture.componentInstance;

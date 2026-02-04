@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
   standalone: true,
   imports: [AsyncPipe, CommonModule],
   templateUrl: './backend-test.html',
-  styleUrl: './backend-test.scss'
+  styleUrl: './backend-test.scss',
 })
 export class BackendTestComponent {
   private backendProxy = inject(BackendProxy);

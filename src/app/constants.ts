@@ -1,1 +1,1 @@
-export const TITLE_SUFFIX = " | Aidan Honan"
+export const TITLE_SUFFIX = " | Aidan Honan";

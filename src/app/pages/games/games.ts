@@ -8,15 +8,15 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   standalone: true,
   imports: [RouterOutlet, RouterLink],
   templateUrl: './games.html',
-  styleUrl: './games.scss'
+  styleUrl: './games.scss',
 })
 export class GamesComponent {
-  private readonly router = inject(Router)
-  private readonly gameDetailRegex: RegExp = /\/games\/\S+/
-  isGameDetailView: WritableSignal<boolean> = signal(false)
+  private readonly router = inject(Router);
+  private readonly gameDetailRegex: RegExp = /\/games\/\S+/;
+  isGameDetailView: WritableSignal<boolean> = signal(false);
 
-  games: Game[] = []
-  gameIconPathDefault = "assets/games/game-icon-default.png"
+  games: Game[] = [];
+  gameIconPathDefault = "assets/games/game-icon-default.png";
 
   constructor() {
     // When navigating off of "/games" page, disable games menu links
@@ -24,13 +24,13 @@ export class GamesComponent {
     this.router.events.pipe(takeUntilDestroyed()).subscribe((event: Event) => {
       if (event instanceof NavigationEnd) {
         if (this.gameDetailRegex.test(event.url)) {
-          this.isGameDetailView.set(true)
+          this.isGameDetailView.set(true);
         } else {
-          this.isGameDetailView.set(false)
+          this.isGameDetailView.set(false);
         }
       }
-    })
+    });
 
-    this.games = GAMES
+    this.games = GAMES;
   }
 }

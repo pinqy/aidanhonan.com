@@ -4,13 +4,13 @@ import { Observable } from "rxjs";
 
 @Injectable({providedIn: 'root'})
 export class BackendProxy {
-    private http = inject(HttpClient);
+  private http = inject(HttpClient);
 
-    // For local testing
-    // private BACKEND_URL = `http://localhost:10000`;
-    private BACKEND_URL = `https://api.aidanhonan.com`;
+  // For local testing
+  // private BACKEND_URL = `http://localhost:10000`;
+  private BACKEND_URL = `https://api.aidanhonan.com`;
 
-    test(): Observable<string> {
-        return this.http.post<string>(`${this.BACKEND_URL}/test`, {});
-    }
+  test(): Observable<string> {
+    return this.http.post<string>(`${this.BACKEND_URL}/test`, {});
+  }
 }

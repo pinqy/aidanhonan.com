@@ -8,9 +8,9 @@ describe('Solitaire', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Solitaire]
+      imports: [Solitaire],
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(Solitaire);
     component = fixture.componentInstance;

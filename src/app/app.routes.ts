@@ -9,24 +9,24 @@ import { GameNotFoundComponent } from './pages/games/game-not-found/game-not-fou
 import { EmptyComponent } from './common/empty-component/empty';
 
 function titleWithSuffix(titleBase: string) : string {
-    return titleBase + TITLE_SUFFIX
+  return titleBase + TITLE_SUFFIX;
 }
 
 export const routes: Routes = [
-    { path: '', title: 'Aidan Honan', component: HomePageComponent },
-    { path: 'backend-test', title: titleWithSuffix('Backend Test'), component: BackendTestComponent },
-    { path: 'games', title: titleWithSuffix('Games'), component: GamesComponent,
-        children: [
-            { path: '', component: EmptyComponent },
-            ...GAMES.map<Route>((game) => {
-                return {
-                    path: game.path,
-                    title: titleWithSuffix(game.displayName),
-                    loadComponent: game.lazyLoad
-                } as Route
-            }),
-            { path: "**", title: titleWithSuffix("Game Not Found"), component: GameNotFoundComponent },
-        ] 
-    },
-    { path: '**', title: titleWithSuffix('Page Not Found'), component: PageNotFoundComponent },
+  { path: '', title: 'Aidan Honan', component: HomePageComponent },
+  { path: 'backend-test', title: titleWithSuffix('Backend Test'), component: BackendTestComponent },
+  { path: 'games', title: titleWithSuffix('Games'), component: GamesComponent,
+    children: [
+      { path: '', component: EmptyComponent },
+      ...GAMES.map<Route>((game) => {
+        return {
+          path: game.path,
+          title: titleWithSuffix(game.displayName),
+          loadComponent: game.lazyLoad,
+        } as Route;
+      }),
+      { path: "**", title: titleWithSuffix("Game Not Found"), component: GameNotFoundComponent },
+    ], 
+  },
+  { path: '**', title: titleWithSuffix('Page Not Found'), component: PageNotFoundComponent },
 ];

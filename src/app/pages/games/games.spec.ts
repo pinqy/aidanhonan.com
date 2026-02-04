@@ -12,7 +12,7 @@ describe('GamesComponent', () => {
       imports: [GamesComponent],
       providers: appConfig.providers,
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(GamesComponent);
     component = fixture.componentInstance;

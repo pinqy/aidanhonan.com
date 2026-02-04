@@ -7,10 +7,10 @@ import { SizeService } from '../../services/size-service';
   standalone: true,
   imports: [RouterLink, RouterLinkActive],
   templateUrl: './header.html',
-  styleUrl: './header.scss'
+  styleUrl: './header.scss',
 })
 export class HeaderComponent {
-  sizeService = inject(SizeService)
+  sizeService = inject(SizeService);
 
   repoLink = "https://github.com/pinqy/aidanhonan.com";
   

@@ -12,7 +12,7 @@ describe('BackendTestComponent', () => {
       imports: [BackendTestComponent],
       providers: appConfig.providers,
     })
-    .compileComponents();
+      .compileComponents();
 
     fixture = TestBed.createComponent(BackendTestComponent);
     component = fixture.componentInstance;
