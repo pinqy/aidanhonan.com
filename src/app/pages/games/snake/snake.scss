@@ -1,0 +1,56 @@
+@use '../../../../styles';
+
+$snake-header-height: 40px;
+$snake-header-color: #cdc6ae; // theme configurable
+
+.snake-game {
+  margin: auto;
+
+  box-sizing: border-box;
+
+  display: inline-flex;
+  flex-direction: column;
+  position: relative;
+
+  box-shadow: 2px 3px 5px #000000;
+
+  padding: 0px 10px 10px 10px;
+  background-color: black; // theme configurable
+  
+  user-select: none;
+}
+
+.snake-header {
+  height: $snake-header-height;
+  color: $snake-header-color;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+#snake-close-button {
+  @include styles.button-no-decoration();
+
+  align-content: center;
+  text-align: right;
+  text-decoration: none;
+  color: inherit;
+  font-size: 24px;
+
+  height: 100%;
+  margin-left: auto;
+  width: $snake-header-height;
+}
+
+.snake-game-body {
+  display: flex;
+  flex-direction: column;
+  background-color: gray; // theme configurable
+  padding: 10px;
+
+  position: relative;
+  overflow: hidden;
+  width: 500px;
+  height: 350px;
+}
