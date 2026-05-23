@@ -19,7 +19,7 @@ export class Solitaire {
   }
 
   /**
-   * TODOs
+   * Improvements:
    * - Animate moves
    * - Game autocomplete
    * - Save settings

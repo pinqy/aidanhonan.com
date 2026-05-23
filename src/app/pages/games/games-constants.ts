@@ -19,4 +19,10 @@ export const GAMES: Game[] = [
     iconPath: 'assets/games/game-icon-solitaire.png',
     lazyLoad: () => import('./solitaire/solitaire').then(m => m.Solitaire),
   },
+  {
+    displayName: 'Snake',
+    path: 'snake',
+    iconPath: 'assets/games/game-icon-snake.png',
+    lazyLoad: () => import('./snake/snake').then(m => m.Snake),
+  },
 ];
