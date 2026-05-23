@@ -1,10 +1,10 @@
-import { computed, Signal, signal, WritableSignal } from "@angular/core";
-import { Card, CardNumber, Deck } from "../common/card-types";
+import { computed, Signal, signal, WritableSignal } from '@angular/core';
+import { Card, CardNumber, Deck } from '../common/card-types';
 
 export enum SolitairePile {
-  Deal = "Deal",
-  Ace = "Ace",
-  Game = "Game",
+  Deal = 'Deal',
+  Ace = 'Ace',
+  Game = 'Game',
 }
 
 export interface SolitaireMove {
@@ -59,7 +59,7 @@ export class SolitaireGame {
     for (let i = 0; i < 7; i++) {
       for (let j = i; j < 7; j++) {
         const card = this.deck.deal_card();
-        if (!card) throw new Error("deck misconfigured");
+        if (!card) throw new Error('deck misconfigured');
         
         this.gamePiles[j].update((cards) => {
           cards.push(card);

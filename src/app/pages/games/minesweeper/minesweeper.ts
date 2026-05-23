@@ -17,7 +17,7 @@ export class MinesweeperComponent {
   private readonly router = inject(Router);
 
   returnToGamesMenu() {
-    this.router.navigate(["/games"]);
+    this.router.navigate(['/games']);
   }
 
   // cookie service
@@ -65,9 +65,9 @@ export class MinesweeperComponent {
   open_remaining_button_enabled: Signal<boolean>= computed(() => this.setting_open_remaining() && this.remaining_bombs() === 0 && !this.game_over());
 
   // Counter signals
-  bomb_counter_100s: Signal<string> = computed(() => this.open_remaining_button_enabled() ? "0_alt" : this.get_100s(this.remaining_bombs()));
-  bomb_counter_10s: Signal<string> = computed(() => this.open_remaining_button_enabled() ? "0_alt" : this.get_10s(this.remaining_bombs()));
-  bomb_counter_1s: Signal<string> = computed(() => this.open_remaining_button_enabled() ? "0_alt" : this.get_1s(this.remaining_bombs()));
+  bomb_counter_100s: Signal<string> = computed(() => this.open_remaining_button_enabled() ? '0_alt' : this.get_100s(this.remaining_bombs()));
+  bomb_counter_10s: Signal<string> = computed(() => this.open_remaining_button_enabled() ? '0_alt' : this.get_10s(this.remaining_bombs()));
+  bomb_counter_1s: Signal<string> = computed(() => this.open_remaining_button_enabled() ? '0_alt' : this.get_1s(this.remaining_bombs()));
   timer_seconds: WritableSignal<number> = signal(0);
   timer_100s: Signal<string> = computed(() => this.get_100s(this.timer_seconds()));
   timer_10s: Signal<string> = computed(() => this.get_10s(this.timer_seconds()));
@@ -79,7 +79,7 @@ export class MinesweeperComponent {
 
     // this accounts for holding mouse down on a tile, dragging off game, and
     // releasing. Without this we would treat it as a mouse down during (mouseenter)
-    document.addEventListener("mouseup", () => {
+    document.addEventListener('mouseup', () => {
       this.mouse_down_in_game.set(false);
       this.mouse_down_on_reset.set(false);
     });
@@ -101,14 +101,14 @@ export class MinesweeperComponent {
 
   load_settings(): void {
     // settings
-    if (this.cookieService.get(MinesweeperCookie.OpeningMove) === "false") this.setting_opening_move.set(false);
-    if (this.cookieService.get(MinesweeperCookie.QuestionMarks) === "false") this.setting_question_marks.set(false);
-    if (this.cookieService.get(MinesweeperCookie.AreaOpen) === "false") this.setting_area_open.set(false);
-    if (this.cookieService.get(MinesweeperCookie.OpenRemaining) === "true") this.setting_open_remaining.set(true);
+    if (this.cookieService.get(MinesweeperCookie.OpeningMove) === 'false') this.setting_opening_move.set(false);
+    if (this.cookieService.get(MinesweeperCookie.QuestionMarks) === 'false') this.setting_question_marks.set(false);
+    if (this.cookieService.get(MinesweeperCookie.AreaOpen) === 'false') this.setting_area_open.set(false);
+    if (this.cookieService.get(MinesweeperCookie.OpenRemaining) === 'true') this.setting_open_remaining.set(true);
     
     // difficulty
     const saved_diff = this.cookieService.get(MinesweeperCookie.Difficulty);
-    if (saved_diff === "") this.set_difficulty(MinesweeperDifficulty.Intermediate);
+    if (saved_diff === '') this.set_difficulty(MinesweeperDifficulty.Intermediate);
     else if (MinesweeperDifficulty.Beginner === saved_diff || MinesweeperDifficulty.Intermediate === saved_diff || MinesweeperDifficulty.Expert === saved_diff) {
       this.set_difficulty(saved_diff);
     } else if (saved_diff === MinesweeperDifficulty.Custom) {
@@ -169,7 +169,7 @@ export class MinesweeperComponent {
 
   // initialize game after first click
   initialize_game(first_tile: MinesweeperSquare | undefined): void {
-    const coords = first_tile ? first_tile.id.split("_") : [500, 500];
+    const coords = first_tile ? first_tile.id.split('_') : [500, 500];
     const x0 = +coords[0];
     const y0 = +coords[1];
 
@@ -285,50 +285,50 @@ export class MinesweeperComponent {
     const classes = [];
 
     if (tile.isOpen() || (tile.isPressed() && !tile.isFlagged())) {
-      classes.push("tile-open");
+      classes.push('tile-open');
     } else {
-      classes.push("tile-closed");
+      classes.push('tile-closed');
     }
 
-    return classes.join(" ");
+    return classes.join(' ');
   }
 
   get_tile_content_classes(tile: MinesweeperSquare) {
     const classes = [];
 
     if (tile.isOpen()) {
-      if (tile.isBomb || (!tile.isBomb && tile.isFlagged())) classes.push("tile-bomb");
-      if (this.losing_bomb_tiles.find((l_tile) => l_tile.id === tile.id)) classes.push("tile-losing-bomb");
+      if (tile.isBomb || (!tile.isBomb && tile.isFlagged())) classes.push('tile-bomb');
+      if (this.losing_bomb_tiles.find((l_tile) => l_tile.id === tile.id)) classes.push('tile-losing-bomb');
     } else {
-      if (tile.isFlagged()) classes.push("tile-flagged");
-      else if (tile.isQuestioned()) classes.push("tile-questioned");
+      if (tile.isFlagged()) classes.push('tile-flagged');
+      else if (tile.isQuestioned()) classes.push('tile-questioned');
     }
 
-    return classes.join(" ");
+    return classes.join(' ');
   }
 
   get_number_tile_color(tile: MinesweeperSquare): string {
-    if (!tile.isOpen()) return "";
+    if (!tile.isOpen()) return '';
 
     switch (tile.number) {
       case 1:
-        return "blue";
+        return 'blue';
       case 2:
-        return "green";
+        return 'green';
       case 3:
-        return "red";
+        return 'red';
       case 4:
-        return "darkblue";
+        return 'darkblue';
       case 5:
-        return "darkred";
+        return 'darkred';
       case 6:
-        return "darkcyan";
+        return 'darkcyan';
       case 7:
-        return "black";
+        return 'black';
       case 8:
-        return "gray";
+        return 'gray';
       default:
-        return "";
+        return '';
     }
   }
 
@@ -340,16 +340,16 @@ export class MinesweeperComponent {
   get_reset_button_classes(): string {
     const classes: string[] = [];
 
-    if (this.reset_button_pressed()) classes.push("reset-button-smile"); // :) when reset button pressed
-    else if (this.game_lost()) classes.push("reset-button-dead"); // X( when game lost
-    else if (this.game_won()) classes.push("reset-button-cool"); // B) when game won
-    else if (this.mouse_down_in_game()) classes.push("reset-button-ooh"); // :o when mouse pressed on tile
-    else classes.push("reset-button-smile"); // :) all other times
+    if (this.reset_button_pressed()) classes.push('reset-button-smile'); // :) when reset button pressed
+    else if (this.game_lost()) classes.push('reset-button-dead'); // X( when game lost
+    else if (this.game_won()) classes.push('reset-button-cool'); // B) when game won
+    else if (this.mouse_down_in_game()) classes.push('reset-button-ooh'); // :o when mouse pressed on tile
+    else classes.push('reset-button-smile'); // :) all other times
 
-    if (this.reset_button_pressed()) classes.push("minesweeper-inlay");
-    else classes.push("minesweeper-extrude");
+    if (this.reset_button_pressed()) classes.push('minesweeper-inlay');
+    else classes.push('minesweeper-extrude');
 
-    return classes.join(" ");
+    return classes.join(' ');
   }
 
 
@@ -357,18 +357,18 @@ export class MinesweeperComponent {
    * Counter functions
    */
   get_100s(n: number): string {
-    if (n < 0) return "-";
-    else if (n > 999) return "9";
+    if (n < 0) return '-';
+    else if (n > 999) return '9';
     else return `${Math.floor(n/100)}`;
   }
 
   get_10s(n: number): string {
-    if (n < -99 || n > 999) return "9";
+    if (n < -99 || n > 999) return '9';
     else return `${Math.floor(Math.abs(n%100)/10)}`;
   }
 
   get_1s(n: number): string {
-    if (n < -99 || n > 999) return "9";
+    if (n < -99 || n > 999) return '9';
     else return `${Math.abs(n%10)}`;
   }
 
@@ -504,7 +504,7 @@ export class MinesweeperComponent {
 
   // generic function to operate on all surrounding tiles (number returned is only used in some cases)
   operate_on_surrounding_tiles(target: MinesweeperSquare, operation: (tile: MinesweeperSquare) => number): number {
-    const coords = target.id.split("_");
+    const coords = target.id.split('_');
     const x = +coords[0];
     const y = +coords[1];
 
@@ -602,25 +602,25 @@ export class MinesweeperComponent {
     switch(setting) {
       case MinesweeperSetting.OpeningMove:
         this.setting_opening_move.update(s => !s);
-        if (!this.setting_opening_move()) this.cookieService.set(MinesweeperCookie.OpeningMove, "false", 7);
+        if (!this.setting_opening_move()) this.cookieService.set(MinesweeperCookie.OpeningMove, 'false', 7);
         else this.cookieService.delete(MinesweeperCookie.OpeningMove);
         break;
 
       case MinesweeperSetting.QuestionMarks:
         this.setting_question_marks.update(s => !s);
-        if (!this.setting_question_marks()) this.cookieService.set(MinesweeperCookie.QuestionMarks, "false", 7);
+        if (!this.setting_question_marks()) this.cookieService.set(MinesweeperCookie.QuestionMarks, 'false', 7);
         else this.cookieService.delete(MinesweeperCookie.QuestionMarks);
         break;
 
       case MinesweeperSetting.AreaOpen:
         this.setting_area_open.update(s => !s);
-        if (!this.setting_area_open()) this.cookieService.set(MinesweeperCookie.AreaOpen, "false", 7);
+        if (!this.setting_area_open()) this.cookieService.set(MinesweeperCookie.AreaOpen, 'false', 7);
         else this.cookieService.delete(MinesweeperCookie.AreaOpen);
         break;
 
       case MinesweeperSetting.OpenRemaining:
         this.setting_open_remaining.update(s => !s);
-        if (this.setting_open_remaining()) this.cookieService.set(MinesweeperCookie.OpenRemaining, "true", 7);
+        if (this.setting_open_remaining()) this.cookieService.set(MinesweeperCookie.OpenRemaining, 'true', 7);
         else this.cookieService.delete(MinesweeperCookie.OpenRemaining);
         break;
     }
@@ -632,33 +632,33 @@ export class MinesweeperComponent {
         hasSelectableItems: true,
         sections: [
           [{
-            text: "New",
+            text: 'New',
             action: () => {this.new_game();},
           }],
           [
             {
-              text: "Beginner",
+              text: 'Beginner',
               isSelected: computed(() => this.selected_difficulty() === MinesweeperDifficulty.Beginner),
               action: () => {this.set_difficulty(MinesweeperDifficulty.Beginner);},
             },
             {
-              text: "Intermediate",
+              text: 'Intermediate',
               isSelected: computed(() => this.selected_difficulty() === MinesweeperDifficulty.Intermediate),
               action: () => {this.set_difficulty(MinesweeperDifficulty.Intermediate);},
             },
             {
-              text: "Expert",
+              text: 'Expert',
               isSelected: computed(() => this.selected_difficulty() === MinesweeperDifficulty.Expert),
               action: () => {this.set_difficulty(MinesweeperDifficulty.Expert);},
             },
             {
-              text: "Custom",
+              text: 'Custom',
               isSelected: computed(() => this.selected_difficulty() === MinesweeperDifficulty.Custom),
               action: () => {this.custom_form_open.update(b => !b);},
             },
           ],
           [{
-            text: "Exit",
+            text: 'Exit',
             action: () => {this.returnToGamesMenu();},
           }],
         ],
@@ -668,28 +668,28 @@ export class MinesweeperComponent {
         sections: [
           [
             {
-              text: "Opening Move",
+              text: 'Opening Move',
               isSelected: computed(() => this.setting_opening_move()),
               action: () => {this.update_setting(MinesweeperSetting.OpeningMove);},
-              hoverText: "The first move will always open a useful series of squares",
+              hoverText: 'The first move will always open a useful series of squares',
             },
             {
-              text: "Question Marks",
+              text: 'Question Marks',
               isSelected: computed(() => this.setting_question_marks()),
               action: () => {this.update_setting(MinesweeperSetting.QuestionMarks);},
-              hoverText: "Second right-click changes bomb marking to a question mark",
+              hoverText: 'Second right-click changes bomb marking to a question mark',
             },
             {
-              text: "Area Open",
+              text: 'Area Open',
               isSelected: computed(() => this.setting_area_open()),
               action: () => {this.update_setting(MinesweeperSetting.AreaOpen);},
-              hoverText: "Clicking on numbered/satisfied square will open all its neighbors",
+              hoverText: 'Clicking on numbered/satisfied square will open all its neighbors',
             },
             {
-              text: "Open Remaining",
+              text: 'Open Remaining',
               isSelected: computed(() => this.setting_open_remaining()),
               action: () => {this.update_setting(MinesweeperSetting.OpenRemaining);},
-              hoverText: "When 0 bombs are left unmarked, click the bomb counter 000 to open all remaining",
+              hoverText: 'When 0 bombs are left unmarked, click the bomb counter 000 to open all remaining',
             },
           ],
         ],
@@ -699,13 +699,13 @@ export class MinesweeperComponent {
         sections: [
           [
             {
-              text: "Instructions",
+              text: 'Instructions',
               action: () => {window.open('https://minesweepergame.com/strategy/how-to-play-minesweeper.php');},
             },
           ],
           [
             {
-              text: "About",
+              text: 'About',
               action: () => {window.open('http://en.wikipedia.org/wiki/Minesweeper_(video_game)');},
             },
           ],

@@ -12,6 +12,6 @@ export class GameNotFoundComponent {
   private readonly router = inject(Router);
 
   returnToGamesMenu() {
-    this.router.navigate(["/games"]);
+    this.router.navigate(['/games']);
   }
 }

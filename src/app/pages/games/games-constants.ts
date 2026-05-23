@@ -8,15 +8,15 @@ export interface Game {
 
 export const GAMES: Game[] = [
   {
-    displayName: "Minesweeper", 
-    path: "minesweeper",
-    iconPath: "assets/games/game-icon-minesweeper.png",
+    displayName: 'Minesweeper', 
+    path: 'minesweeper',
+    iconPath: 'assets/games/game-icon-minesweeper.png',
     lazyLoad: () => import('./minesweeper/minesweeper').then(m => m.MinesweeperComponent),
   },
   {
-    displayName: "Solitaire",
+    displayName: 'Solitaire',
     path: 'solitaire',
-    iconPath: "assets/games/game-icon-solitaire.png",
+    iconPath: 'assets/games/game-icon-solitaire.png',
     lazyLoad: () => import('./solitaire/solitaire').then(m => m.Solitaire),
   },
 ];

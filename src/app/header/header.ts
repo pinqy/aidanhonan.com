@@ -12,8 +12,8 @@ import { SizeService } from '../../services/size-service';
 export class HeaderComponent {
   sizeService = inject(SizeService);
 
-  repoLink = "https://github.com/pinqy/aidanhonan.com";
+  repoLink = 'https://github.com/pinqy/aidanhonan.com';
   
-  headerText = computed(() => this.sizeService.isXSmall() ? "AH" : "AidanHonan.com"); // replace this change with a dropdown for menu items
-  homeLinkSize = computed(() => (this.sizeService.isXSmall() || this.sizeService.isSmall()) ? "1.6rem" : "2rem");
+  headerText = computed(() => this.sizeService.isXSmall() ? 'AH' : 'AidanHonan.com'); // replace this change with a dropdown for menu items
+  homeLinkSize = computed(() => (this.sizeService.isXSmall() || this.sizeService.isSmall()) ? '1.6rem' : '2rem');
 }

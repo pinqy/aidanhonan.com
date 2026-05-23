@@ -39,6 +39,7 @@ export default defineConfig(
       "@stylistic/semi": ["error", "always"],
       "@stylistic/comma-dangle": ["error", "always-multiline"],
       "@stylistic/indent": ["error", 2],
+      "@stylistic/quotes": ["error", "single"],
     },
   },
   {

@@ -4,7 +4,7 @@ import { Component } from '@angular/core';
   selector: 'app-empty',
   imports: [],
   standalone: true,
-  template: ``,
-  styles: ``,
+  template: '',
+  styles: '',
 })
 export class EmptyComponent {}

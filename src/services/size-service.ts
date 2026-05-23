@@ -1,5 +1,5 @@
-import { BreakpointObserver, Breakpoints, BreakpointState } from "@angular/cdk/layout";
-import { computed, inject, Injectable, Signal, signal, WritableSignal } from "@angular/core";
+import { BreakpointObserver, Breakpoints, BreakpointState } from '@angular/cdk/layout';
+import { computed, inject, Injectable, Signal, signal, WritableSignal } from '@angular/core';
 
 @Injectable({providedIn: 'root'})
 export class SizeService {
