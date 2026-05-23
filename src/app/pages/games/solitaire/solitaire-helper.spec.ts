@@ -1,5 +1,5 @@
-import { SolitaireGame, SolitairePile } from "./solitaire-helpers";
-import { Card, CardNumber, CardSuit, Deck } from "../common/card-types";
+import { SolitaireGame, SolitairePile } from './solitaire-helpers';
+import { Card, CardNumber, CardSuit, Deck } from '../common/card-types';
 
 describe('SolitaireGame', () => {
   let game: SolitaireGame;

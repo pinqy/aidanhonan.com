@@ -1,4 +1,4 @@
-import { Card, CardNumber, CardSuit, Deck } from "./card-types";
+import { Card, CardNumber, CardSuit, Deck } from './card-types';
 
 describe('Card', () => {
   let redCard: Card;
@@ -14,13 +14,13 @@ describe('Card', () => {
     expect(redCard.number).toEqual(CardNumber.Ace);
     expect(redCard.value).toEqual(14);
     expect(redCard.isRevealed()).toEqual(false);
-    expect(redCard.color()).toEqual("red");
+    expect(redCard.color()).toEqual('red');
 
     expect(blackCard.suit).toEqual(CardSuit.Clubs);
     expect(blackCard.number).toEqual(CardNumber.Eight);
     expect(blackCard.value).toEqual(8);
     expect(blackCard.isRevealed()).toEqual(false);
-    expect(blackCard.color()).toEqual("black");
+    expect(blackCard.color()).toEqual('black');
   });
 
   it('same_color comparison works', () => {

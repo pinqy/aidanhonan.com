@@ -1,26 +1,26 @@
-import { signal, WritableSignal } from "@angular/core";
+import { signal, WritableSignal } from '@angular/core';
 
 export enum CardSuit {
-  Clubs = "Clubs",
-  Spades = "Spades",
-  Diamonds = "Diamonds",
-  Hearts = "Hearts",
+  Clubs = 'Clubs',
+  Spades = 'Spades',
+  Diamonds = 'Diamonds',
+  Hearts = 'Hearts',
 }
 
 export enum CardNumber {
-  Ace = "A",
-  Two = "2",
-  Three = "3",
-  Four = "4",
-  Five = "5",
-  Six = "6",
-  Seven = "7",
-  Eight = "8",
-  Nine = "9",
-  Ten = "10",
-  Jack = "J",
-  Queen = "Q",
-  King = "K",
+  Ace = 'A',
+  Two = '2',
+  Three = '3',
+  Four = '4',
+  Five = '5',
+  Six = '6',
+  Seven = '7',
+  Eight = '8',
+  Nine = '9',
+  Ten = '10',
+  Jack = 'J',
+  Queen = 'Q',
+  King = 'K',
 }
 
 export class Card {
@@ -37,7 +37,7 @@ export class Card {
   }
 
   color(): string {
-    return [CardSuit.Diamonds, CardSuit.Hearts].includes(this.suit) ? "red" : "black";
+    return [CardSuit.Diamonds, CardSuit.Hearts].includes(this.suit) ? 'red' : 'black';
   }
 
   same_color(other_card: Card): boolean {

@@ -15,7 +15,7 @@ export class Solitaire {
   private readonly router = inject(Router);
 
   returnToGamesMenu() {
-    this.router.navigate(["/games"]);
+    this.router.navigate(['/games']);
   }
 
   /**
@@ -68,8 +68,8 @@ export class Solitaire {
     // Initialize card dragging vars
     this.dragging_card = computed(() => this.find_movable_card(this.dragging_pile(), this.dragging_index(), this.dragging_depth()));
     this.is_dragging = computed(() => this.dragging_card() !== undefined);
-    document.addEventListener("mousemove", (event) => this.handle_card_drag(event));
-    document.addEventListener("mouseup", () => this.handle_window_mouseup());
+    document.addEventListener('mousemove', (event) => this.handle_card_drag(event));
+    document.addEventListener('mouseup', () => this.handle_window_mouseup());
 
     // initialize timer that will "tick" every second and update the game clock
     const timer_obj = setInterval(() => {

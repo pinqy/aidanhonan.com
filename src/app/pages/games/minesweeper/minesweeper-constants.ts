@@ -1,4 +1,4 @@
-import { Signal, WritableSignal } from "@angular/core";
+import { Signal, WritableSignal } from '@angular/core';
 
 export enum MinesweeperDifficulty {
   Beginner = 'Beginner',
@@ -37,19 +37,19 @@ export interface MinesweeperMenuItem {
 }
 
 export enum MinesweeperSetting {
-  OpeningMove = "opening_move",
-  QuestionMarks = "question_marks",
-  AreaOpen = "area_open",
-  OpenRemaining = "open_remaining",
+  OpeningMove = 'opening_move',
+  QuestionMarks = 'question_marks',
+  AreaOpen = 'area_open',
+  OpenRemaining = 'open_remaining',
 }
 
 export enum MinesweeperCookie {
-  Difficulty = "mines_difficulty",
-  CustomX = "mines_custom_width",
-  CustomY = "mines_custom_height",
-  CustomBombs = "mines_custom_bombs",
-  OpeningMove = "mines_opening_move",
-  QuestionMarks = "mines_question_marks",
-  AreaOpen = "mines_area_open",
-  OpenRemaining = "mines_open_remaining",
+  Difficulty = 'mines_difficulty',
+  CustomX = 'mines_custom_width',
+  CustomY = 'mines_custom_height',
+  CustomBombs = 'mines_custom_bombs',
+  OpeningMove = 'mines_opening_move',
+  QuestionMarks = 'mines_question_marks',
+  AreaOpen = 'mines_area_open',
+  OpenRemaining = 'mines_open_remaining',
 }

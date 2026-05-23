@@ -25,7 +25,7 @@ export const routes: Routes = [
           loadComponent: game.lazyLoad,
         } as Route;
       }),
-      { path: "**", title: titleWithSuffix("Game Not Found"), component: GameNotFoundComponent },
+      { path: '**', title: titleWithSuffix('Game Not Found'), component: GameNotFoundComponent },
     ], 
   },
   { path: '**', title: titleWithSuffix('Page Not Found'), component: PageNotFoundComponent },
