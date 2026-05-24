@@ -14,4 +14,9 @@ export class Snake {
   returnToGamesMenu() {
     this.router.navigate(['/games']);
   }
+
+  /**
+   * Improvements:
+   * - a lot
+   */
 }

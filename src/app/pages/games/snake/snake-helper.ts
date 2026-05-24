@@ -1,0 +1,146 @@
+import { computed, Signal, signal, WritableSignal } from '@angular/core';
+
+export enum SnakeDir {
+  L = 'Left',
+  R = 'Right',
+  U = 'Up',
+  D = 'Down',
+  None = 'None',
+}
+
+export interface SnakeSquare {
+  id: string;
+  isSnake: WritableSignal<boolean>,
+  isFood: WritableSignal<boolean>,
+}
+
+export class SnakeGame {
+  board: SnakeSquare[][] = [];
+  private snake_dir: SnakeDir = SnakeDir.None;
+
+  // snake body, head, and tail will reference coords on the board in the form 'x_y'
+  private snake_body: WritableSignal<string[]> = signal(['1_1']);
+  private snake_len: Signal<number> = computed(() => this.snake_body().length);
+  private snake_head: Signal<string> = computed(() => this.snake_body()[this.snake_len()-1]);
+  private snake_tail: Signal<string> = computed(() => this.snake_body()[0]);
+
+  // can make this configurable
+  private tiles_x = 70;
+  private tiles_y = 40;
+
+  // can queue moves for smoother turning
+  private turn_dir?: SnakeDir;
+  private static readonly UP_DOWN = [SnakeDir.U, SnakeDir.D];
+  private static readonly LEFT_RIGHT = [SnakeDir.L, SnakeDir.R];
+
+  // loss handling
+  loss_pos: WritableSignal<readonly [number, number] | undefined> = signal(undefined);
+  game_over: Signal<boolean> = computed(() => this.loss_pos() ? true : false);
+
+  constructor() {
+    this.new_game();
+  }
+
+  new_game(): void {
+    this.snake_dir = SnakeDir.None;
+    this.loss_pos.set(undefined);
+
+    const new_board: SnakeSquare[][] = [];
+    for (let i = 0; i < this.tiles_x; i++) {
+      new_board.push([]);
+      for (let j = 0; j < this.tiles_y; j++) {
+        new_board[i].push({
+          id: `${i}_${j}`,
+          isSnake: signal(false),
+          isFood: signal(false),
+        });
+      }
+    }
+
+    // modifying body/board separately so every board square doesn't need to refresh
+    // on each "frame"
+    new_board[1][1].isSnake.set(true);
+    this.board = new_board;
+    this.snake_body.set(['1_1']);
+
+    this.place_food();
+  }
+
+  // TODO: should optimize this for long snakes
+  private place_food(): void {
+    // generate new food position until finding an open spot
+    let f_x = 0;
+    let f_y = 0;
+    do {
+      f_x = Math.floor(Math.random() * this.tiles_x);
+      f_y = Math.floor(Math.random() * this.tiles_y);
+    } while (this.board[f_x][f_y].isSnake());
+
+    this.board[f_x][f_y].isFood.set(true);
+  }
+
+  turn(new_dir: SnakeDir): void {
+    if (this.snake_len() === 1 ||
+      (SnakeGame.UP_DOWN.includes(this.snake_dir) && SnakeGame.LEFT_RIGHT.includes(new_dir)) ||
+      (SnakeGame.LEFT_RIGHT.includes(this.snake_dir) && SnakeGame.UP_DOWN.includes(new_dir))) {
+      if (this.turn_dir === undefined) this.turn_dir = new_dir;
+    }
+  }
+  move(): void {
+    if (this.turn_dir) {
+      this.snake_dir = this.turn_dir;
+      this.turn_dir = undefined;
+    }
+
+    if (this.game_over() || this.snake_dir === SnakeDir.None) return;
+
+    // get current head pos (before tail removal in case length is 1)
+    const curr_head_pos = SnakeGame.parse_pos(this.snake_head());
+
+    // delete tail
+    const curr_tail = this.snake_tail();
+    const curr_tail_pos = SnakeGame.parse_pos(curr_tail);
+    this.snake_body.update((sb) => sb.slice(1));
+    if (curr_tail !== this.snake_tail()) { // these will be identical after eating food
+      this.board[curr_tail_pos[0]][curr_tail_pos[1]].isSnake.set(false);
+    }
+    
+    // get new head position
+    const new_head_pos = this.get_new_head_pos(curr_head_pos);
+    const new_head_pos_str = `${new_head_pos[0]}_${new_head_pos[1]}`;
+
+    // check for loss
+    if (this.snake_body().includes(new_head_pos_str) || new_head_pos[0] < 0 || new_head_pos[0] >= this.tiles_x || new_head_pos[1] < 0 || new_head_pos[1] >= this.tiles_y) {
+      this.loss_pos.set(new_head_pos);
+      return;
+    }
+
+    // move head
+    this.snake_body.update((sb) => sb.concat(new_head_pos_str));
+    const new_head_sq = this.board[new_head_pos[0]][new_head_pos[1]];
+    new_head_sq.isSnake.set(true);
+
+    // eat food
+    if (new_head_sq.isFood()) {
+      // add a duplicate tail entry so snake will extend as it moves
+      this.snake_body.update((sb) => [this.snake_tail()].concat(sb));
+      new_head_sq.isFood.set(false);
+      this.place_food();
+    }
+  }
+
+  private get_new_head_pos(pos: readonly [number, number]): readonly [number, number] {
+    switch(this.snake_dir) {
+      case(SnakeDir.L): return [pos[0]-1, pos[1]];
+      case(SnakeDir.R): return [pos[0]+1, pos[1]];
+      case(SnakeDir.U): return [pos[0], pos[1]-1];
+      case(SnakeDir.D): return [pos[0], pos[1]+1];
+      default: return pos;
+    }
+  }
+
+  static parse_pos(pos_str: string): readonly [number, number] {
+    const pos = pos_str.split('_');
+    return [+pos[0], +pos[1]];
+  }
+}
