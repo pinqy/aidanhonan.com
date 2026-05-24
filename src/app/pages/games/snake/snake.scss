@@ -45,12 +45,22 @@ $snake-header-color: #cdc6ae; // theme configurable
 
 .snake-game-body {
   display: flex;
-  flex-direction: column;
-  background-color: gray; // theme configurable
-  padding: 10px;
+  flex-direction: row;
+  background-color: white; // theme configurable
+  border-bottom: 1px solid lightgray;
+  border-right: 1px solid lightgray;
 
   position: relative;
   overflow: hidden;
-  width: 500px;
-  height: 350px;
+}
+
+.snake-column {
+  display: inline-flex;
+  flex-direction: column;
+}
+
+.snake-tile {
+  box-sizing: border-box;
+  border-left: 1px solid lightgray;
+  border-top: 1px solid lightgray;
 }
