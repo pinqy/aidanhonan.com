@@ -69,12 +69,26 @@ describe('SnakeGame', () => {
     expect(game.board[4][1].isSnake()).toBeFalse();
   });
 
-  it('no double turn', () => {
+  it('turn queues up to 2 moves', () => {
     game.turn(SnakeDir.R);
     game.turn(SnakeDir.D);
     game.move();
     expect(game.board[2][1].isSnake()).toBeTrue();
-    expect(game.board[1][2].isSnake()).toBeFalse();
+    game.move();
+    expect(game.board[2][2].isSnake()).toBeTrue();
+
+    game.turn(SnakeDir.R);
+    game.turn(SnakeDir.D);
+    game.turn(SnakeDir.L); // should be ignored
+    game.move();
+    expect(game.board[3][2].isSnake()).toBeTrue();
+    game.turn(SnakeDir.R); // should not be ignored
+    game.move();
+    expect(game.board[3][3].isSnake()).toBeTrue();
+    game.move();
+    expect(game.board[4][3].isSnake()).toBeTrue();
+    expect(game.board[2][3].isSnake()).toBeFalse();
+
   });
 
   it('starts stationary', () => {
@@ -90,7 +104,7 @@ describe('SnakeGame', () => {
     let food_pos = SnakeGame.parse_pos(find_food(game)[0].id);
 
     // make this test simpler by avoiding edge cases for food location
-    while (food_pos[0] < 3 || food_pos[1] < 3 || food_pos[0] >= 67 || food_pos[1] >= 37) {
+    while (food_pos[0] < 4 || food_pos[1] < 4 || food_pos[0] >= 67 || food_pos[1] >= 37) {
       game.new_game();
       food_pos = SnakeGame.parse_pos(find_food(game)[0].id);
     }
@@ -105,40 +119,44 @@ describe('SnakeGame', () => {
     expect(new_food_pos[0] !== food_pos[0] || new_food_pos[1] !== food_pos[1]).toBeTrue();
 
     let new_food_left = false;
-    for (let i = 0; i < 3; i++)
+    for (let i = 0; i < 4; i++)
       if (game.board[food_pos[0]-i][food_pos[1]].isFood()) new_food_left = true;
 
     game.turn(new_food_left ? SnakeDir.R : SnakeDir.L);
     game.move();
     game.move();
+    game.move();
     const hor_move_num = new_food_left ? 1 : -1;
+    expect(game.board[food_pos[0]+(3*hor_move_num)][food_pos[1]].isSnake()).toBeTrue();
     expect(game.board[food_pos[0]+(2*hor_move_num)][food_pos[1]].isSnake()).toBeTrue();
     expect(game.board[food_pos[0]+(1*hor_move_num)][food_pos[1]].isSnake()).toBeTrue();
-    expect(game.board[food_pos[0]][food_pos[1]].isSnake()).toBeFalse();
+    expect(game.board[food_pos[0]][food_pos[1]].isSnake()).toBeTrue();
 
     // test no reversing horizontally
     game.turn(new_food_left ? SnakeDir.L : SnakeDir.R);
     game.move();
-    expect(game.board[food_pos[0]+(3*hor_move_num)][food_pos[1]].isSnake()).toBeTrue();
-    expect(game.board[food_pos[0]+(1*hor_move_num)][food_pos[1]].isSnake()).toBeFalse();
+    expect(game.board[food_pos[0]+(4*hor_move_num)][food_pos[1]].isSnake()).toBeTrue();
+    expect(game.board[food_pos[0]][food_pos[1]].isSnake()).toBeFalse();
 
     let new_food_up = false;
-    for (let i = 0; i < 3; i++)
-      if (game.board[food_pos[0]+(3*hor_move_num)][food_pos[1]-i].isFood()) new_food_up = true;
+    for (let i = 0; i < 4; i++)
+      if (game.board[food_pos[0]+(4*hor_move_num)][food_pos[1]-i].isFood()) new_food_up = true;
 
     game.turn(new_food_up ? SnakeDir.D : SnakeDir.U);
     game.move();
     game.move();
+    game.move();
     const vert_move_num = new_food_up ? 1 : -1;
-    expect(game.board[food_pos[0]+(3*hor_move_num)][food_pos[1]+(2*vert_move_num)].isSnake()).toBeTrue();
-    expect(game.board[food_pos[0]+(3*hor_move_num)][food_pos[1]+(1*vert_move_num)].isSnake()).toBeTrue();
-    expect(game.board[food_pos[0]+(3*hor_move_num)][food_pos[1]].isSnake()).toBeFalse();
+    expect(game.board[food_pos[0]+(4*hor_move_num)][food_pos[1]+(3*vert_move_num)].isSnake()).toBeTrue();
+    expect(game.board[food_pos[0]+(4*hor_move_num)][food_pos[1]+(2*vert_move_num)].isSnake()).toBeTrue();
+    expect(game.board[food_pos[0]+(4*hor_move_num)][food_pos[1]+(1*vert_move_num)].isSnake()).toBeTrue();
+    expect(game.board[food_pos[0]+(4*hor_move_num)][food_pos[1]].isSnake()).toBeTrue();
 
     // test no reversing vertically
     game.turn(new_food_up ? SnakeDir.U : SnakeDir.D);
     game.move();
-    expect(game.board[food_pos[0]+(3*hor_move_num)][food_pos[1]+(3*vert_move_num)].isSnake()).toBeTrue();
-    expect(game.board[food_pos[0]+(3*hor_move_num)][food_pos[1]+(1*vert_move_num)].isSnake()).toBeFalse();
+    expect(game.board[food_pos[0]+(4*hor_move_num)][food_pos[1]+(4*vert_move_num)].isSnake()).toBeTrue();
+    expect(game.board[food_pos[0]+(4*hor_move_num)][food_pos[1]].isSnake()).toBeFalse();
   });
 
   it('edge collision loses the game', () => {

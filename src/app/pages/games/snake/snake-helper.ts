@@ -28,8 +28,11 @@ export class SnakeGame {
   private tiles_x = 70;
   private tiles_y = 40;
 
+  // can make this configurable
+  private food_strength = 3;
+
   // can queue moves for smoother turning
-  private turn_dir?: SnakeDir;
+  private turn_dir: SnakeDir[] = [];
   private static readonly UP_DOWN = [SnakeDir.U, SnakeDir.D];
   private static readonly LEFT_RIGHT = [SnakeDir.L, SnakeDir.R];
 
@@ -43,6 +46,7 @@ export class SnakeGame {
 
   new_game(): void {
     this.snake_dir = SnakeDir.None;
+    this.turn_dir = [];
     this.loss_pos.set(undefined);
 
     const new_board: SnakeSquare[][] = [];
@@ -80,16 +84,17 @@ export class SnakeGame {
   }
 
   turn(new_dir: SnakeDir): void {
+    if (this.turn_dir.length >= 2) return; 
+    const compare_dir = this.turn_dir.length > 0 ? this.turn_dir[0] : this.snake_dir;
     if (this.snake_len() === 1 ||
-      (SnakeGame.UP_DOWN.includes(this.snake_dir) && SnakeGame.LEFT_RIGHT.includes(new_dir)) ||
-      (SnakeGame.LEFT_RIGHT.includes(this.snake_dir) && SnakeGame.UP_DOWN.includes(new_dir))) {
-      if (this.turn_dir === undefined) this.turn_dir = new_dir;
+      (SnakeGame.UP_DOWN.includes(compare_dir) && SnakeGame.LEFT_RIGHT.includes(new_dir)) ||
+      (SnakeGame.LEFT_RIGHT.includes(compare_dir) && SnakeGame.UP_DOWN.includes(new_dir))) {
+      this.turn_dir.push(new_dir);
     }
   }
   move(): void {
-    if (this.turn_dir) {
-      this.snake_dir = this.turn_dir;
-      this.turn_dir = undefined;
+    if (this.turn_dir.length > 0) {
+      this.snake_dir = this.turn_dir.shift()!;
     }
 
     if (this.game_over() || this.snake_dir === SnakeDir.None) return;
@@ -122,8 +127,10 @@ export class SnakeGame {
 
     // eat food
     if (new_head_sq.isFood()) {
-      // add a duplicate tail entry so snake will extend as it moves
-      this.snake_body.update((sb) => [this.snake_tail()].concat(sb));
+      // add duplicate tail entries so snake will extend as it moves
+      const new_len: string[] = [];
+      for(let i = 0; i < this.food_strength; i++) new_len.push(this.snake_tail());
+      this.snake_body.update((sb) => new_len.concat(sb));
       new_head_sq.isFood.set(false);
       this.place_food();
     }

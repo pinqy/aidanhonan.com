@@ -3,14 +3,30 @@
     <button (click)="new_game()" id="snake-new-game-button">New Game</button>
     <button (click)="returnToGamesMenu()" id="snake-close-button">&#10006;</button>
   </div>
-  <div class="snake-game-body">
-    @for (col of game.board; track $index) {
-      <div class="snake-column">
-        @for (item of col; track item.id) {
-          <div id="{{item.id}}" class="snake-tile" [style.background-color]="get_background_color(item.id, item.isSnake(), item.isFood(), game.loss_pos())"
-            [style.height]="squareSize()" [style.width]="squareSize()"></div>
-        }
-      </div>
-    }
+  <div class="snake-border-row">@for (_ of game.board; track `${$index}_-1`) {
+    <div [style.background-color]="get_background_color(`${$index}_-1`, false, false, game.loss_pos())" [style.width]="squareSize()" style="margin: 0px 1px 2px 1px"></div>
+  }</div>
+
+  <div class="snake-game-container" style="display: inline-flex; flex-direction: row;">
+    <div class="snake-border-col">@for (_ of game.board[0]; track `-1_${$index}`) {
+      <div [style.background-color]="get_background_color(`-1_${$index}`, false, false, game.loss_pos())" [style.height]="squareSize()" style="margin: 1px 2px 1px 0px"></div>
+    }</div>
+    <div class="snake-game-body">
+      @for (col of game.board; track $index) {
+        <div class="snake-column">
+          @for (item of col; track item.id) {
+            <div id="{{item.id}}" class="snake-tile" [style.background-color]="get_background_color(item.id, item.isSnake(), item.isFood(), game.loss_pos())"
+              [style.height]="squareSize()" [style.width]="squareSize()"></div>
+          }
+        </div>
+      }
+    </div>
+    <div class="snake-border-col">@for (_ of game.board[0]; track `${game.board.length}_${$index}`) {
+      <div [style.background-color]="get_background_color(`${game.board.length}_${$index}`, false, false, game.loss_pos())" [style.height]="squareSize()" style="margin: 1px 0px 1px 2px"></div>
+    }</div>
   </div>
+
+  <div class="snake-border-row">@for (_ of game.board; track `${$index}_${game.board[0].length}`) {
+    <div [style.background-color]="get_background_color(`${$index}_${game.board[0].length}`, false, false, game.loss_pos())" [style.width]="squareSize()" style="margin: 2px 1px 0px 1px"></div>
+  }</div>
 </div>
