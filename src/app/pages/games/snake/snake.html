@@ -1,8 +1,16 @@
 <div class="snake-game">
   <div class="snake-header">
+    <button (click)="new_game()" id="snake-new-game-button">New Game</button>
     <button (click)="returnToGamesMenu()" id="snake-close-button">&#10006;</button>
   </div>
   <div class="snake-game-body">
-    
+    @for (col of game.board; track $index) {
+      <div class="snake-column">
+        @for (item of col; track item.id) {
+          <div id="{{item.id}}" class="snake-tile" [style.background-color]="get_background_color(item.id, item.isSnake(), item.isFood(), game.loss_pos())"
+            [style.height]="squareSize()" [style.width]="squareSize()"></div>
+        }
+      </div>
+    }
   </div>
 </div>

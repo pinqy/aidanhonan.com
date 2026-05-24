@@ -20,7 +20,7 @@ export class SnakeGame {
 
   // snake body, head, and tail will reference coords on the board in the form 'x_y'
   private snake_body: WritableSignal<string[]> = signal(['1_1']);
-  private snake_len: Signal<number> = computed(() => this.snake_body().length);
+  readonly snake_len: Signal<number> = computed(() => this.snake_body().length);
   private snake_head: Signal<string> = computed(() => this.snake_body()[this.snake_len()-1]);
   private snake_tail: Signal<string> = computed(() => this.snake_body()[0]);
 
