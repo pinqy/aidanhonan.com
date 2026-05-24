@@ -32,11 +32,12 @@ export class Snake {
 
   /**
    * Improvements:
-   * - queue turn requests
-   * - appearance
-   * - themes
-   * - speed
-   * - ...a lot
+   * - general appearance
+   * - settings
+   *   - theme
+   *   - speed
+   *   - food strength
+   *   - grid lines
    */
   game: SnakeGame;
 

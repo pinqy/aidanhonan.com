@@ -47,11 +47,24 @@ $snake-header-color: #cdc6ae; // theme configurable
   display: flex;
   flex-direction: row;
   background-color: white; // theme configurable
-  border-bottom: 1px solid lightgray;
-  border-right: 1px solid lightgray;
+  border-bottom: 1px solid transparent;
+  border-right: 1px solid transparent;
 
   position: relative;
   overflow: hidden;
+}
+
+.snake-border-row {
+  height: 5px;
+  margin-left: 5px; // to account for border-columns
+  display: flex;
+  flex-direction: row;
+}
+
+.snake-border-col {
+  width: 5px;
+  display: flex;
+  flex-direction: column;
 }
 
 .snake-column {
@@ -61,6 +74,5 @@ $snake-header-color: #cdc6ae; // theme configurable
 
 .snake-tile {
   box-sizing: border-box;
-  border-left: 1px solid lightgray;
-  border-top: 1px solid lightgray;
+  margin: 1px;
 }
