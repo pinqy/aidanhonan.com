@@ -160,33 +160,45 @@ describe('SnakeGame', () => {
   });
 
   it('edge collision loses the game', () => {
+    expect(game.game_started()).toBeFalse();
     game.turn(SnakeDir.L);
     game.move();
     expect(game.game_over()).toBeFalse();
+    expect(game.game_started()).toBeTrue();
     game.move();
     expect(game.game_over()).toBeTrue();
+    expect(game.game_started()).toBeTrue();
     game.move(); // make sure no NPE or anything when moving after loss
 
     game.new_game();
+    expect(game.game_started()).toBeFalse();
     game.turn(SnakeDir.U);
     game.move();
     expect(game.game_over()).toBeFalse();
+    expect(game.game_started()).toBeTrue();
     game.move();
     expect(game.game_over()).toBeTrue();
+    expect(game.game_started()).toBeTrue();
 
     game.new_game();
+    expect(game.game_started()).toBeFalse();
     game.turn(SnakeDir.R);
     for (let i = 0; i < 68; i++) game.move();
     expect(game.game_over()).toBeFalse();
+    expect(game.game_started()).toBeTrue();
     game.move();
     expect(game.game_over()).toBeTrue();
+    expect(game.game_started()).toBeTrue();
 
     game.new_game();
+    expect(game.game_started()).toBeFalse();
     game.turn(SnakeDir.D);
     for (let i = 0; i < 38; i++) game.move();
     expect(game.game_over()).toBeFalse();
+    expect(game.game_started()).toBeTrue();
     game.move();
     expect(game.game_over()).toBeTrue();
+    expect(game.game_started()).toBeTrue();
   });
 
   it('parse_pos happy path', () => {

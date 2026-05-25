@@ -25,4 +25,10 @@ export const GAMES: Game[] = [
     iconPath: 'assets/games/game-icon-snake.png',
     lazyLoad: () => import('./snake/snake').then(m => m.Snake),
   },
+  /**
+   * Future options
+   * - Pinball
+   * - BlackJack
+   * - Craps (throwback)
+   */
 ];
