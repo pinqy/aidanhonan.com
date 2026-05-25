@@ -1,11 +1,13 @@
-import { Component, computed, DestroyRef, inject } from '@angular/core';
+import { Component, computed, DestroyRef, inject, Signal, signal, WritableSignal } from '@angular/core';
 import { Router } from '@angular/router';
-import { SnakeDir, SnakeGame } from './snake-helper';
+import { SNAKE_THEMES, SnakeDir, SnakeGame, SnakeTheme } from './snake-helper';
 import { SizeService } from '../../../../services/size-service';
+import { MatSelectChange, MatSelectModule } from '@angular/material/select';
+
 
 @Component({
   selector: 'app-snake',
-  imports: [],
+  imports: [MatSelectModule],
   templateUrl: './snake.html',
   styleUrl: './snake.scss',
 })
@@ -33,16 +35,23 @@ export class Snake {
   /**
    * Improvements:
    * - general appearance
+   *   - prettify/add themes
+   *   - score (length)
    * - settings
-   *   - theme
    *   - speed
    *   - food strength
    *   - grid lines
    */
   game: SnakeGame;
+  gameInProgress: Signal<boolean>;
+
+  allThemes = SNAKE_THEMES;
+  themeName: WritableSignal<string> = signal('Default');
+  theme: Signal<SnakeTheme> = computed(() => (this.allThemes.get(this.themeName())!));
 
   constructor() {
     this.game = new SnakeGame();
+    this.gameInProgress = computed(() => this.game.game_started() && !this.game.game_over());
 
     document.addEventListener('keydown', (event: KeyboardEvent) => {
       switch(event.key.toLocaleLowerCase()) {
@@ -79,10 +88,27 @@ export class Snake {
     this.game.new_game();
   }
 
-  get_background_color(id: string, isSnake: boolean, isFood: boolean, lossPos: readonly [number, number] | undefined): string {
-    if (lossPos && id === `${lossPos[0]}_${lossPos[1]}`) return 'lightblue';
-    else if (isSnake) return 'blue';
-    else if (isFood) return 'red';
+  update_theme(e: MatSelectChange): void {
+    const new_key = typeof(e.value) === 'string' ? e.value as string : undefined;
+    if (new_key && this.allThemes.get(new_key)) this.themeName.set(new_key);
+  }
+
+  theme_option_style(themeName: string): string {
+    const opt_theme = this.allThemes.get(themeName);
+    if (opt_theme) {
+      let opt_theme_style = '';
+      opt_theme_style += `color: ${opt_theme.headerColor};`;
+      opt_theme_style += `background-color: ${opt_theme.borderBackground};`;
+      return opt_theme_style;
+    }
+
+    return '';
+  }
+
+  get_sq_background_color(id: string, isSnake: boolean, isFood: boolean, lossPos: readonly [number, number] | undefined, curr_theme: SnakeTheme): string {
+    if (lossPos && id === `${lossPos[0]}_${lossPos[1]}`) return curr_theme.snakeLossColor;
+    else if (isSnake) return curr_theme.snakeColor;
+    else if (isFood) return curr_theme.foodColor;
     else return 'inherit';
   }
 }

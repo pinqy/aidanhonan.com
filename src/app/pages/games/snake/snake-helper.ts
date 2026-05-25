@@ -39,6 +39,7 @@ export class SnakeGame {
   // loss handling
   loss_pos: WritableSignal<readonly [number, number] | undefined> = signal(undefined);
   game_over: Signal<boolean> = computed(() => this.loss_pos() ? true : false);
+  game_started: WritableSignal<boolean> = signal(false);
 
   constructor() {
     this.new_game();
@@ -48,6 +49,7 @@ export class SnakeGame {
     this.snake_dir = SnakeDir.None;
     this.turn_dir = [];
     this.loss_pos.set(undefined);
+    this.game_started.set(false);
 
     const new_board: SnakeSquare[][] = [];
     for (let i = 0; i < this.tiles_x; i++) {
@@ -98,6 +100,8 @@ export class SnakeGame {
     }
 
     if (this.game_over() || this.snake_dir === SnakeDir.None) return;
+
+    this.game_started.set(true);
 
     // get current head pos (before tail removal in case length is 1)
     const curr_head_pos = SnakeGame.parse_pos(this.snake_head());
@@ -151,3 +155,31 @@ export class SnakeGame {
     return [+pos[0], +pos[1]];
   }
 }
+
+export interface SnakeTheme {
+  headerColor: string,
+  borderBackground: string,
+  gameBackground: string,
+  snakeColor: string,
+  snakeLossColor: string,
+  foodColor: string,
+}
+
+export const SNAKE_THEMES: Map<string, SnakeTheme> = new Map<string, SnakeTheme>([
+  ['Default', {
+    headerColor: 'white',
+    borderBackground: 'black',
+    gameBackground: 'lightgreen',
+    snakeColor: 'blue',
+    snakeLossColor: 'lightblue',
+    foodColor: 'red',
+  }],
+  ['NonDefault', {
+    headerColor: 'blue',
+    borderBackground: 'white',
+    gameBackground: 'black',
+    snakeColor: 'purple',
+    snakeLossColor: 'cyan',
+    foodColor: 'green',
+  }],
+]);

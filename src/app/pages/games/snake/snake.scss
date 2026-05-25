@@ -1,7 +1,6 @@
 @use '../../../../styles';
 
 $snake-header-height: 40px;
-$snake-header-color: #cdc6ae; // theme configurable
 
 .snake-game {
   margin: auto;
@@ -14,19 +13,44 @@ $snake-header-color: #cdc6ae; // theme configurable
 
   box-shadow: 2px 3px 5px #000000;
 
-  padding: 0px 10px 10px 10px;
-  background-color: black; // theme configurable
+  padding: 0px 5px 5px 5px;
   
   user-select: none;
 }
 
 .snake-header {
   height: $snake-header-height;
-  color: $snake-header-color;
+  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+
+  margin: 5px 5px 0px 5px;
 
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+
+#snake-new-game-button {
+  @include styles.button-no-decoration();
+
+  font-family: inherit;
+  color: inherit;
+  border: 1px solid;
+  border-radius: 3px;
+  padding: 5px;
+  margin-right: 25px;
+}
+
+#snake-new-game-button:hover {
+  background-color: rgba(205, 198, 174, 0.3); // use different effect for better theming
+}
+
+#snake-theme-dropdown {
+  border-left: 1px solid;
+  border-right: 1px solid;
+  padding: 0px 5px 0px 0px;
+  color: inherit;
+  font-family: inherit;
+  width: 200px;
 }
 
 #snake-close-button {
@@ -43,10 +67,13 @@ $snake-header-color: #cdc6ae; // theme configurable
   width: $snake-header-height;
 }
 
+#snake-close-button:hover {
+  opacity: 0.6;
+}
+
 .snake-game-body {
   display: flex;
   flex-direction: row;
-  background-color: white; // theme configurable
   border-bottom: 1px solid transparent;
   border-right: 1px solid transparent;
 
