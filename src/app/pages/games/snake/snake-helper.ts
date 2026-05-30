@@ -121,6 +121,7 @@ export class SnakeGame {
     // check for loss
     if (this.snake_body().includes(new_head_pos_str) || new_head_pos[0] < 0 || new_head_pos[0] >= this.tiles_x || new_head_pos[1] < 0 || new_head_pos[1] >= this.tiles_y) {
       this.loss_pos.set(new_head_pos);
+      this.snake_body.update((sb) => sb.concat(new_head_pos_str)); // still update this so length doesn't drop by 1 on loss
       return;
     }
 
@@ -157,29 +158,47 @@ export class SnakeGame {
 }
 
 export interface SnakeTheme {
-  headerColor: string,
-  borderBackground: string,
-  gameBackground: string,
+  backgroundColor: string,
+  gameBackground?: string,
+  gridColor: string,
+  textColor: string,
   snakeColor: string,
   snakeLossColor: string,
   foodColor: string,
 }
 
 export const SNAKE_THEMES: Map<string, SnakeTheme> = new Map<string, SnakeTheme>([
-  ['Default', {
-    headerColor: 'white',
-    borderBackground: 'black',
-    gameBackground: 'lightgreen',
+  ['Paper', {
+    backgroundColor: 'white',
+    gridColor: 'gray',
+    textColor: 'black',
     snakeColor: 'blue',
-    snakeLossColor: 'lightblue',
+    snakeLossColor: 'darkblue',
     foodColor: 'red',
   }],
-  ['NonDefault', {
-    headerColor: 'blue',
-    borderBackground: 'white',
-    gameBackground: 'black',
-    snakeColor: 'purple',
-    snakeLossColor: 'cyan',
-    foodColor: 'green',
+  ['Inspo', {
+    backgroundColor: '#FC5454',
+    gameBackground: 'blue',
+    gridColor: 'darkblue',
+    textColor: 'white',
+    snakeColor: 'yellow',
+    snakeLossColor: 'lightgray',
+    foodColor: 'red',
+  }],
+  ['Neon', {
+    backgroundColor: 'black',
+    gridColor: '#2C0D2A',
+    textColor: '#00FFF7',
+    snakeColor: '#FF1E9D',
+    snakeLossColor: '#a70000',
+    foodColor: '#FAD009',
+  }],
+  ['Pink', {
+    backgroundColor: '#940054',
+    gridColor: '#aa0261',
+    textColor: '#FF1E9D',
+    snakeColor: '#FF1E9D',
+    snakeLossColor: '#a70000',
+    foodColor: '#ff69be',
   }],
 ]);

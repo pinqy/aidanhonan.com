@@ -1,15 +1,15 @@
-<div class="snake-game" [style.background-color]="theme().borderBackground">
-  <div class="snake-header" [style.color]="theme().headerColor" [style.border-color]="theme().headerColor">
+<div class="snake-game" [style.background-color]="theme().backgroundColor">
+  <div class="snake-header" [style.color]="theme().textColor" [style.border-color]="theme().textColor">
     <button (click)="new_game()" id="snake-new-game-button" [disabled]="gameInProgress()">New Game</button>
     <mat-select name="snake-theme" id="snake-theme-dropdown" placeholder="Theme" (selectionChange)="update_theme($event)"
-        [disabled]="gameInProgress()" panelWidth="" panelClass="mat-select-panel-no-padding">
+        panelWidth="" panelClass="mat-select-panel-no-padding">
       <mat-select-trigger>Theme</mat-select-trigger>
       @for (themeName of allThemes.keys(); track themeName) {
         <mat-option class="snake-theme-item" value="{{themeName}}" [style]="theme_option_style(themeName)">{{themeName}} Theme</mat-option>
       }
     </mat-select>
     <button for="grid-checkbox" id="snake-grid-checkbox" (click)="toggle_show_grid()">
-      <input type="checkbox" name="grid-checkbox" [checked]="showGrid()" [style.accent-color]="theme().borderBackground"/>
+      <input type="checkbox" name="grid-checkbox" [checked]="showGrid()" [style.accent-color]="theme().backgroundColor"/>
       Show Grid
     </button>
     <span id="snake-score-span">Length: {{game.snake_len()}}</span>
@@ -23,7 +23,7 @@
     <div class="snake-border-col">@for (_ of game.board[0]; track `-1_${$index}`) {
       <div [style.background-color]="get_sq_background_color(`-1_${$index}`, false, false, game.loss_pos(), theme())" [style.height]="squareSize()" style="margin: 2px 2px 0px 0px"></div>
     }</div>
-    <div class="snake-game-body" [style.background-color]="theme().gameBackground">
+    <div class="snake-game-body" [style.background-color]="theme().gameBackground ?? theme().backgroundColor" [style.border]="`1px solid ${theme().gameBackground ?? theme().textColor}`">
       @for (col of game.board; track $index) {
         <div class="snake-column">
           @for (item of col; track item.id) {

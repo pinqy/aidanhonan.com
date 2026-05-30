@@ -44,7 +44,7 @@ export class Snake {
   gameInProgress: Signal<boolean>;
 
   allThemes = SNAKE_THEMES;
-  themeName: WritableSignal<string> = signal('Default');
+  themeName: WritableSignal<string> = signal('Paper');
   theme: Signal<SnakeTheme> = computed(() => (this.allThemes.get(this.themeName())!));
   showGrid: WritableSignal<boolean> = signal(false);
 
@@ -90,14 +90,16 @@ export class Snake {
   update_theme(e: MatSelectChange): void {
     const new_key = typeof(e.value) === 'string' ? e.value as string : undefined;
     if (new_key && this.allThemes.get(new_key)) this.themeName.set(new_key);
+
+    e.source.close();
   }
 
   theme_option_style(themeName: string): string {
     const opt_theme = this.allThemes.get(themeName);
     if (opt_theme) {
       let opt_theme_style = '';
-      opt_theme_style += `color: ${opt_theme.headerColor};`;
-      opt_theme_style += `background-color: ${opt_theme.borderBackground};`;
+      opt_theme_style += `color: ${opt_theme.textColor};`;
+      opt_theme_style += `background-color: ${opt_theme.backgroundColor};`;
       return opt_theme_style;
     }
 
@@ -109,8 +111,8 @@ export class Snake {
   }
 
   get_grid_style(showGrid: boolean, currTheme: SnakeTheme): string {
-    if (!showGrid) return `1px solid ${currTheme.gameBackground}`;
-    return `1px solid ${currTheme.borderBackground}`;
+    if (!showGrid) return `1px solid ${currTheme.gameBackground ?? currTheme.backgroundColor}`;
+    return `1px solid ${currTheme.gridColor}`;
   }
 
   get_sq_background_color(id: string, isSnake: boolean, isFood: boolean, lossPos: readonly [number, number] | undefined, curr_theme: SnakeTheme): string {
