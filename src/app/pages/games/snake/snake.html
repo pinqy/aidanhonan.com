@@ -1,5 +1,5 @@
 <div class="snake-game" [style.background-color]="theme().backgroundColor">
-  <div class="snake-header" [style.color]="theme().textColor" [style.border-color]="theme().textColor">
+  <div class="snake-header" [style.color]="theme().textColor" [style.border-color]="theme().textColor" [style.font-size]="headerFontSize()">
     <button (click)="new_game()" id="snake-new-game-button" [disabled]="gameInProgress()">New Game</button>
     <mat-select name="snake-theme" id="snake-theme-dropdown" placeholder="Theme" (selectionChange)="update_theme($event)"
         panelWidth="" panelClass="mat-select-panel-no-padding">

@@ -28,7 +28,6 @@ $snake-header-item-height: 32px;
   display: flex;
   flex-direction: row;
   align-items: center;
-  font-size: 1em;
 }
 
 #snake-new-game-button {
@@ -74,7 +73,9 @@ $snake-header-item-height: 32px;
     cursor: pointer;
   }
   input {
-    margin-right: 10px;
+    margin-right: 5px;
+    width: 10px;
+    height: 10px;
   }
 }
 
@@ -95,10 +96,9 @@ $snake-header-item-height: 32px;
   text-decoration: none;
   color: inherit;
   margin-left: 10px;
-  font-size: 24px;
+  font-size: inherit;
 
   height: 100%;
-  width: $snake-header-height;
 }
 
 #snake-close-button:hover {
