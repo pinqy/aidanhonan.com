@@ -28,14 +28,16 @@ export class Snake {
    * Screen-size based configurations
    */
   sizeService = inject(SizeService);
-  squareSize = computed(() => {
-    if (this.sizeService.isXSmall()) {return '10px';}
-    else if (this.sizeService.isSmall()) {return '10px';}
-    else if (this.sizeService.isMedium()) {return '10px';}
-    else if (this.sizeService.isLarge()) {return '15px';}
-    else if (this.sizeService.isXLarge()) {return '15px';}
-    else {return '10px';}
+  sizedStyles: Signal<{sqSize: string, fontSize: string}> = computed(() => {
+    if (this.sizeService.isXLarge()) return {sqSize: '15px', fontSize: '1em'};
+    else if (this.sizeService.isLarge()) return {sqSize: '15px', fontSize: '1em'};
+    else if (this.sizeService.isMedium()) return {sqSize: '10px', fontSize: '1em'};
+    else if (this.sizeService.isSmall()) return {sqSize: '6px', fontSize: '0.75em'};
+    else if (this.sizeService.isXSmall()) return {sqSize: '5px', fontSize: '0.75em'};
+    else return {sqSize: '10px', fontSize: '1em'};
   });
+  squareSize: Signal<string> = computed(() => this.sizedStyles().sqSize);
+  headerFontSize: Signal<string> = computed(() => this.sizedStyles().fontSize);
 
   /**
    * Improvements:
