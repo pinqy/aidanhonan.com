@@ -1,37 +1,44 @@
 <div class="snake-game" [style.background-color]="theme().borderBackground">
   <div class="snake-header" [style.color]="theme().headerColor" [style.border-color]="theme().headerColor">
-    <button (click)="new_game()" id="snake-new-game-button">New Game</button>
-    <mat-select name="snake-theme" id="snake-theme-dropdown" [value]="themeName()" (selectionChange)="update_theme($event)" [disabled]="gameInProgress()">
+    <button (click)="new_game()" id="snake-new-game-button" [disabled]="gameInProgress()">New Game</button>
+    <mat-select name="snake-theme" id="snake-theme-dropdown" placeholder="Theme" (selectionChange)="update_theme($event)"
+        [disabled]="gameInProgress()" panelWidth="" panelClass="mat-select-panel-no-padding">
+      <mat-select-trigger>Theme</mat-select-trigger>
       @for (themeName of allThemes.keys(); track themeName) {
         <mat-option class="snake-theme-item" value="{{themeName}}" [style]="theme_option_style(themeName)">{{themeName}} Theme</mat-option>
       }
     </mat-select>
+    <button for="grid-checkbox" id="snake-grid-checkbox" (click)="toggle_show_grid()">
+      <input type="checkbox" name="grid-checkbox" [checked]="showGrid()" [style.accent-color]="theme().borderBackground"/>
+      Show Grid
+    </button>
+    <span id="snake-score-span">Length: {{game.snake_len()}}</span>
     <button (click)="returnToGamesMenu()" id="snake-close-button">&#10006;</button>
   </div>
   <div class="snake-border-row">@for (_ of game.board; track `${$index}_-1`) {
-    <div [style.background-color]="get_sq_background_color(`${$index}_-1`, false, false, game.loss_pos(), theme())" [style.width]="squareSize()" style="margin: 0px 1px 2px 1px"></div>
+    <div [style.background-color]="get_sq_background_color(`${$index}_-1`, false, false, game.loss_pos(), theme())" [style.width]="squareSize()" style="margin: 0px 0px 2px 2px"></div>
   }</div>
 
   <div class="snake-game-container" style="display: inline-flex; flex-direction: row;">
     <div class="snake-border-col">@for (_ of game.board[0]; track `-1_${$index}`) {
-      <div [style.background-color]="get_sq_background_color(`-1_${$index}`, false, false, game.loss_pos(), theme())" [style.height]="squareSize()" style="margin: 1px 2px 1px 0px"></div>
+      <div [style.background-color]="get_sq_background_color(`-1_${$index}`, false, false, game.loss_pos(), theme())" [style.height]="squareSize()" style="margin: 2px 2px 0px 0px"></div>
     }</div>
     <div class="snake-game-body" [style.background-color]="theme().gameBackground">
       @for (col of game.board; track $index) {
         <div class="snake-column">
           @for (item of col; track item.id) {
             <div id="{{item.id}}" class="snake-tile" [style.background-color]="get_sq_background_color(item.id, item.isSnake(), item.isFood(), game.loss_pos(), theme())"
-              [style.height]="squareSize()" [style.width]="squareSize()"></div>
+              [style.height]="squareSize()" [style.width]="squareSize()" [style.border-left]="get_grid_style(showGrid(), theme())" [style.border-top]="get_grid_style(showGrid(), theme())"></div>
           }
         </div>
       }
     </div>
     <div class="snake-border-col">@for (_ of game.board[0]; track `${game.board.length}_${$index}`) {
-      <div [style.background-color]="get_sq_background_color(`${game.board.length}_${$index}`, false, false, game.loss_pos(), theme())" [style.height]="squareSize()" style="margin: 1px 0px 1px 2px"></div>
+      <div [style.background-color]="get_sq_background_color(`${game.board.length}_${$index}`, false, false, game.loss_pos(), theme())" [style.height]="squareSize()" style="margin: 2px 0px 0px 2px"></div>
     }</div>
   </div>
 
   <div class="snake-border-row">@for (_ of game.board; track `${$index}_${game.board[0].length}`) {
-    <div [style.background-color]="get_sq_background_color(`${$index}_${game.board[0].length}`, false, false, game.loss_pos(), theme())" [style.width]="squareSize()" style="margin: 2px 1px 0px 1px"></div>
+    <div [style.background-color]="get_sq_background_color(`${$index}_${game.board[0].length}`, false, false, game.loss_pos(), theme())" [style.width]="squareSize()" style="margin: 2px 0px 0px 2px"></div>
   }</div>
 </div>
