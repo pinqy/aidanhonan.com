@@ -30,6 +30,10 @@ $footer-background: #6e604b;
   background-color: inherit;
 }
 
+div.mat-select-panel-no-padding.mat-mdc-select-panel {
+  padding: 0px;
+}
+
 // Hardcoded for header-color #5d4232, generated here: https://codepen.io/sosuke/pen/Pjoqqp
 .filter-header-color {
   filter: invert(22%) sepia(65%) saturate(326%) hue-rotate(339deg) brightness(95%) contrast(85%);

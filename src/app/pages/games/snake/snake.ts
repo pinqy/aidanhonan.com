@@ -36,11 +36,9 @@ export class Snake {
    * Improvements:
    * - general appearance
    *   - prettify/add themes
-   *   - score (length)
    * - settings
    *   - speed
    *   - food strength
-   *   - grid lines
    */
   game: SnakeGame;
   gameInProgress: Signal<boolean>;
@@ -48,6 +46,7 @@ export class Snake {
   allThemes = SNAKE_THEMES;
   themeName: WritableSignal<string> = signal('Default');
   theme: Signal<SnakeTheme> = computed(() => (this.allThemes.get(this.themeName())!));
+  showGrid: WritableSignal<boolean> = signal(false);
 
   constructor() {
     this.game = new SnakeGame();
@@ -103,6 +102,15 @@ export class Snake {
     }
 
     return '';
+  }
+
+  toggle_show_grid(): void {
+    this.showGrid.update(sg => !sg);
+  }
+
+  get_grid_style(showGrid: boolean, currTheme: SnakeTheme): string {
+    if (!showGrid) return `1px solid ${currTheme.gameBackground}`;
+    return `1px solid ${currTheme.borderBackground}`;
   }
 
   get_sq_background_color(id: string, isSnake: boolean, isFood: boolean, lossPos: readonly [number, number] | undefined, curr_theme: SnakeTheme): string {
