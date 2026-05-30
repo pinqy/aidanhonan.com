@@ -1,13 +1,15 @@
 import { Component, computed, DestroyRef, inject, Signal, signal, WritableSignal } from '@angular/core';
 import { Router } from '@angular/router';
-import { SNAKE_THEMES, SnakeDir, SnakeGame, SnakeTheme } from './snake-helper';
+import { SNAKE_THEMES, SnakeCookie, SnakeDir, SnakeGame, SnakeTheme } from './snake-helper';
 import { SizeService } from '../../../../services/size-service';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
+import { CookieService } from 'ngx-cookie-service';
 
 
 @Component({
   selector: 'app-snake',
   imports: [MatSelectModule],
+  providers: [CookieService],
   templateUrl: './snake.html',
   styleUrl: './snake.scss',
 })
@@ -18,6 +20,9 @@ export class Snake {
   returnToGamesMenu() {
     this.router.navigate(['/games']);
   }
+
+  // cookie service
+  private readonly cookieService = inject(CookieService);
 
   /**
    * Screen-size based configurations
@@ -34,8 +39,6 @@ export class Snake {
 
   /**
    * Improvements:
-   * - general appearance
-   *   - prettify/add themes
    * - settings
    *   - speed
    *   - food strength
@@ -47,8 +50,10 @@ export class Snake {
   themeName: WritableSignal<string> = signal('Paper');
   theme: Signal<SnakeTheme> = computed(() => (this.allThemes.get(this.themeName())!));
   showGrid: WritableSignal<boolean> = signal(false);
+  highScore: WritableSignal<number> = signal(1);
 
   constructor() {
+    this.load_cookies();
     this.game = new SnakeGame();
     this.gameInProgress = computed(() => this.game.game_started() && !this.game.game_over());
 
@@ -77,19 +82,41 @@ export class Snake {
     // change interval for snake speed/animation
     const timer_obj = setInterval(() => {
       this.game.move();
+      if (this.game.snake_len() > this.highScore()) this.update_high_score(this.game.snake_len());
     }, 75);
 
     const destroy_ref = inject(DestroyRef);
     destroy_ref.onDestroy(() => {clearInterval(timer_obj);});
   }
 
+  load_cookies(): void {
+    const saved_theme = this.cookieService.get(SnakeCookie.Theme);
+    if (saved_theme.length > 0 && this.allThemes.get(saved_theme)) this.themeName.set(saved_theme);
+
+    if (this.cookieService.get(SnakeCookie.Grid) === 'true') this.showGrid.set(true);
+
+    const saved_high_score = this.cookieService.get(SnakeCookie.HighScore);
+    if (/^\d+$/.test(saved_high_score)) {
+      // refresh cookie on initial page load
+      this.update_high_score(Number(saved_high_score));
+    }
+  }
+
   new_game(): void {
     this.game.new_game();
   }
 
+  update_high_score(new_hs: number): void {
+    this.highScore.set(new_hs);
+    this.cookieService.set(SnakeCookie.HighScore, String(new_hs), 365);
+  }
+
   update_theme(e: MatSelectChange): void {
     const new_key = typeof(e.value) === 'string' ? e.value as string : undefined;
-    if (new_key && this.allThemes.get(new_key)) this.themeName.set(new_key);
+    if (new_key && this.allThemes.get(new_key)) {
+      this.themeName.set(new_key);
+      this.cookieService.set(SnakeCookie.Theme, new_key, 14);
+    }
 
     e.source.close();
   }
@@ -108,6 +135,7 @@ export class Snake {
 
   toggle_show_grid(): void {
     this.showGrid.update(sg => !sg);
+    this.cookieService.set(SnakeCookie.Grid, String(this.showGrid()), 14);
   }
 
   get_grid_style(showGrid: boolean, currTheme: SnakeTheme): string {

@@ -202,3 +202,9 @@ export const SNAKE_THEMES: Map<string, SnakeTheme> = new Map<string, SnakeTheme>
     foodColor: '#ff69be',
   }],
 ]);
+
+export enum SnakeCookie {
+  Theme = 'snake_theme',
+  Grid = 'snake_grid',
+  HighScore = 'snake_high_score',
+}

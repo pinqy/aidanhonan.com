@@ -12,7 +12,7 @@
       <input type="checkbox" name="grid-checkbox" [checked]="showGrid()" [style.accent-color]="theme().backgroundColor"/>
       Show Grid
     </button>
-    <span id="snake-score-span">Length: {{game.snake_len()}}</span>
+    <span id="snake-score-span">Length: {{game.snake_len()}} (High Score: {{highScore()}})</span>
     <button (click)="returnToGamesMenu()" id="snake-close-button">&#10006;</button>
   </div>
   <div class="snake-border-row">@for (_ of game.board; track `${$index}_-1`) {
