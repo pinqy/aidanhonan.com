@@ -4,7 +4,7 @@
     <mat-select name="snake-theme" id="snake-theme-dropdown" placeholder="Theme" (selectionChange)="update_theme($event)"
         panelWidth="" panelClass="mat-select-panel-no-padding">
       <mat-select-trigger>Theme</mat-select-trigger>
-      @for (themeName of allThemes.keys(); track themeName) {
+      @for (themeName of SNAKE_THEMES.keys(); track themeName) {
         <mat-option class="snake-theme-item" value="{{themeName}}" [style]="theme_option_style(themeName)">{{themeName}} Theme</mat-option>
       }
     </mat-select>

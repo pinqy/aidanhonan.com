@@ -1,6 +1,6 @@
 import { Component, computed, DestroyRef, inject, Signal, signal, WritableSignal } from '@angular/core';
 import { Router } from '@angular/router';
-import { SNAKE_THEMES, SnakeCookie, SnakeDir, SnakeGame, SnakeTheme } from './snake-helper';
+import { SnakeCookie, SnakeDir, SnakeGame, SnakeTheme } from './snake-helper';
 import { SizeService } from '../../../../services/size-service';
 import { MatSelectChange, MatSelectModule } from '@angular/material/select';
 import { CookieService } from 'ngx-cookie-service';
@@ -48,9 +48,45 @@ export class Snake {
   game: SnakeGame;
   gameInProgress: Signal<boolean>;
 
-  allThemes = SNAKE_THEMES;
-  themeName: WritableSignal<string> = signal('Paper');
-  theme: Signal<SnakeTheme> = computed(() => (this.allThemes.get(this.themeName())!));
+  SNAKE_THEMES: Map<string, SnakeTheme> = new Map<string, SnakeTheme>([
+    ['Paper', {
+      backgroundColor: 'white',
+      gridColor: 'gray',
+      textColor: 'black',
+      snakeColor: 'blue',
+      snakeLossColor: 'darkblue',
+      foodColor: 'red',
+    }],
+    ['Inspo', {
+      backgroundColor: '#FC5454',
+      gameBackground: 'blue',
+      gridColor: 'darkblue',
+      textColor: 'white',
+      snakeColor: 'yellow',
+      snakeLossColor: 'lightgray',
+      foodColor: 'red',
+    }],
+    ['Neon', {
+      backgroundColor: 'black',
+      gridColor: '#2C0D2A',
+      textColor: '#00FFF7',
+      snakeColor: '#FF1E9D',
+      snakeLossColor: '#a70000',
+      foodColor: '#FAD009',
+    }],
+    ['Pink', {
+      backgroundColor: '#940054',
+      gridColor: '#aa0261',
+      textColor: '#FF1E9D',
+      snakeColor: '#FF1E9D',
+      snakeLossColor: '#a70000',
+      foodColor: '#ff69be',
+    }],
+  ]);
+
+  private defaultTheme = 'Paper';
+  themeName: WritableSignal<string> = signal(this.defaultTheme);
+  theme: Signal<SnakeTheme> = computed(() => (this.SNAKE_THEMES.get(this.themeName()) ?? this.SNAKE_THEMES.get(this.defaultTheme)!));
   showGrid: WritableSignal<boolean> = signal(false);
   highScore: WritableSignal<number> = signal(1);
 
@@ -93,7 +129,7 @@ export class Snake {
 
   load_cookies(): void {
     const saved_theme = this.cookieService.get(SnakeCookie.Theme);
-    if (saved_theme.length > 0 && this.allThemes.get(saved_theme)) this.themeName.set(saved_theme);
+    if (saved_theme.length > 0 && this.SNAKE_THEMES.get(saved_theme)) this.themeName.set(saved_theme);
 
     if (this.cookieService.get(SnakeCookie.Grid) === 'true') this.showGrid.set(true);
 
@@ -115,7 +151,7 @@ export class Snake {
 
   update_theme(e: MatSelectChange): void {
     const new_key = typeof(e.value) === 'string' ? e.value as string : undefined;
-    if (new_key && this.allThemes.get(new_key)) {
+    if (new_key && this.SNAKE_THEMES.get(new_key)) {
       this.themeName.set(new_key);
       this.cookieService.set(SnakeCookie.Theme, new_key, 14);
     }
@@ -124,7 +160,7 @@ export class Snake {
   }
 
   theme_option_style(themeName: string): string {
-    const opt_theme = this.allThemes.get(themeName);
+    const opt_theme = this.SNAKE_THEMES.get(themeName);
     if (opt_theme) {
       let opt_theme_style = '';
       opt_theme_style += `color: ${opt_theme.textColor};`;
