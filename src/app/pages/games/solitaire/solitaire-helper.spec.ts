@@ -28,10 +28,12 @@ describe('SolitaireGame', () => {
 
     game.acePiles.forEach((pile) => expect(pile().length).toEqual(0));
     game.gamePiles.forEach((pile, i) => {
-      expect(pile().length).toEqual(i+1);
+      expect(pile().length).toEqual(i + 1);
       pile().forEach((card, j) => {
-        if (j !== i) expect(card.isRevealed()).toBeFalse();
-        else expect(card.isRevealed()).toBeTrue(); // top card
+        if (j !== i)
+          expect(card.isRevealed()).toBe(false);
+        else
+          expect(card.isRevealed()).toBe(true); // top card
       });
     });
   });
@@ -44,9 +46,9 @@ describe('SolitaireGame', () => {
       indexTrack++;
       expect(game.dealIndex()).toEqual(indexTrack);
       expect(game.flipPile().length).toEqual(indexTrack);
-      expect(game.flipPile()[indexTrack-1]).toEqual(game.dealPile()[indexTrack-1]);
+      expect(game.flipPile()[indexTrack - 1]).toEqual(game.dealPile()[indexTrack - 1]);
       expect(game.flipPileTopCard()).toBeDefined();
-      expect(game.flipPileTopCard()).toEqual(game.dealPile()[indexTrack-1]);
+      expect(game.flipPileTopCard()).toEqual(game.dealPile()[indexTrack - 1]);
     }
 
     game.reset_deal();
@@ -61,12 +63,12 @@ describe('SolitaireGame', () => {
     let indexTrack = 0;
     while (game.dealIndex() < game.dealPile().length) {
       game.deal_3();
-      indexTrack += Math.min(3, game.dealPile().length-indexTrack);
+      indexTrack += Math.min(3, game.dealPile().length - indexTrack);
       expect(game.dealIndex()).toEqual(indexTrack);
       expect(game.flipPile().length).toEqual(indexTrack);
-      expect(game.flipPile()[indexTrack-1]).toEqual(game.dealPile()[indexTrack-1]);
+      expect(game.flipPile()[indexTrack - 1]).toEqual(game.dealPile()[indexTrack - 1]);
       expect(game.flipPileTopCard()).toBeDefined();
-      expect(game.flipPileTopCard()).toEqual(game.dealPile()[indexTrack-1]);
+      expect(game.flipPileTopCard()).toEqual(game.dealPile()[indexTrack - 1]);
     }
 
     game.reset_deal();
@@ -157,8 +159,8 @@ describe('SolitaireGame', () => {
       game.gamePiles[6].set([moving_card]);
       const move = game.find_move(SolitairePile.Game, 6, 1);
       expect(move).toBeDefined();
-      
-      expect(game.execute_move(move!)).toBeTrue();
+
+      expect(game.execute_move(move!)).toBe(true);
       expect(game.gamePiles[6]().length).toEqual(0);
       expect(game.acePiles[0]().length).toEqual(1);
       expect(game.acePiles[0]()[0]).toEqual(moving_card);
@@ -169,8 +171,8 @@ describe('SolitaireGame', () => {
       game.dealPile.set([moving_card]);
       const move = game.find_move(SolitairePile.Deal, 0);
       expect(move).toBeDefined();
-      
-      expect(game.execute_move(move!)).toBeTrue();
+
+      expect(game.execute_move(move!)).toBe(true);
       expect(game.dealPile().length).toEqual(0);
       expect(game.gamePiles[0]().length).toEqual(1);
       expect(game.gamePiles[0]()[0]).toEqual(moving_card);
@@ -183,7 +185,7 @@ describe('SolitaireGame', () => {
       const move = game.find_move(SolitairePile.Ace, 3);
       expect(move).toBeDefined();
 
-      expect(game.execute_move(move!)).toBeTrue();
+      expect(game.execute_move(move!)).toBe(true);
       expect(game.acePiles[3]().length).toEqual(2);
       expect(game.gamePiles[1]().length).toEqual(2);
       expect(game.gamePiles[1]()[1]).toEqual(moving_card);
@@ -205,7 +207,7 @@ describe('SolitaireGame', () => {
       expect(game.dealIndex()).toEqual(0);
 
       game.deal_1();
-      const moving_card_end = deck.cards[deck.cards.length-1];
+      const moving_card_end = deck.cards[deck.cards.length - 1];
       const move_end = game.find_move(SolitairePile.Deal, 50);
       expect(move_end).toBeDefined();
 
@@ -217,17 +219,17 @@ describe('SolitaireGame', () => {
 
       // Move middle card
       const srcIndex = game.dealPile().findIndex(card => card.number === CardNumber.Nine && card.suit === CardSuit.Hearts);
-      const prev_card = game.dealPile()[srcIndex-1];
+      const prev_card = game.dealPile()[srcIndex - 1];
       const moving_card = game.dealPile()[srcIndex];
-      const next_card = game.dealPile()[srcIndex+1];
+      const next_card = game.dealPile()[srcIndex + 1];
       game.deal_3();
       game.gamePiles[6].set([new Card(CardSuit.Clubs, CardNumber.Ten, 10)]);
       const move = game.find_move(SolitairePile.Deal, srcIndex);
       expect(move).toBeDefined();
 
-      expect(game.execute_move(move!)).toBeTrue();
+      expect(game.execute_move(move!)).toBe(true);
       expect(game.dealPile().length).toEqual(49);
-      expect(game.dealPile()[srcIndex-1]).toEqual(prev_card);
+      expect(game.dealPile()[srcIndex - 1]).toEqual(prev_card);
       expect(game.dealPile()[srcIndex]).toEqual(next_card);
       expect(game.gamePiles[6]().length).toEqual(2);
       expect(game.gamePiles[6]()[1]).toEqual(moving_card);
@@ -244,7 +246,7 @@ describe('SolitaireGame', () => {
       const move = game.find_move(SolitairePile.Game, 4, 2);
       expect(move).toBeDefined();
 
-      expect(game.execute_move(move!)).toBeTrue();
+      expect(game.execute_move(move!)).toBe(true);
       expect(game.gamePiles[4]().length).toEqual(1);
       expect(game.gamePiles[3]().length).toEqual(3);
       expect(game.gamePiles[3]()[1]).toEqual(srcCard1);
@@ -253,24 +255,24 @@ describe('SolitaireGame', () => {
 
     it('does not execute invalid moves', () => {
       // source pile index doesn't exist
-      expect(game.execute_move({sourcePileType: SolitairePile.Game, sourcePileIndex: 100, sourcePileDepth: 1, destinationPileType: SolitairePile.Game, destinationPileIndex: 1})).toBeFalse();
-      expect(game.execute_move({sourcePileType: SolitairePile.Ace, sourcePileIndex: 100, destinationPileType: SolitairePile.Game, destinationPileIndex: 1})).toBeFalse();
-      expect(game.execute_move({sourcePileType: SolitairePile.Deal, sourcePileIndex: 100, destinationPileType: SolitairePile.Game, destinationPileIndex: 1})).toBeFalse();
+      expect(game.execute_move({ sourcePileType: SolitairePile.Game, sourcePileIndex: 100, sourcePileDepth: 1, destinationPileType: SolitairePile.Game, destinationPileIndex: 1 })).toBe(false);
+      expect(game.execute_move({ sourcePileType: SolitairePile.Ace, sourcePileIndex: 100, destinationPileType: SolitairePile.Game, destinationPileIndex: 1 })).toBe(false);
+      expect(game.execute_move({ sourcePileType: SolitairePile.Deal, sourcePileIndex: 100, destinationPileType: SolitairePile.Game, destinationPileIndex: 1 })).toBe(false);
 
       // no card in source position
-      expect(game.execute_move({sourcePileType: SolitairePile.Game, sourcePileIndex: 0, sourcePileDepth: undefined, destinationPileType: SolitairePile.Game, destinationPileIndex: 1})).toBeFalse();
-      expect(game.execute_move({sourcePileType: SolitairePile.Game, sourcePileIndex: 0, sourcePileDepth: 1, destinationPileType: SolitairePile.Game, destinationPileIndex: 1})).toBeFalse();
-      expect(game.execute_move({sourcePileType: SolitairePile.Ace, sourcePileIndex: 0, destinationPileType: SolitairePile.Game, destinationPileIndex: 1})).toBeFalse();
+      expect(game.execute_move({ sourcePileType: SolitairePile.Game, sourcePileIndex: 0, sourcePileDepth: undefined, destinationPileType: SolitairePile.Game, destinationPileIndex: 1 })).toBe(false);
+      expect(game.execute_move({ sourcePileType: SolitairePile.Game, sourcePileIndex: 0, sourcePileDepth: 1, destinationPileType: SolitairePile.Game, destinationPileIndex: 1 })).toBe(false);
+      expect(game.execute_move({ sourcePileType: SolitairePile.Ace, sourcePileIndex: 0, destinationPileType: SolitairePile.Game, destinationPileIndex: 1 })).toBe(false);
 
       // invalid pile move (ace -> ace or any -> deal)
       game.acePiles[0].set([new Card(CardSuit.Diamonds, CardNumber.Ace, 1)]);
-      expect(game.execute_move({sourcePileType: SolitairePile.Ace, sourcePileIndex: 0, destinationPileType: SolitairePile.Ace, destinationPileIndex: 1})).toBeFalse();
+      expect(game.execute_move({ sourcePileType: SolitairePile.Ace, sourcePileIndex: 0, destinationPileType: SolitairePile.Ace, destinationPileIndex: 1 })).toBe(false);
       game.gamePiles[0].set([new Card(CardSuit.Hearts, CardNumber.Ace, 1)]);
-      expect(game.execute_move({sourcePileType: SolitairePile.Game, sourcePileIndex: 0, sourcePileDepth: 1, destinationPileType: SolitairePile.Deal, destinationPileIndex: 0})).toBeFalse();
+      expect(game.execute_move({ sourcePileType: SolitairePile.Game, sourcePileIndex: 0, sourcePileDepth: 1, destinationPileType: SolitairePile.Deal, destinationPileIndex: 0 })).toBe(false);
 
       // destination pile index doesn't exist
-      expect(game.execute_move({sourcePileType: SolitairePile.Game, sourcePileIndex: 0, sourcePileDepth: 1, destinationPileType: SolitairePile.Game, destinationPileIndex: 100})).toBeFalse();
-      expect(game.execute_move({sourcePileType: SolitairePile.Game, sourcePileIndex: 0, sourcePileDepth: 1, destinationPileType: SolitairePile.Ace, destinationPileIndex: 100})).toBeFalse();
+      expect(game.execute_move({ sourcePileType: SolitairePile.Game, sourcePileIndex: 0, sourcePileDepth: 1, destinationPileType: SolitairePile.Game, destinationPileIndex: 100 })).toBe(false);
+      expect(game.execute_move({ sourcePileType: SolitairePile.Game, sourcePileIndex: 0, sourcePileDepth: 1, destinationPileType: SolitairePile.Ace, destinationPileIndex: 100 })).toBe(false);
 
       // invalid pile move (ace pile isn't same suit + 1 lower / game pile isn't opposite color + 1 higher)
       game.gamePiles[1].set([new Card(CardSuit.Clubs, CardNumber.Three, 3)]);
@@ -278,14 +280,14 @@ describe('SolitaireGame', () => {
       game.acePiles[2].set([new Card(CardSuit.Hearts, CardNumber.Ace, 1), new Card(CardSuit.Hearts, CardNumber.Two, 2)]); // Ace pile wrong suit
       game.gamePiles[2].set([new Card(CardSuit.Diamonds, CardNumber.Three, 3)]); // Game pile wrong number
       game.gamePiles[3].set([new Card(CardSuit.Spades, CardNumber.Three, 4)]); // Game pile wrong suit
-      expect(game.execute_move({sourcePileType: SolitairePile.Game, sourcePileIndex: 1, sourcePileDepth: 1, destinationPileType: SolitairePile.Game, destinationPileIndex: 2})).toBeFalse();
-      expect(game.execute_move({sourcePileType: SolitairePile.Game, sourcePileIndex: 1, sourcePileDepth: 1, destinationPileType: SolitairePile.Game, destinationPileIndex: 3})).toBeFalse();
-      expect(game.execute_move({sourcePileType: SolitairePile.Game, sourcePileIndex: 1, sourcePileDepth: 1, destinationPileType: SolitairePile.Ace, destinationPileIndex: 1})).toBeFalse();
-      expect(game.execute_move({sourcePileType: SolitairePile.Game, sourcePileIndex: 1, sourcePileDepth: 1, destinationPileType: SolitairePile.Ace, destinationPileIndex: 2})).toBeFalse();
+      expect(game.execute_move({ sourcePileType: SolitairePile.Game, sourcePileIndex: 1, sourcePileDepth: 1, destinationPileType: SolitairePile.Game, destinationPileIndex: 2 })).toBe(false);
+      expect(game.execute_move({ sourcePileType: SolitairePile.Game, sourcePileIndex: 1, sourcePileDepth: 1, destinationPileType: SolitairePile.Game, destinationPileIndex: 3 })).toBe(false);
+      expect(game.execute_move({ sourcePileType: SolitairePile.Game, sourcePileIndex: 1, sourcePileDepth: 1, destinationPileType: SolitairePile.Ace, destinationPileIndex: 1 })).toBe(false);
+      expect(game.execute_move({ sourcePileType: SolitairePile.Game, sourcePileIndex: 1, sourcePileDepth: 1, destinationPileType: SolitairePile.Ace, destinationPileIndex: 2 })).toBe(false);
 
       // invalid pile move (buried card -> ace pile)
       game.gamePiles[4].set([new Card(CardSuit.Spades, CardNumber.Four, 4), new Card(CardSuit.Hearts, CardNumber.Three, 3), new Card(CardSuit.Spades, CardNumber.Two, 2)]);
-      expect(game.execute_move({sourcePileType: SolitairePile.Game, sourcePileIndex: 4, sourcePileDepth: 2, destinationPileType: SolitairePile.Ace, destinationPileIndex: 2})).toBeFalse();
+      expect(game.execute_move({ sourcePileType: SolitairePile.Game, sourcePileIndex: 4, sourcePileDepth: 2, destinationPileType: SolitairePile.Ace, destinationPileIndex: 2 })).toBe(false);
     });
   });
 });

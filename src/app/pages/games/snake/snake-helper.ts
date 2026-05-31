@@ -167,42 +167,6 @@ export interface SnakeTheme {
   foodColor: string,
 }
 
-export const SNAKE_THEMES: Map<string, SnakeTheme> = new Map<string, SnakeTheme>([
-  ['Paper', {
-    backgroundColor: 'white',
-    gridColor: 'gray',
-    textColor: 'black',
-    snakeColor: 'blue',
-    snakeLossColor: 'darkblue',
-    foodColor: 'red',
-  }],
-  ['Inspo', {
-    backgroundColor: '#FC5454',
-    gameBackground: 'blue',
-    gridColor: 'darkblue',
-    textColor: 'white',
-    snakeColor: 'yellow',
-    snakeLossColor: 'lightgray',
-    foodColor: 'red',
-  }],
-  ['Neon', {
-    backgroundColor: 'black',
-    gridColor: '#2C0D2A',
-    textColor: '#00FFF7',
-    snakeColor: '#FF1E9D',
-    snakeLossColor: '#a70000',
-    foodColor: '#FAD009',
-  }],
-  ['Pink', {
-    backgroundColor: '#940054',
-    gridColor: '#aa0261',
-    textColor: '#FF1E9D',
-    snakeColor: '#FF1E9D',
-    snakeLossColor: '#a70000',
-    foodColor: '#ff69be',
-  }],
-]);
-
 export enum SnakeCookie {
   Theme = 'snake_theme',
   Grid = 'snake_grid',

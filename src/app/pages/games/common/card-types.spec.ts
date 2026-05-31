@@ -48,10 +48,10 @@ describe('Card', () => {
     const cardDiffNum = new Card(CardSuit.Hearts, CardNumber.Six, 5);
     const cardDiffVal = new Card(CardSuit.Hearts, CardNumber.Five, 6);
 
-    expect(card.equals(cardSame)).toBeTrue();
-    expect(card.equals(cardDiffSuit)).toBeFalse();
-    expect(card.equals(cardDiffNum)).toBeFalse();
-    expect(card.equals(cardDiffVal)).toBeFalse();
+    expect(card.equals(cardSame)).toBe(true);
+    expect(card.equals(cardDiffSuit)).toBe(false);
+    expect(card.equals(cardDiffNum)).toBe(false);
+    expect(card.equals(cardDiffVal)).toBe(false);
   });
 });
 
@@ -104,7 +104,8 @@ describe('Deck', () => {
 
       let same = 0;
       deck.cards.forEach((card, index) => {
-        if (card.number === deck_copy[index].number && card.suit === deck_copy[index].suit) same++;
+        if (card.number === deck_copy[index].number && card.suit === deck_copy[index].suit)
+          same++;
       });
 
       expect(same).toBeLessThan(20);
