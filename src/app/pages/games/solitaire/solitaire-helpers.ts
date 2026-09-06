@@ -1,5 +1,6 @@
 import { computed, Signal, signal, WritableSignal } from '@angular/core';
 import { Card, CardNumber, Deck } from '../common/card-types';
+import { sleep } from '../common/helpers';
 
 export enum SolitairePile {
   Deal = 'Deal',
@@ -27,6 +28,8 @@ export class SolitaireGame {
   readonly flipPile: Signal<Card[]>;
   readonly flipPileTopCard: Signal<Card | undefined>;
   readonly flipPileTop3: Signal<Card[]>;
+  readonly score_moves: WritableSignal<number> = signal(0);
+  autocompleting = false;
 
   constructor() {
     this.deck = new Deck(false);
@@ -51,6 +54,8 @@ export class SolitaireGame {
   }
 
   new_game(): void {
+    this.score_moves.set(0);
+    this.autocompleting = false;
     this.deck.shuffle();
     for (const pile of this.acePiles) pile.set([]);
     for (const pile of this.gamePiles) pile.set([]);
@@ -78,14 +83,21 @@ export class SolitaireGame {
 
   deal_1(): void {
     this.dealIndex.update((di) => Math.min(di+1, this.dealPile().length));
+    this.increment_score();
   }
 
   deal_3(): void {
     this.dealIndex.update((di) => Math.min(di+3, this.dealPile().length));
+    this.increment_score();
+  }
+
+  increment_score(): void {
+    this.score_moves.update((sm) => sm+1);
   }
 
   reset_deal(): void {
     this.dealIndex.set(0);
+    this.increment_score();
   }
 
   find_card(pile: SolitairePile, pileIndex: number, pileDepth?: number): Card | undefined {
@@ -157,6 +169,12 @@ export class SolitaireGame {
       this.acePiles[move.destinationPileIndex].update(pile => pile.concat(srcCards));
     }
 
+    this.increment_score();
+    if (!this.autocompleting && this.can_autocomplete()) {
+      this.autocompleting = true;
+      this.autocomplete();
+    }
+
     return true;
   }
 
@@ -191,5 +209,25 @@ export class SolitaireGame {
         if (pileLen > 0) this.acePiles[pileIndex]()[pileLen-1].isRevealed.set(true);
         break;
     }
+  }
+
+  private can_autocomplete(): boolean {
+    // all game piles fully revealed (or empty), no cards left in deal pile
+    return this.gamePiles.filter((gp) => gp().length > 0 && !gp()[0].isRevealed()).length === 0 && this.dealPile().length === 0;
+  }
+
+  private async autocomplete(): Promise<void> {
+    let attempts = 0;
+    while (attempts < 52 && this.gamePiles.filter((g) => g().length > 0).length > 0) {
+      for (let i = 0; i < this.gamePiles.length; i++) {
+        const move = this.find_move(SolitairePile.Game, i, 1);
+        if (move) {
+          this.execute_move(move);
+          await sleep(100);
+        }
+      };
+      attempts += 1;
+    }
+    this.autocompleting = false;
   }
 }

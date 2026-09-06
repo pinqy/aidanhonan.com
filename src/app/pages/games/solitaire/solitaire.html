@@ -10,7 +10,7 @@
     <button class="solitaire-timer-pause" (click)="toggle_timer_paused()" [innerHTML]="score_timer_paused() ? '&#9658;' : '&#10074;&#10074;'"></button>
     <div class="solitaire-score-timer">{{score_mins()}}:{{score_secs_str()}}</div>
     <div class="solitaire-score-moves">
-      <span>{{score_moves()}}</span>
+      <span>{{game.score_moves()}}</span>
       <p>moves</p>
     </div>
   </div>
@@ -36,7 +36,7 @@
         }
         @else if (game_over()) {
           <div class="solitaire-popup">
-            <span>Congratulations! You won with {{score_moves()}} moves in {{score_mins()}}:{{score_secs_str()}}.</span>
+            <span>Congratulations! You won with {{game.score_moves()}} moves in {{score_mins()}}:{{score_secs_str()}}.</span>
             <div class="solitaire-popup-buttons">
               <button (click)="new_game()" style="margin: auto; background-color: lightblue;">Start New Game</button>
             </div>

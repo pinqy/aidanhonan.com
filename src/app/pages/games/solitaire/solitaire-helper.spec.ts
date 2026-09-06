@@ -1,5 +1,6 @@
 import { SolitaireGame, SolitairePile } from './solitaire-helpers';
 import { Card, CardNumber, CardSuit, Deck } from '../common/card-types';
+import { sleep } from '../common/helpers';
 
 describe('SolitaireGame', () => {
   let game: SolitaireGame;
@@ -288,6 +289,62 @@ describe('SolitaireGame', () => {
       // invalid pile move (buried card -> ace pile)
       game.gamePiles[4].set([new Card(CardSuit.Spades, CardNumber.Four, 4), new Card(CardSuit.Hearts, CardNumber.Three, 3), new Card(CardSuit.Spades, CardNumber.Two, 2)]);
       expect(game.execute_move({ sourcePileType: SolitairePile.Game, sourcePileIndex: 4, sourcePileDepth: 2, destinationPileType: SolitairePile.Ace, destinationPileIndex: 2 })).toBe(false);
+    });
+
+    it('triggers autocomplete from deal pile', async () => {
+      game.dealPile.set([new Card(CardSuit.Hearts, CardNumber.Two, 2)]);
+      game.acePiles[3].set([new Card(CardSuit.Hearts, CardNumber.Ace, 1)]);
+      game.gamePiles[0].set([new Card(CardSuit.Hearts, CardNumber.Three, 3)]);
+      game.gamePiles[0]()[0].isRevealed.set(true);
+      const move = game.find_move(SolitairePile.Deal, 0);
+      expect(move).toBeDefined();
+      game.execute_move(move!);
+      expect(game.autocompleting).toBe(true);
+
+      await sleep(200);
+      expect(game.autocompleting).toBe(false);
+      game.gamePiles.forEach((gp) => expect(gp().length).toEqual(0));
+      expect(game.acePiles[3]().length).toEqual(3);
+      expect(game.score_moves()).toEqual(2);
+    });
+
+    it('triggers autocomplete from game pile', async () => {
+      game.dealPile.set([]);
+      game.acePiles[0].set([new Card(CardSuit.Clubs, CardNumber.Ace, 1)]);
+      game.acePiles[3].set([new Card(CardSuit.Hearts, CardNumber.Ace, 1)]);
+      game.gamePiles[0].set([new Card(CardSuit.Hearts, CardNumber.Three, 3)]);
+      game.gamePiles[1].set([new Card(CardSuit.Hearts, CardNumber.Two, 2), new Card(CardSuit.Clubs, CardNumber.Two, 2)]);
+      game.gamePiles[2].set([new Card(CardSuit.Diamonds, CardNumber.Four, 4), new Card(CardSuit.Spades, CardNumber.Three, 3), new Card(CardSuit.Diamonds, CardNumber.Two, 2), new Card(CardSuit.Spades, CardNumber.Ace, 1)]);
+      game.gamePiles[3].set([new Card(CardSuit.Spades, CardNumber.Four, 4), new Card(CardSuit.Diamonds, CardNumber.Three, 3), new Card(CardSuit.Spades, CardNumber.Two, 2), new Card(CardSuit.Diamonds, CardNumber.Ace, 1)]);
+      game.gamePiles[0]()[0].isRevealed.set(true);
+      game.gamePiles[1]()[1].isRevealed.set(true);
+      game.gamePiles[2]().forEach((card) => card.isRevealed.set(true));
+      game.gamePiles[3]().forEach((card) => card.isRevealed.set(true));
+      // move that reveals the final game pile card
+      const move = game.find_move(SolitairePile.Game, 1, 1);
+      expect(move).toBeDefined();
+      game.execute_move(move!);
+      expect(game.autocompleting).toBe(true);
+
+      // confirm there's a delay between attempts to move cards
+      await sleep(100);
+      expect(game.autocompleting).toBe(true);
+
+      // confirm autocompletion actually finishes and validate end state
+      let attempts = 0;
+      let still_autocompleting = true;
+      while (attempts < 10 && still_autocompleting) {
+        await sleep(100);
+        still_autocompleting = game.autocompleting;
+        attempts += 1;
+      }
+      if (still_autocompleting) expect.fail('Autocompletion never finished');
+      game.gamePiles.forEach((gp) => expect(gp().length).toEqual(0));
+      expect(game.acePiles[3]().length).toEqual(3);
+      expect(game.acePiles[0]().length).toEqual(2);
+      expect(game.acePiles[1]().length).toEqual(4);
+      expect(game.acePiles[2]().length).toEqual(4);
+      expect(game.score_moves()).toEqual(11);
     });
   });
 });
