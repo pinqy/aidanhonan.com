@@ -30,7 +30,7 @@
     "zone.js": "^0.16.3"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^22.1.7",
+    "@angular/build": "^22.1.7",
     "@angular/cli": "^22.1.7",
     "@angular/compiler-cli": "^22.1.5",
     "@stylistic/eslint-plugin": "^5.7.1",
@@ -42,5 +42,8 @@
     "typescript": "~6.0",
     "typescript-eslint": "8.69.0",
     "vitest": "^4.1.7"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
   }
 }

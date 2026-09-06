@@ -31,7 +31,6 @@ export class Solitaire {
   flipPileDisplayCards: Signal<Card[]>;
   game_started: WritableSignal<boolean> = signal(false);
   game_over: Signal<boolean> = computed(() => {for (const p of this.game.acePiles) {if (p().length < 13) return false;}; return true;});
-  score_moves: WritableSignal<number> = signal(0);
   score_timer: WritableSignal<number> = signal(0);
   score_mins: Signal<number> = computed(() => Math.floor(this.score_timer() / 60));
   score_secs: Signal<number> = computed(() => this.score_timer() % 60);
@@ -88,7 +87,6 @@ export class Solitaire {
   new_game(): void {
     this.game.new_game();
     this.game_started.set(false);
-    this.score_moves.set(0);
     this.score_timer.set(0);
     this.show_flip_change_popup.set(false);
     this.score_timer_paused.set(false);
@@ -132,7 +130,6 @@ export class Solitaire {
     if (this.allow_moves() && (!move || this.game.execute_move(move))) {
       this.game_started.set(true);
       this.score_timer_paused.set(false);
-      this.score_moves.update(m => m+1);
     }
   }
 
