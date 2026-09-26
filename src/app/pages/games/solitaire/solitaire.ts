@@ -21,7 +21,6 @@ export class Solitaire {
   /**
    * Improvements:
    * - Animate moves
-   * - Game autocomplete
    * - Save settings
    * - Check for winnability + related settings/options
    */
